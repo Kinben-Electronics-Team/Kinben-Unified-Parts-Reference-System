@@ -1,22 +1,26 @@
-# Kinben KPN Component Libraries
+# Kinben Unified Parts Reference System
 
-Centralized repository for all Kinben component libraries, schematics, footprints, 3D models, and approved KPN (Kinben Part Number) components.
+Centralized EDA library for all Kinben component management, schematics, footprints, 3D models, and approved KPN (Kinben Part Number) components.
 
 ## Repository Structure
 
 ```
 kinben-kpn-libs/
-├── schematics/           # Schematic symbols (.lib, .kicad_sym)
+├── kicad_library/        # Complete KiCad library files
+│   ├── 3d_models/       # 3D component models (.step, .stp)
+│   ├── lib_fp/          # PCB footprints (.pretty folders with .kicad_mod)
+│   └── lib_sym/         # Schematic symbols (.kicad_sym files)
+├── schematics/           # Generic schematic symbols organized by category
 │   ├── passives/
 │   ├── semiconductors/
 │   ├── connectors/
 │   └── modules/
-├── footprints/           # PCB footprints (.pretty, .kicad_mod)
+├── footprints/           # Generic PCB footprints organized by category
 │   ├── passives/
 │   ├── semiconductors/
 │   ├── connectors/
 │   └── modules/
-├── 3d_models/           # 3D component models (.step, .wrl)
+├── 3d_models/           # Generic 3D models organized by category
 │   ├── passives/
 │   ├── semiconductors/
 │   ├── connectors/
