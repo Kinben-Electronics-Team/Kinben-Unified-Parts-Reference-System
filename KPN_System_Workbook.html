@@ -168,12 +168,131 @@
         [data-component-id] { border-left: 2px solid #6c757d; }
     </style>
     <script>
-        // Component data storage
+        // ==================== CSV DATABASE INTEGRATION ====================
+        
+        // API Base URL - automatically detects if server is running
+        const API_BASE = window.location.hostname === 'localhost' ? 
+            `http://localhost:3000/api` : '/api';
+        
+        // Component data storage - now backed by CSV files
         let componentData = {
             capacitors: [], resistors: [], inductors: [], diodes: [], transistors: [],
             ics: [], connectors: [], crystals: [], fuses: [], switches: [],
             relays: [], optocouplers: [], sensors: [], mechanical: [], hardware: [], cables: []
         };
+        
+        // CSV Integration Functions
+        async function loadComponentsFromCSV(category) {
+            try {
+                const response = await fetch(`${API_BASE}/components/${category.toUpperCase()}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                componentData[category] = data.components || [];
+                
+                console.log(`✅ Loaded ${data.count} components for ${category} from CSV`);
+                return data.components;
+            } catch (error) {
+                console.error(`❌ Error loading ${category} from CSV:`, error);
+                // Fallback to localStorage for offline mode
+                return JSON.parse(localStorage.getItem(`kpn_${category}`) || '[]');
+            }
+        }
+        
+        async function saveComponentToCSV(category, componentData) {
+            try {
+                const response = await fetch(`${API_BASE}/components/${category.toUpperCase()}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(componentData)
+                });
+                
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const result = await response.json();
+                console.log('✅ Component saved to CSV:', result.component.Kinben_PN);
+                
+                // Also save to localStorage as backup
+                const categoryKey = `kpn_${category}`;
+                let localData = JSON.parse(localStorage.getItem(categoryKey) || '[]');
+                localData.push(result.component);
+                localStorage.setItem(categoryKey, JSON.stringify(localData));
+                
+                return result;
+            } catch (error) {
+                console.error('❌ Error saving to CSV:', error);
+                // Fallback to localStorage only
+                const categoryKey = `kpn_${category}`;
+                let localData = JSON.parse(localStorage.getItem(categoryKey) || '[]');
+                localData.push(componentData);
+                localStorage.setItem(categoryKey, JSON.stringify(localData));
+                
+                throw error; // Re-throw to let calling code handle it
+            }
+        }
+        
+        async function generateKPNFromAPI(category, subcategory) {
+            try {
+                const response = await fetch(`${API_BASE}/kpn/${category.toUpperCase()}/${subcategory.toUpperCase()}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const data = await response.json();
+                return data.kpn;
+            } catch (error) {
+                console.error('❌ Error generating KPN from API:', error);
+                // Fallback to local generation
+                return generateKPN(category, subcategory);
+            }
+        }
+        
+        // Initialize system - load all components from CSV files
+        async function initializeSystem() {
+            console.log('🚀 Initializing KPN System with CSV Database...');
+            
+            // Test API connectivity
+            try {
+                const healthResponse = await fetch(`${API_BASE}/health`);
+                if (healthResponse.ok) {
+                    const health = await healthResponse.json();
+                    console.log('✅ API Server Connected:', health.status);
+                    
+                    // Load all categories from CSV
+                    const categories = Object.keys(componentData);
+                    for (const category of categories) {
+                        await loadComponentsFromCSV(category);
+                    }
+                    
+                    updateDashboardStats();
+                    console.log('✅ System initialized with CSV database');
+                    
+                } else {
+                    throw new Error('API server not available');
+                }
+            } catch (error) {
+                console.log('⚠️  API server not available, using localStorage mode');
+                loadDataFromLocalStorage();
+            }
+        }
+        
+        // Fallback function to load from localStorage
+        function loadDataFromLocalStorage() {
+            console.log('📦 Loading data from localStorage...');
+            Object.keys(componentData).forEach(category => {
+                const stored = localStorage.getItem(`kpn_${category}`);
+                if (stored) {
+                    componentData[category] = JSON.parse(stored);
+                }
+            });
+            updateDashboardStats();
+        }
+        
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            updateStats(); // Update existing stats function
+            updateSystemStats(); // Update system-level stats
+        }
         
         // System-level data storage
         let systemData = {
@@ -611,22 +730,30 @@
             }
         }
         
-        function generateKPNPreview() {
+        async function generateKPNPreview() {
             const category = document.getElementById('categorySelect').value;
             const subcategory = document.getElementById('subcategorySelect').value;
             const preview = document.getElementById('kpnPreview');
             
             if (category && subcategory) {
-                const kpn = generateKPN(category, subcategory);
-                preview.textContent = kpn;
-                document.getElementById('kinbenPN').value = kpn;
+                try {
+                    // Try to get KPN from API first
+                    const kpn = await generateKPNFromAPI(category, subcategory);
+                    preview.textContent = kpn;
+                    document.getElementById('kinbenPN').value = kpn;
+                } catch (error) {
+                    // Fallback to local generation
+                    const kpn = generateKPN(category, subcategory);
+                    preview.textContent = kpn + ' (offline)';
+                    document.getElementById('kinbenPN').value = kpn;
+                }
             } else {
                 preview.textContent = 'Select category and subcategory';
                 document.getElementById('kinbenPN').value = '';
             }
         }
         
-        function addComponent() {
+        async function addComponent() {
             const form = document.getElementById('addComponentForm');
             const formData = new FormData(form);
             const category = formData.get('category');
@@ -636,47 +763,73 @@
                 return;
             }
             
-            // Create component object
+            // Create component object in CSV format
             const component = {
-                kinbenPN: formData.get('kinbenPN'),
-                value: formData.get('value'),
-                voltage: formData.get('voltage'),
-                current: formData.get('current'),
-                power: formData.get('power'),
-                tolerance: formData.get('tolerance'),
-                package: formData.get('package'),
-                mounting: formData.get('mounting'),
-                temperature: formData.get('temperature'),
-                manufacturer: formData.get('manufacturer'),
-                manufacturerPN: formData.get('manufacturerPN'),
-                description: formData.get('description'),
-                supplier: formData.get('supplier'),
-                mouserPN: formData.get('mouserPN'),
-                digikeyPN: formData.get('digikeyPN'),
-                cost: formData.get('cost'),
-                moq: formData.get('moq'),
-                status: formData.get('status') || 'Active',
-                symbolFile: formData.get('symbolFile'),
-                footprintFile: formData.get('footprintFile'),
-                modelFile: formData.get('modelFile'),
-                notes: formData.get('notes'),
-                createdDate: new Date().toISOString().split('T')[0],
-                createdBy: 'User'
+                Kinben_PN: formData.get('kinbenPN'),
+                Value: formData.get('value'),
+                Voltage_Rating: formData.get('voltage'),
+                Current_Rating: formData.get('current'),
+                Power_Rating: formData.get('power'),
+                Tolerance: formData.get('tolerance'),
+                Package: formData.get('package'),
+                Mounting: formData.get('mounting'),
+                Temperature_Range: formData.get('temperature'),
+                Manufacturer: formData.get('manufacturer'),
+                Manufacturer_PN: formData.get('manufacturerPN'),
+                Description: formData.get('description'),
+                Preferred_Supplier: formData.get('supplier'),
+                Mouser_PN: formData.get('mouserPN'),
+                DigiKey_PN: formData.get('digikeyPN'),
+                Unit_Cost: formData.get('cost'),
+                MOQ: formData.get('moq'),
+                Status: formData.get('status') || 'Active',
+                Symbol_File: formData.get('symbolFile'),
+                Footprint_File: formData.get('footprintFile'),
+                '3D_Model_File': formData.get('modelFile'),
+                Notes: formData.get('notes'),
+                Created_By: 'User',
+                subcategory: formData.get('subcategory') // Include subcategory for KPN generation
             };
             
-            // Add to component data
-            if (!componentData[category]) {
-                componentData[category] = [];
+            try {
+                // Save to CSV via API
+                const result = await saveComponentToCSV(category, component);
+                
+                // Add to local component data
+                if (!componentData[category]) {
+                    componentData[category] = [];
+                }
+                componentData[category].push(result.component);
+                
+                // Success notification
+                alert('Component added successfully to CSV database!');
+                
+                // Close modal and refresh
+                closeAddComponentModal();
+                form.reset();
+                updateDashboardStats();
+                
+                // If we're on the category sheet, refresh it
+                const activeSheet = document.querySelector('.sheet.active');
+                if (activeSheet && activeSheet.id === category) {
+                    displayCategoryData(category);
+                }
+                
+            } catch (error) {
+                alert('Failed to save component to CSV. Using local storage as backup.');
+                console.error('Component save error:', error);
+                
+                // Fallback: still add to local storage
+                if (!componentData[category]) {
+                    componentData[category] = [];
+                }
+                componentData[category].push(component);
+                
+                closeAddComponentModal();
+                form.reset();
+                updateDashboardStats();
             }
-            componentData[category].push(component);
-            
-            // Close modal and refresh
-            closeAddComponentModal();
-            form.reset();
-            updateStats();
-            
-            // If we're on the category sheet, refresh it
-            const activeSheet = document.querySelector('.sheet.active');
+        }
             if (activeSheet && activeSheet.id === category) {
                 refreshComponentTable(category);
             }
@@ -1237,8 +1390,10 @@
         }
         
         // Initialize on page load
-        window.addEventListener('load', function() {
-            updateStats();
+        window.addEventListener('load', async function() {
+            // Initialize system with CSV database
+            await initializeSystem();
+            
             initializeCategoryFilters(); // Add category filters to all pages
             initializeSystemManagement(); // Initialize system-first approach
             
