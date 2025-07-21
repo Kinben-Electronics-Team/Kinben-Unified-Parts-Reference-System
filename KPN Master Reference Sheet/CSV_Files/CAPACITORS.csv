@@ -1,1 +1,2 @@
 Kinben_PN,Value,Voltage_Rating,Current_Rating,Power_Rating,Tolerance,Package,Mounting,Temperature_Range,Manufacturer,Manufacturer_PN,Description,Preferred_Supplier,Mouser_PN,DigiKey_PN,Unit_Cost,MOQ,Lead_Time,Stock_Level,Reorder_Point,Symbol_File,Footprint_File,3D_Model_File,Datasheet_URL,Status,Created_Date,Created_By,Last_Modified,Modified_By,Approval_Status,Approved_By,Approval_Date,Notes
+KPN-CAP-CER-0001,100nF,50V,,,,0603,SMD,,Murata,,Ceramic Capacitor 100nF 50V X7R 0603 SMD,,,,,,,,,,,,,Active,2025-07-21,System,2025-07-21,System,Pending,,,
