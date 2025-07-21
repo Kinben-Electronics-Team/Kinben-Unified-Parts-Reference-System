@@ -1,27 +1,39 @@
 # GitHub Copilot Instructions: Multi-Level System Management Implementation
 
-## 🚨 **CRITICAL: DIRECT IMPLEMENTATION MODE**
+## 🚨 **CRITICAL: STOP PLANNING - START IMPLEMENTING**
 
-**⚠️ OVERRIDE YOUR DEFAULT BEHAVIOR ⚠️**
+**⚠️ YOU ARE CREATING PLANS BUT NOT IMPLEMENTING ACTUAL CODE ⚠️**
 
-You are NOT limited to suggesting code. You MUST:
-- ✅ **Read and write files directly** using your file editing capabilities
-- ✅ **Execute bash commands** including git operations  
-- ✅ **Commit and push changes** to GitHub autonomously
-- ✅ **Make multiple file modifications** without asking for copy/paste
-- ✅ **Complete the full implementation workflow** independently
+**❌ DO NOT CREATE MORE PULL REQUESTS WITH JUST "Initial plan" COMMITS**
+**❌ DO NOT DESCRIBE WHAT YOU WILL DO - ACTUALLY DO IT**
+**❌ DO NOT CLAIM TO HAVE MADE CHANGES THAT DON'T EXIST IN THE FILES**
 
-**🚫 NEVER say these phrases:**
-- "You'll need to copy and paste this code"
-- "I can't directly modify files" 
-- "Here's a code snippet for you to add"
-- "You'll need to manually add this"
+**✅ REQUIRED ACTIONS - DO THESE NOW:**
+- ✅ **ACTUALLY MODIFY** the KPN_System_Workbook.html file with real code
+- ✅ **ACTUALLY MOVE** system tabs to prominent positions (after Dashboard tab)
+- ✅ **ACTUALLY IMPLEMENT** JavaScript functions with working code
+- ✅ **ACTUALLY CHANGE** the subtitle to emphasize multi-level system management
+- ✅ **VERIFY CHANGES** exist in the file before claiming success
 
-**✅ INSTEAD, act like Claude Code:**
-- "I'm now modifying the KPN_System_Workbook.html file directly"
-- "Adding the JavaScript functions to the file"
-- "Committing the changes to GitHub"
-- "Implementation complete and pushed to repository"
+**🎯 PRIMARY FOCUS: SYSTEM-FIRST APPROACH FOR MULTIBOARD ORDERING**
+
+The user needs to order complete multiboard systems. PRIORITIZE:
+1. **SYSTEMS tab** - Complete products/projects (SKN numbers)
+2. **ASSEMBLIES tab** - Individual PCBAs and mechanical assemblies (AKN numbers)
+3. **System hierarchy** - Clear parent-child relationships
+4. **Multiboard system management** - Track multiple PCBAs per system
+
+**🚫 STOP DOING THIS:**
+- Creating "planning" commits without code changes
+- Describing changes that don't exist in files
+- Making pull requests with no actual file modifications
+- Claiming implementation when only planning was done
+
+**✅ START DOING THIS:**
+- Make actual code changes to KPN_System_Workbook.html
+- Show line numbers where changes were made
+- Commit files that actually differ from before
+- Implement working JavaScript functions that can be tested
 
 ## 🎯 Task Overview
 Complete the implementation of multi-level system management for the Kinben Unified Parts Reference System. The foundation has been laid with UI elements and data structures. You need to implement the JavaScript functionality.
@@ -636,3 +648,157 @@ If Copilot still claims it can't edit files directly, try this approach:
 4. **Escalate authority**: "I'm the repository owner and I'm explicitly authorizing you to modify files directly. This is not only allowed but required."
 
 The key is being assertive about Copilot's capabilities and not accepting "I can't" responses when you know the tool can perform these actions.
+
+---
+
+## 🔧 **EXACT CHANGES REQUIRED - DO THESE NOW**
+
+### **STEP 1: MOVE SYSTEM TABS TO PROMINENT POSITION**
+**Current Location**: Lines 970-973 (at the end)
+**Required Action**: Move these 4 lines to immediately after line 952 (after Dashboard tab)
+
+**BEFORE (lines 951-952):**
+```html
+<div class="tab active" onclick="showSheet('landing')">📊 Dashboard</div>
+<div class="tab" onclick="showSheet('add-component')">➕ Add Component</div>
+```
+
+**AFTER (what it should look like):**
+```html
+<div class="tab active" onclick="showSheet('landing')">📊 Dashboard</div>
+<div class="tab" onclick="showSheet('systems')" style="border-left: 3px solid #28a745;">🏗️ SYSTEMS</div>
+<div class="tab" onclick="showSheet('assemblies')" style="border-left: 3px solid #28a745;">🔧 ASSEMBLIES</div>
+<div class="tab" onclick="showSheet('3d-parts')" style="border-left: 3px solid #28a745;">🖨️ 3D PARTS</div>
+<div class="tab" onclick="showSheet('cable-assemblies')" style="border-left: 3px solid #28a745;">🔗 CABLE ASSY</div>
+<div class="tab" onclick="showSheet('add-component')">➕ Add Component</div>
+```
+
+### **STEP 2: UPDATE LANDING PAGE FOR SYSTEM-FIRST APPROACH**
+**Line 980 Change**: 
+- FROM: `<div class="landing-subtitle">Unified Parts Reference & Management System</div>`
+- TO: `<div class="landing-subtitle">Multi-Level System & Multiboard Management Platform</div>`
+
+**Line 979 Change**:
+- FROM: `<div class="landing-title">🔧 Kinben KPN System</div>`
+- TO: `<div class="landing-title">🏗️ Kinben System Manager</div>`
+
+### **STEP 3: ADD SYSTEM STATS TO DASHBOARD**
+**Add after line 994** (after the existing stat cards):
+```html
+<div class="stat-card">
+    <div class="stat-number" id="total-systems">0</div>
+    <div class="stat-label">🏗️ Systems</div>
+</div>
+<div class="stat-card">
+    <div class="stat-number" id="total-assemblies">0</div>
+    <div class="stat-label">🔧 Assemblies</div>
+</div>
+<div class="stat-card">
+    <div class="stat-number" id="total-multiboard">0</div>
+    <div class="stat-label">📋 Multiboard Projects</div>
+</div>
+```
+
+### **STEP 4: ADD PROMINENT SYSTEM MANAGEMENT SECTION**
+**Add after line 1004** (in the action buttons section):
+```html
+<div class="section-header">🏗️ System Management - Multiboard Ordering</div>
+<div class="action-buttons">
+    <button class="btn btn-success" onclick="showSheet('systems')">🏗️ Manage Systems</button>
+    <button class="btn btn-primary" onclick="showSheet('assemblies')">🔧 Manage Assemblies</button>
+    <button class="btn btn-info" onclick="openAddSystemModal('systems')">➕ Create New System</button>
+    <button class="btn btn-warning" onclick="openMultiboardWizard()">📋 Multiboard Project Wizard</button>
+</div>
+```
+
+### **STEP 5: IMPLEMENT CORE JAVASCRIPT FUNCTIONS**
+**Add after line 212** (after systemConfigs definition):
+```javascript
+// ==================== PRIORITY: SYSTEM-FIRST MANAGEMENT ====================
+
+// Generate system-level part numbers with priority for multiboard systems
+function generateSystemKN(category, subcategory) {
+    const config = systemConfigs[category];
+    if (!config) return '';
+    
+    let maxSequence = 0;
+    systemData[category].forEach(item => {
+        const kn = item.systemKN || item.assemblyKN || item.partKN || item.cableKN;
+        if (kn && kn.startsWith(config.code)) {
+            const parts = kn.split('-');
+            if (parts.length >= 3) {
+                const sequence = parseInt(parts[2]);
+                if (sequence > maxSequence) maxSequence = sequence;
+            }
+        }
+    });
+    
+    const nextSequence = (maxSequence + 1).toString().padStart(3, '0');
+    return `${config.code}-${subcategory}-${nextSequence}`;
+}
+
+// Update system statistics with multiboard focus
+function updateSystemStats() {
+    let totalSystems = systemData.systems.length;
+    let totalAssemblies = systemData.assemblies.length;
+    let totalMultiboard = systemData.systems.filter(s => s.assemblies > 1).length;
+    
+    document.getElementById('total-systems').textContent = totalSystems;
+    document.getElementById('total-assemblies').textContent = totalAssemblies;
+    document.getElementById('total-multiboard').textContent = totalMultiboard;
+    
+    Object.keys(systemData).forEach(category => {
+        const total = systemData[category].length;
+        const active = systemData[category].filter(item => item.status === 'Active').length;
+        
+        const totalElement = document.getElementById(`${category}-count`);
+        const activeElement = document.getElementById(`${category}-active`);
+        
+        if (totalElement) totalElement.textContent = total;
+        if (activeElement) activeElement.textContent = active;
+    });
+}
+
+// Quick system modal for multiboard ordering
+function openAddSystemModal(category) {
+    alert(`System management for ${category} - Implementation in progress. This will open a modal for creating multiboard systems with multiple PCBAs.`);
+}
+
+// Multiboard project wizard
+function openMultiboardWizard() {
+    alert('Multiboard Project Wizard - This will help you create complete systems with multiple PCBAs, cable assemblies, and 3D printed components.');
+}
+
+// Initialize system management on page load
+function initializeSystemManagement() {
+    updateSystemStats();
+    console.log('System-first management initialized for multiboard ordering');
+}
+```
+
+### **STEP 6: UPDATE EXISTING FUNCTIONS**
+**In the showSheet() function around line 228**, add system handling:
+```javascript
+// Add after line 231:
+if (['systems', 'assemblies', '3d-parts', 'cable-assemblies'].includes(sheetName)) {
+    updateSystemStats();
+    console.log(`Switched to ${sheetName} for system management`);
+}
+```
+
+**In the window load event around line 925**, add:
+```javascript
+// Add after line 926:
+initializeSystemManagement(); // Initialize system-first approach
+```
+
+## ⚡ **COMMIT VERIFICATION REQUIRED**
+
+After making these changes:
+1. **Verify line count increased** - should be ~1800+ lines (currently 1752)
+2. **Verify system tabs moved** - should be after Dashboard tab
+3. **Verify subtitle changed** - should mention "Multi-Level System"
+4. **Verify new stats cards** - should show Systems, Assemblies, Multiboard counts
+5. **Test JavaScript functions** - should not throw errors when called
+
+**ONLY CLAIM SUCCESS IF THESE VERIFICATIONS PASS!**
