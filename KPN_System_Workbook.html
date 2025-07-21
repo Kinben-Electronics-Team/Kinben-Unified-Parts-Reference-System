@@ -211,6 +211,303 @@
             'cable-assemblies': { code: 'CAN', subcategories: ['PWR', 'DATA', 'CTRL', 'RF'] }
         };
 
+        // ==================== PRIORITY: SYSTEM-FIRST MANAGEMENT ====================
+
+        // Generate system-level part numbers with priority for multiboard systems
+        function generateSystemKN(category, subcategory) {
+            const config = systemConfigs[category];
+            if (!config) return '';
+            
+            let maxSequence = 0;
+            systemData[category].forEach(item => {
+                const kn = item.systemKN || item.assemblyKN || item.partKN || item.cableKN;
+                if (kn && kn.startsWith(config.code)) {
+                    const parts = kn.split('-');
+                    if (parts.length >= 3) {
+                        const sequence = parseInt(parts[2]);
+                        if (sequence > maxSequence) maxSequence = sequence;
+                    }
+                }
+            });
+            
+            const nextSequence = (maxSequence + 1).toString().padStart(3, '0');
+            return `${config.code}-${subcategory}-${nextSequence}`;
+        }
+
+        // Update system statistics with multiboard focus
+        function updateSystemStats() {
+            let totalSystems = systemData.systems.length;
+            let totalAssemblies = systemData.assemblies.length;
+            let totalMultiboard = systemData.systems.filter(s => s.assemblies > 1).length;
+            
+            const systemsElement = document.getElementById('total-systems');
+            const assembliesElement = document.getElementById('total-assemblies');
+            const multiboardElement = document.getElementById('total-multiboard');
+            
+            if (systemsElement) systemsElement.textContent = totalSystems;
+            if (assembliesElement) assembliesElement.textContent = totalAssemblies;
+            if (multiboardElement) multiboardElement.textContent = totalMultiboard;
+            
+            Object.keys(systemData).forEach(category => {
+                const total = systemData[category].length;
+                const active = systemData[category].filter(item => item.status === 'Active').length;
+                
+                const totalElement = document.getElementById(`${category}-count`);
+                const activeElement = document.getElementById(`${category}-active`);
+                
+                if (totalElement) totalElement.textContent = total;
+                if (activeElement) activeElement.textContent = active;
+            });
+        }
+
+        // Refresh system-level tables
+        function refreshSystemTable(category) {
+            let table;
+            
+            // Handle categories that start with numbers - use attribute selector
+            if (category === '3d-parts') {
+                table = document.querySelector('[id="3d-parts"] .component-table tbody');
+            } else {
+                table = document.querySelector(`#${category} .component-table tbody`);
+            }
+            
+            if (!table) return;
+            
+            table.innerHTML = '';
+            const items = systemData[category] || [];
+            
+            if (items.length === 0) {
+                const colCount = table.closest('table').querySelector('thead tr').children.length;
+                table.innerHTML = `<tr><td colspan="${colCount}" style="text-align: center; color: #666; padding: 20px;">No ${category.replace('-', ' ')} added yet. Click "Add ${category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')}" to get started!</td></tr>`;
+                return;
+            }
+            
+            items.forEach(item => {
+                const row = document.createElement('tr');
+                row.setAttribute(`data-${category.slice(0, -1)}-id`, item.id || Date.now());
+                
+                // Build row based on category type
+                switch(category) {
+                    case 'systems':
+                        row.innerHTML = `
+                            <td>${item.systemKN}</td>
+                            <td>${item.name}</td>
+                            <td>${item.version}</td>
+                            <td>${item.type}</td>
+                            <td><span class="status-${item.status.toLowerCase()}">${item.status}</span></td>
+                            <td>${item.assemblies || 0}</td>
+                            <td>${item.description}</td>
+                            <td>${item.owner || 'N/A'}</td>
+                            <td><div class="file-attachments">${(item.files || []).map(f => `<a href="#" class="file-badge">${f}</a>`).join('')}</div></td>
+                            <td><button class="btn btn-sm btn-info" onclick="viewSystemDetails('${item.systemKN}')">View</button></td>
+                        `;
+                        break;
+                    case 'assemblies':
+                        row.innerHTML = `
+                            <td>${item.assemblyKN}</td>
+                            <td>${item.name}</td>
+                            <td>${item.type}</td>
+                            <td>${item.version}</td>
+                            <td><span class="status-${item.status.toLowerCase()}">${item.status}</span></td>
+                            <td>${item.components || 0}</td>
+                            <td>${item.description}</td>
+                            <td><div class="file-attachments">${(item.files || []).map(f => `<a href="#" class="file-badge">${f}</a>`).join('')}</div></td>
+                            <td><button class="btn btn-sm btn-info" onclick="viewSystemDetails('${item.assemblyKN}')">View</button></td>
+                        `;
+                        break;
+                    case '3d-parts':
+                        row.innerHTML = `
+                            <td>${item.partKN}</td>
+                            <td>${item.name}</td>
+                            <td>${item.type}</td>
+                            <td>${item.material}</td>
+                            <td><span class="status-${item.status.toLowerCase()}">${item.status}</span></td>
+                            <td>${item.version}</td>
+                            <td>${item.description}</td>
+                            <td><div class="file-attachments">${(item.files || []).map(f => `<a href="#" class="file-badge">${f}</a>`).join('')}</div></td>
+                            <td><button class="btn btn-sm btn-info" onclick="viewSystemDetails('${item.partKN}')">View</button></td>
+                        `;
+                        break;
+                    case 'cable-assemblies':
+                        row.innerHTML = `
+                            <td>${item.cableKN}</td>
+                            <td>${item.name}</td>
+                            <td>${item.type}</td>
+                            <td>${item.length}</td>
+                            <td>${item.connectors}</td>
+                            <td><span class="status-${item.status.toLowerCase()}">${item.status}</span></td>
+                            <td>${item.description}</td>
+                            <td><div class="file-attachments">${(item.files || []).map(f => `<a href="#" class="file-badge">${f}</a>`).join('')}</div></td>
+                            <td><button class="btn btn-sm btn-info" onclick="viewSystemDetails('${item.cableKN}')">View</button></td>
+                        `;
+                        break;
+                }
+                
+                table.appendChild(row);
+            });
+        }
+
+        // Sort system-level tables
+        function sortSystemTable(category, column) {
+            let table;
+            
+            // Handle categories that start with numbers
+            if (category === '3d-parts') {
+                table = document.querySelector('[id="3d-parts"] .component-table');
+            } else {
+                table = document.querySelector(`#${category} .component-table`);
+            }
+            
+            if (!table) return;
+            
+            const headers = table.querySelectorAll('th.sortable-header');
+            const currentHeader = Array.from(headers).find(h => h.onclick && h.onclick.toString().includes(`'${column}'`));
+            
+            // Clear all sort indicators
+            headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+            
+            // Determine sort direction
+            let ascending = true;
+            if (currentHeader && currentHeader.classList.contains('sort-asc')) {
+                ascending = false;
+                currentHeader.classList.add('sort-desc');
+            } else if (currentHeader) {
+                currentHeader.classList.add('sort-asc');
+            }
+            
+            // Sort data
+            systemData[category].sort((a, b) => {
+                let valA = a[column] || '';
+                let valB = b[column] || '';
+                
+                // Handle numeric values
+                if (!isNaN(valA) && !isNaN(valB)) {
+                    return ascending ? valA - valB : valB - valA;
+                }
+                
+                // Handle string values
+                valA = valA.toString().toLowerCase();
+                valB = valB.toString().toLowerCase();
+                
+                if (ascending) {
+                    return valA < valB ? -1 : valA > valB ? 1 : 0;
+                } else {
+                    return valA > valB ? -1 : valA < valB ? 1 : 0;
+                }
+            });
+            
+            refreshSystemTable(category);
+        }
+
+        // Export system-level data
+        function exportSystemData(format, category) {
+            const items = systemData[category] || [];
+            if (items.length === 0) {
+                alert(`No ${category.replace('-', ' ')} to export.`);
+                return;
+            }
+            
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            let filename = `${category}_${timestamp}`;
+            let content, mimeType;
+            
+            if (format === 'csv') {
+                // Generate CSV headers based on category
+                let headers = [];
+                switch(category) {
+                    case 'systems':
+                        headers = ['System KN', 'Name', 'Version', 'Type', 'Status', 'Assemblies', 'Description', 'Owner', 'Files'];
+                        break;
+                    case 'assemblies':
+                        headers = ['Assembly KN', 'Name', 'Type', 'Version', 'Status', 'Components', 'Description', 'Files'];
+                        break;
+                    case '3d-parts':
+                        headers = ['Part KN', 'Name', 'Type', 'Material', 'Status', 'Version', 'Description', 'Files'];
+                        break;
+                    case 'cable-assemblies':
+                        headers = ['Cable KN', 'Name', 'Type', 'Length', 'Connectors', 'Status', 'Description', 'Files'];
+                        break;
+                }
+                
+                content = headers.join(',') + '\n';
+                items.forEach(item => {
+                    const row = headers.map(header => {
+                        const key = header.toLowerCase().replace(/\s+/g, '').replace('kn', 'KN');
+                        let value = '';
+                        switch(key) {
+                            case 'systemKN': value = item.systemKN || ''; break;
+                            case 'assemblyKN': value = item.assemblyKN || ''; break;
+                            case 'partKN': value = item.partKN || ''; break;
+                            case 'cableKN': value = item.cableKN || ''; break;
+                            case 'files': value = (item.files || []).join(';'); break;
+                            default:
+                                const prop = key.charAt(0).toLowerCase() + key.slice(1);
+                                value = item[prop] || '';
+                        }
+                        return `"${value.toString().replace(/"/g, '""')}"`;
+                    });
+                    content += row.join(',') + '\n';
+                });
+                
+                filename += '.csv';
+                mimeType = 'text/csv';
+            } else {
+                content = JSON.stringify(items, null, 2);
+                filename += '.json';
+                mimeType = 'application/json';
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Quick system modal for multiboard ordering
+        function openAddSystemModal(category) {
+            alert(`System management for ${category} - Implementation in progress. This will open a modal for creating multiboard systems with multiple PCBAs.`);
+        }
+
+        // Multiboard project wizard
+        function openMultiboardWizard() {
+            alert('Multiboard Project Wizard - This will help you create complete systems with multiple PCBAs, cable assemblies, and 3D printed components.');
+        }
+
+        // View system details (placeholder for future expansion)
+        function viewSystemDetails(kn) {
+            alert(`System details for ${kn} - This feature will be expanded for hierarchical BOM views and detailed system management.`);
+        }
+
+        // Load system data from localStorage
+        function loadSystemData() {
+            const saved = localStorage.getItem('kinbenSystemData');
+            if (saved) {
+                try {
+                    systemData = JSON.parse(saved);
+                } catch (e) {
+                    console.warn('Failed to load system data from localStorage');
+                }
+            }
+        }
+
+        // Initialize system management on page load
+        function initializeSystemManagement() {
+            loadSystemData();
+            updateSystemStats();
+            
+            // Refresh all system tables
+            Object.keys(systemData).forEach(category => {
+                refreshSystemTable(category);
+            });
+            
+            console.log('System-first management initialized for multiboard ordering');
+        }
+
         function showSheet(sheetName) {
             // Hide all sheets
             const sheets = document.querySelectorAll('.sheet');
@@ -226,7 +523,13 @@
             
             // Update component counts and refresh tables
             updateStats();
-            if (sheetName !== 'landing') {
+            
+            // Handle system-level sheets first
+            if (['systems', 'assemblies', '3d-parts', 'cable-assemblies'].includes(sheetName)) {
+                updateSystemStats();
+                refreshSystemTable(sheetName);
+                console.log(`Switched to ${sheetName} for system management`);
+            } else if (sheetName !== 'landing') {
                 refreshComponentTable(sheetName);
             }
         }
@@ -251,6 +554,19 @@
             document.getElementById('total-components').textContent = totalComponents;
             document.getElementById('active-categories').textContent = activeCategories;
             document.getElementById('total-categories').textContent = Object.keys(componentData).length;
+            
+            // Add system-level statistics
+            let totalSystems = systemData.systems.length;
+            let totalAssemblies = systemData.assemblies.length;
+            let totalMultiboard = systemData.systems.filter(s => s.assemblies > 1).length;
+            
+            const systemsElement = document.getElementById('total-systems');
+            const assembliesElement = document.getElementById('total-assemblies');
+            const multiboardElement = document.getElementById('total-multiboard');
+            
+            if (systemsElement) systemsElement.textContent = totalSystems;
+            if (assembliesElement) assembliesElement.textContent = totalAssemblies;
+            if (multiboardElement) multiboardElement.textContent = totalMultiboard;
         }
         
         function generateKPN(category, subcategory) {
@@ -924,6 +1240,7 @@
         window.addEventListener('load', function() {
             updateStats();
             initializeCategoryFilters(); // Add category filters to all pages
+            initializeSystemManagement(); // Initialize system-first approach
             
             // Add event listeners
             document.getElementById('categorySelect').addEventListener('change', updateSubcategories);
@@ -949,6 +1266,10 @@
     <div class="workbook-container">
         <div class="sheet-tabs">
             <div class="tab active" onclick="showSheet('landing')">📊 Dashboard</div>
+            <div class="tab" onclick="showSheet('systems')" style="border-left: 3px solid #28a745;">🏗️ SYSTEMS</div>
+            <div class="tab" onclick="showSheet('assemblies')" style="border-left: 3px solid #28a745;">🔧 ASSEMBLIES</div>
+            <div class="tab" onclick="showSheet('3d-parts')" style="border-left: 3px solid #28a745;">🖨️ 3D PARTS</div>
+            <div class="tab" onclick="showSheet('cable-assemblies')" style="border-left: 3px solid #28a745;">🔗 CABLE ASSY</div>
             <div class="tab" onclick="showSheet('add-component')">➕ Add Component</div>
             <div class="tab" onclick="showSheet('capacitors')">🔋 CAPACITORS</div>
             <div class="tab" onclick="showSheet('resistors')">⚡ RESISTORS</div>
@@ -966,18 +1287,13 @@
             <div class="tab" onclick="showSheet('mechanical')">⚙️ MECHANICAL</div>
             <div class="tab" onclick="showSheet('hardware')">🔩 HARDWARE</div>
             <div class="tab" onclick="showSheet('cables')">🔌 CABLES</div>
-            <!-- System-Level Management Tabs -->
-            <div class="tab" onclick="showSheet('systems')" style="border-left: 3px solid #28a745;">🏗️ SYSTEMS</div>
-            <div class="tab" onclick="showSheet('assemblies')" style="border-left: 3px solid #28a745;">🔧 ASSEMBLIES</div>
-            <div class="tab" onclick="showSheet('3d-parts')" style="border-left: 3px solid #28a745;">🖨️ 3D PARTS</div>
-            <div class="tab" onclick="showSheet('cable-assemblies')" style="border-left: 3px solid #28a745;">🔗 CABLE ASSY</div>
         </div>
 
         <!-- Enhanced Dashboard -->
         <div id="landing" class="sheet active">
             <div class="landing-page">
-                <div class="landing-title">🔧 Kinben KPN System</div>
-                <div class="landing-subtitle">Unified Parts Reference & Management System</div>
+                <div class="landing-title">🏗️ Kinben System Manager</div>
+                <div class="landing-subtitle">Multi-Level System & Multiboard Management Platform</div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -993,9 +1309,29 @@
                         <div class="stat-label">Total Categories</div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-number" id="total-systems">0</div>
+                        <div class="stat-label">🏗️ Systems</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-assemblies">0</div>
+                        <div class="stat-label">🔧 Assemblies</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-multiboard">0</div>
+                        <div class="stat-label">📋 Multiboard Projects</div>
+                    </div>
+                    <div class="stat-card">
                         <div class="stat-number">📈</div>
                         <div class="stat-label">Growing Daily</div>
                     </div>
+                </div>
+                
+                <div class="section-header" style="background: #28a745; color: white; padding: 15px; border-radius: 8px; margin: 20px 0; font-size: 18px; font-weight: bold; text-align: center;">🏗️ System Management - Multiboard Ordering</div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="showSheet('systems')">🏗️ Manage Systems</button>
+                    <button class="btn btn-primary" onclick="showSheet('assemblies')">🔧 Manage Assemblies</button>
+                    <button class="btn btn-info" onclick="openAddSystemModal('systems')">➕ Create New System</button>
+                    <button class="btn btn-warning" onclick="openMultiboardWizard()">📋 Multiboard Project Wizard</button>
                 </div>
                 
                 <div class="action-buttons">
