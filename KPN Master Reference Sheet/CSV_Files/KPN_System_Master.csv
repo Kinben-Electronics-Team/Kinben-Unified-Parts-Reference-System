@@ -1,0 +1,162 @@
+Sheet,KPN_SYSTEM_LANDING_PAGE
+Section,KINBEN UNIFIED PARTS REFERENCE SYSTEM
+Subsection,KPN Master Management Dashboard
+
+Field,Description
+Repository_URL,https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System
+Purpose,Centralized component management and KPN assignment system
+Last_Updated,
+Version,1.0
+Maintainer,Kinben Electronics Team
+
+Section,SYSTEM_OVERVIEW
+Description,The Kinben Part Number (KPN) system ensures standardized component usage across all projects through centralized registry and approval workflow.
+
+Section,NAMING_CONVENTION
+Format,KPN-[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]
+Examples,
+KPN-CAP-CER-001,Ceramic Capacitor #1
+KPN-CAP-TAN-001,Tantalum Capacitor #1  
+KPN-RES-THF-001,Through-hole Film Resistor #1
+KPN-IC-MCU-001,Microcontroller #1
+KPN-CON-JST-001,JST Connector #1
+
+Section,CATEGORY_CODES
+CAP,Capacitors
+RES,Resistors  
+IND,Inductors
+DIO,Diodes
+LED,LEDs
+TRN,Transistors
+IC,Integrated Circuits
+CON,Connectors
+SW,Switches
+CRY,Crystals/Oscillators
+FUS,Fuses
+REL,Relays
+OPT,Optocouplers
+SEN,Sensors
+MEC,Mechanical Components
+HW,Hardware/Fasteners
+
+Section,SUBCATEGORY_CODES_CAPACITORS
+CER,Ceramic
+TAN,Tantalum
+ELE,Electrolytic
+FIL,Film
+SUP,Supercapacitor
+
+Section,SUBCATEGORY_CODES_RESISTORS
+THF,Through-hole Film
+THW,Through-hole Wirewound
+SMD,Surface Mount
+POT,Potentiometer
+VAR,Variable
+PTC,PTC Thermistor
+NTC,NTC Thermistor
+
+Section,SUBCATEGORY_CODES_ICS
+MCU,Microcontrollers
+REG,Regulators
+AMP,Amplifiers
+DAC,Digital-to-Analog Converters
+ADC,Analog-to-Digital Converters
+DRV,Drivers
+SW,Switches
+CLK,Clock/Timing
+MEM,Memory
+LOG,Logic Gates
+
+Section,SUBCATEGORY_CODES_CONNECTORS
+JST,JST Connectors
+HDR,Headers
+SOC,Sockets
+USB,USB Connectors
+POW,Power Connectors
+RF,RF Connectors
+FFC,Flat Flex Connectors
+
+Section,SHEET_NAVIGATION
+Sheet_Name,Purpose,Status
+CAPACITORS,All capacitor components with KPN assignments,Ready
+RESISTORS,All resistor components with KPN assignments,Ready  
+INDUCTORS,All inductor components with KPN assignments,Ready
+DIODES,All diode components with KPN assignments,Ready
+LEDS,All LED components with KPN assignments,Ready
+TRANSISTORS,All transistor components with KPN assignments,Ready
+INTEGRATED_CIRCUITS,All IC components with KPN assignments,Ready
+CONNECTORS,All connector components with KPN assignments,Ready
+SWITCHES,All switch components with KPN assignments,Ready
+CRYSTALS_OSCILLATORS,All crystal/oscillator components with KPN assignments,Ready
+FUSES,All fuse components with KPN assignments,Ready
+RELAYS,All relay components with KPN assignments,Ready
+OPTOCOUPLERS,All optocoupler components with KPN assignments,Ready
+SENSORS,All sensor components with KPN assignments,Ready
+MECHANICAL,All mechanical components with KPN assignments,Ready
+HARDWARE,All hardware/fastener components with KPN assignments,Ready
+
+Section,STANDARD_FIELDS
+Field_Name,Required,Description
+Kinben_PN,YES,Official Kinben Part Number (Auto-generated)
+Value,YES,Component value/specification
+Voltage_Rating,YES,Maximum voltage rating
+Current_Rating,NO,Maximum current rating (if applicable)  
+Power_Rating,NO,Maximum power rating (if applicable)
+Tolerance,YES,Component tolerance
+Package,YES,Physical package/footprint
+Mounting,YES,SMD or THT mounting type
+Temperature_Range,YES,Operating temperature range
+Manufacturer,YES,Component manufacturer
+Manufacturer_PN,YES,Manufacturer part number
+Description,YES,Detailed component description
+Preferred_Supplier,YES,Primary supplier (Mouser/DigiKey/Direct)
+Mouser_PN,NO,Mouser part number
+DigiKey_PN,NO,DigiKey part number
+Unit_Cost,YES,Cost per unit in USD
+MOQ,YES,Minimum order quantity
+Lead_Time,NO,Typical lead time in weeks
+Stock_Level,NO,Current inventory count
+Reorder_Point,NO,Minimum stock before reorder
+Symbol_File,YES,KiCad schematic symbol filename
+Footprint_File,YES,KiCad footprint filename  
+3D_Model_File,YES,3D model filename (.step/.stp)
+Datasheet_URL,YES,Link to component datasheet
+Status,YES,Active/Obsolete/Under_Review
+Created_Date,YES,Date KPN was assigned
+Created_By,YES,Engineer who created entry
+Last_Modified,YES,Last modification date
+Modified_By,YES,Last engineer to modify
+Approval_Status,YES,Pending/Approved/Rejected
+Approved_By,NO,Approving engineer
+Approval_Date,NO,Date of approval
+Notes,NO,Special notes or application guidance
+
+Section,WORKFLOW_STATUS_CODES
+PENDING,Component submitted for review - not yet approved for use
+APPROVED,Component approved and available for design use
+REJECTED,Component rejected - cannot be used
+OBSOLETE,Component discontinued - use alternatives
+UNDER_REVIEW,Component being evaluated for approval
+
+Section,USAGE_INSTRUCTIONS
+Step_1,Submit new components via GitHub PR to this repository
+Step_2,Add component details to appropriate category sheet
+Step_3,Include corresponding KiCad library files (symbol footprint 3D model)
+Step_4,Engineering team reviews and approves/rejects submission
+Step_5,Approved components receive official KPN and become available for use
+Step_6,Use only approved KPN components in all production designs
+
+Section,MAINTENANCE_SCHEDULE
+Task,Frequency,Responsibility
+Review pending submissions,Weekly,Engineering Team
+Update pricing information,Monthly,Procurement Team
+Audit obsolete components,Quarterly,Engineering Team
+Library synchronization check,Monthly,Engineering Team
+Backup KPN database,Weekly,IT/Engineering Team
+
+Section,CONTACT_INFORMATION
+Role,Contact,Email
+KPN System Administrator,Engineering Team,engineering@kinben.com
+Procurement Contact,Procurement Team,procurement@kinben.com
+Library Maintainer,Engineering Team,engineering@kinben.com
+Repository Manager,Engineering Team,engineering@kinben.com
