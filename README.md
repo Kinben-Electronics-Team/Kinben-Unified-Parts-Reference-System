@@ -1,6 +1,23 @@
-# Kinben Unified Parts Reference System
+# 🔧 Kinben Unified Parts Reference System
+
+[![Deploy Status](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/workflows/Deploy%20KPN%20System%20Workbook/badge.svg)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/actions)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/)
+[![Version](https://img.shields.io/badge/Version-2.1-blue)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/releases)
+
+## 🚀 [**LAUNCH APPLICATION**](https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/KPN_System_Workbook.html)
 
 A comprehensive electronic design automation (EDA) library and centralized KPN (Kinben Part Number) management system for standardized component management across all Kinben projects.
+
+## 🌟 Live Demo
+
+**Try the system now**: [https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/](https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/)
+
+The live demo includes:
+- 🏗️ **3 Complete Systems** with full hierarchical breakdowns
+- 🔧 **6 Assemblies** (PCBAs, mechanical, sensor modules)  
+- 🟩 **7 PCBs** (2L-6L layer counts, flex, rigid-flex)
+- 🖨️ **9 3D Parts** (various materials and applications)
+- 🔗 **8 Cable Assemblies** (power, data, RF applications)
 
 ## 🌟 Project Overview
 

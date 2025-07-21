@@ -198,6 +198,17 @@
         .detail-table td:last-child { color: #333; }
         .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
         .btn-secondary { background: #6c757d; color: white; }
+        
+        /* Image support styles */
+        .image-upload-container { position: relative; border: 2px dashed #ddd; border-radius: 6px; padding: 20px; text-align: center; margin: 10px 0; }
+        .image-upload-container:hover { border-color: #007bff; background-color: #f8f9fa; }
+        .image-upload-text { color: #666; font-size: 14px; }
+        .image-preview { max-width: 200px; max-height: 200px; border-radius: 4px; margin: 10px; border: 1px solid #ddd; }
+        .image-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin: 10px 0; }
+        .image-item { position: relative; }
+        .image-item img { width: 100%; height: 120px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+        .image-remove { position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer; }
+        .image-caption { font-size: 11px; color: #666; text-align: center; padding: 2px; }
         .btn-danger { background: #dc3545; color: white; }
         .btn-secondary:hover { background: #5a6268; }
         .btn-danger:hover { background: #c82333; }
@@ -318,10 +329,606 @@
         
         // System-level data storage
         let systemData = {
-            systems: [],      // SKN - Complete products/projects
-            assemblies: [],   // AKN - PCBAs, mechanical assemblies
-            '3d-parts': [],   // 3PN - 3D printed components
-            'cable-assemblies': [] // CAN - Cable harnesses
+            systems: [        // SKN - Complete products/projects (can contain other systems)
+                {
+                    id: 1704099600000,
+                    systemKN: 'SKN-PROD-001',
+                    name: 'IoT Environmental Sensor Hub',
+                    type: 'PROD',
+                    version: 'v2.1',
+                    status: 'Active',
+                    assemblies: 3,
+                    description: 'Complete IoT system with environmental sensors, wireless connectivity, and power management. Features temperature, humidity, air quality monitoring with LoRaWAN connectivity.',
+                    owner: 'John Engineer',
+                    files: ['system_architecture.pdf', 'user_manual.pdf', 'certification_docs.zip'],
+                    images: [],
+                    dateAdded: '2024-01-01',
+                    systemAssemblies: [
+                        {kn: 'AKN-PCBA-001', name: 'Main Controller PCBA', quantity: 1},
+                        {kn: 'AKN-SENS-001', name: 'Sensor Assembly', quantity: 1},
+                        {kn: 'AKN-MECH-001', name: 'Mounting Bracket Assembly', quantity: 1}
+                    ],
+                    systemComponents: [],
+                    system3DParts: [
+                        {kn: '3PN-ENCL-001', name: 'Main Enclosure Bottom', quantity: 1},
+                        {kn: '3PN-ENCL-002', name: 'Main Enclosure Top', quantity: 1},
+                        {kn: '3PN-BRKT-001', name: 'Sensor Mount Bracket', quantity: 2}
+                    ],
+                    systemCables: [
+                        {kn: 'CAN-DATA-001', name: 'Sensor Data Cable', quantity: 2},
+                        {kn: 'CAN-PWR-001', name: 'Power Distribution Cable', quantity: 1}
+                    ]
+                },
+                {
+                    id: 1704186000000,
+                    systemKN: 'SKN-PROTO-001',
+                    name: 'Smart Home Gateway',
+                    type: 'PROTO',
+                    version: 'v1.0',
+                    status: 'Active',
+                    assemblies: 2,
+                    description: 'Prototype smart home gateway with WiFi, Zigbee, and Z-Wave support. Includes local processing and cloud connectivity.',
+                    owner: 'Sarah Designer',
+                    files: ['prototype_specs.pdf', 'test_plan.xlsx'],
+                    images: [],
+                    dateAdded: '2024-01-02',
+                    systemAssemblies: [
+                        {kn: 'AKN-PCBA-002', name: 'Gateway Main Board', quantity: 1},
+                        {kn: 'AKN-PCBA-003', name: 'RF Module Assembly', quantity: 1}
+                    ],
+                    systemComponents: [],
+                    system3DParts: [
+                        {kn: '3PN-ENCL-003', name: 'Gateway Enclosure', quantity: 1}
+                    ],
+                    systemCables: [
+                        {kn: 'CAN-RF-001', name: 'Antenna Coax Cable', quantity: 3}
+                    ]
+                },
+                {
+                    id: 1704272400000,
+                    systemKN: 'SKN-EVAL-001',
+                    name: 'Motor Control Evaluation Board',
+                    type: 'EVAL',
+                    version: 'v1.5',
+                    status: 'Active',
+                    assemblies: 1,
+                    description: 'Evaluation board for BLDC motor control with integrated gate drivers, current sensing, and debug interfaces.',
+                    owner: 'Mike Hardware',
+                    files: ['eval_manual.pdf', 'software_examples.zip', 'schematic.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-03',
+                    systemAssemblies: [
+                        {kn: 'AKN-PCBA-004', name: 'Motor Control PCBA', quantity: 1}
+                    ],
+                    systemComponents: [],
+                    system3DParts: [
+                        {kn: '3PN-BRKT-002', name: 'Heat Sink Mount', quantity: 1}
+                    ],
+                    systemCables: [
+                        {kn: 'CAN-CTRL-001', name: 'Motor Phase Cable', quantity: 1}
+                    ]
+                }
+            ],      
+            assemblies: [     // AKN - PCBAs, mechanical assemblies (PCB + components + mechanical)
+                {
+                    id: 1704096600000,
+                    assemblyKN: 'AKN-PCBA-001',
+                    name: 'Main Controller PCBA',
+                    type: 'PCBA',
+                    version: 'v1.0',
+                    status: 'Active',
+                    components: 45,
+                    description: 'Populated main controller board with ESP32-S3 MCU, power management (LDO + buck converter), LoRaWAN radio, and debug interfaces',
+                    files: ['bom_v1.csv', 'assembly_drawing.pdf', 'test_procedure.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01',
+                    assemblyComponents: [
+                        {kpn: 'IC-MCU-001', name: 'ESP32-S3-WROOM-1', quantity: 1, refdes: 'U1'},
+                        {kpn: 'IC-PWR-005', name: 'LM2596 Buck Converter', quantity: 1, refdes: 'U2'},
+                        {kpn: 'CAP-CER-010', name: '10uF 25V Ceramic Cap', quantity: 8, refdes: 'C1-C8'}
+                    ],
+                    assembly3DParts: [],
+                    assemblyCables: []
+                },
+                {
+                    id: 1704183000000,
+                    assemblyKN: 'AKN-SENS-001',
+                    name: 'Environmental Sensor Assembly',
+                    type: 'SENS',
+                    version: 'v1.2',
+                    status: 'Active',
+                    components: 12,
+                    description: 'Multi-sensor assembly with temperature/humidity (SHT30), air quality (SGP40), and pressure (BMP280) sensors on flex PCB',
+                    files: ['sensor_bom.csv', 'calibration_data.xlsx'],
+                    images: [],
+                    dateAdded: '2024-01-01',
+                    assemblyComponents: [
+                        {kpn: 'SEN-TMP-003', name: 'SHT30 Temp/Humidity Sensor', quantity: 1, refdes: 'U1'},
+                        {kpn: 'SEN-PRE-001', name: 'BMP280 Pressure Sensor', quantity: 1, refdes: 'U2'},
+                        {kpn: 'SEN-ACC-005', name: 'SGP40 Air Quality Sensor', quantity: 1, refdes: 'U3'}
+                    ],
+                    assembly3DParts: [
+                        {kn: '3PN-BRKT-001', name: 'Sensor Mount Bracket', quantity: 1}
+                    ],
+                    assemblyCables: []
+                },
+                {
+                    id: 1704269400000,
+                    assemblyKN: 'AKN-PCBA-002',
+                    name: 'Smart Gateway Main Board',
+                    type: 'PCBA',
+                    version: 'v1.0',
+                    status: 'Active',
+                    components: 78,
+                    description: 'High-performance gateway board with ARM Cortex-A72 processor, WiFi 6, Ethernet, and multiple wireless protocol support',
+                    files: ['gateway_bom.csv', 'layout_guidelines.pdf', 'thermal_analysis.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-02',
+                    assemblyComponents: [
+                        {kpn: 'IC-MCU-010', name: 'BCM2711 ARM Processor', quantity: 1, refdes: 'U1'},
+                        {kpn: 'IC-PWR-012', name: 'MP2307 3A Buck Converter', quantity: 3, refdes: 'U2-U4'},
+                        {kpn: 'CON-USB-003', name: 'USB 3.0 Type-A Connector', quantity: 2, refdes: 'J1-J2'}
+                    ],
+                    assembly3DParts: [],
+                    assemblyCables: []
+                },
+                {
+                    id: 1704355800000,
+                    assemblyKN: 'AKN-PCBA-003',
+                    name: 'Multi-Protocol RF Module',
+                    type: 'PCBA',
+                    version: 'v2.0',
+                    status: 'Active',
+                    components: 23,
+                    description: 'RF module supporting Zigbee, Z-Wave, and Thread protocols with integrated antenna switching and power amplifiers',
+                    files: ['rf_module_bom.csv', 'antenna_matching.pdf', 'fcc_test_report.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-02',
+                    assemblyComponents: [
+                        {kpn: 'IC-RF-008', name: 'EFR32MG21 Zigbee SoC', quantity: 1, refdes: 'U1'},
+                        {kpn: 'IC-RF-009', name: 'ZM5304 Z-Wave Module', quantity: 1, refdes: 'U2'},
+                        {kpn: 'SWI-RF-001', name: 'RF Antenna Switch', quantity: 1, refdes: 'U3'}
+                    ],
+                    assembly3DParts: [],
+                    assemblyCables: []
+                },
+                {
+                    id: 1704442200000,
+                    assemblyKN: 'AKN-PCBA-004',
+                    name: 'BLDC Motor Control PCBA',
+                    type: 'PCBA',
+                    version: 'v1.5',
+                    status: 'Active',
+                    components: 67,
+                    description: 'Three-phase BLDC motor controller with integrated gate drivers, current sensing, encoder interface, and CAN communication',
+                    files: ['motor_control_bom.csv', 'gate_driver_layout.pdf', 'current_sensing_design.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-03',
+                    assemblyComponents: [
+                        {kpn: 'IC-MCU-015', name: 'STM32F334 Motor Control MCU', quantity: 1, refdes: 'U1'},
+                        {kpn: 'IC-DRV-003', name: 'DRV8323 Gate Driver', quantity: 1, refdes: 'U2'},
+                        {kpn: 'TRA-FET-010', name: 'IPP320N20N3 Power MOSFET', quantity: 6, refdes: 'Q1-Q6'}
+                    ],
+                    assembly3DParts: [
+                        {kn: '3PN-BRKT-002', name: 'Heat Sink Mount', quantity: 1}
+                    ],
+                    assemblyCables: []
+                },
+                {
+                    id: 1704528600000,
+                    assemblyKN: 'AKN-MECH-001',
+                    name: 'Wall Mount Bracket Assembly',
+                    type: 'MECH',
+                    version: 'v1.0',
+                    status: 'Active',
+                    components: 8,
+                    description: 'Adjustable wall mounting bracket with vibration dampening and weatherproofing for outdoor sensor installations',
+                    files: ['mechanical_drawing.pdf', 'torque_specs.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01',
+                    assemblyComponents: [
+                        {kpn: 'HWR-SCR-001', name: 'M4x16 Stainless Steel Screw', quantity: 4, refdes: 'H1-H4'},
+                        {kpn: 'HWR-WSH-002', name: 'M4 Spring Washer', quantity: 4, refdes: 'H5-H8'}
+                    ],
+                    assembly3DParts: [
+                        {kn: '3PN-BRKT-003', name: 'Main Bracket', quantity: 1},
+                        {kn: '3PN-BRKT-004', name: 'Pivot Arm', quantity: 1}
+                    ],
+                    assemblyCables: []
+                }
+            ],   
+            pcbs: [           // PKN - Bare PCBs (before component assembly)
+                {
+                    id: 1704096000000,
+                    pcbKN: 'PKN-4L-001',
+                    name: 'Main Controller Board',
+                    type: '4L',
+                    layers: '4',
+                    size: '100x80',
+                    thickness: '1.6',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: '4-layer main controller PCB with power and signal routing, controlled impedance traces for high-speed signals',
+                    files: ['controller_v1.kicad_pcb', 'gerbers_v1.zip', 'drill_files.zip'],
+                    images: [],
+                    dateAdded: '2024-01-01',
+                    pcbComponents: [],
+                    pcbIsPopulated: false,
+                    pcbSystemKN: null
+                },
+                {
+                    id: 1704182400000,
+                    pcbKN: 'PKN-FLEX-001',
+                    name: 'Sensor Interface Flex PCB',
+                    type: 'FLEX',
+                    layers: '2',
+                    size: '25x60',
+                    thickness: '0.2',
+                    status: 'Active',
+                    version: 'v1.2',
+                    description: '2-layer flexible PCB for sensor connections with bend radius optimized for compact installations',
+                    files: ['flex_pcb_v1.2.kicad_pcb', 'flex_fab_notes.pdf', 'bend_test_results.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01',
+                    pcbComponents: [],
+                    pcbIsPopulated: false,
+                    pcbSystemKN: null
+                },
+                {
+                    id: 1704268800000,
+                    pcbKN: 'PKN-6L-001',
+                    name: 'Smart Gateway Main Board',
+                    type: '6L',
+                    layers: '6',
+                    size: '120x100',
+                    thickness: '1.6',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: '6-layer high-density PCB with embedded processor, multiple power domains, and RF sections',
+                    files: ['gateway_main_v1.kicad_pcb', 'impedance_control.pdf', 'via_spec.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-02',
+                    pcbComponents: [],
+                    pcbIsPopulated: false,
+                    pcbSystemKN: null
+                },
+                {
+                    id: 1704355200000,
+                    pcbKN: 'PKN-4L-002',
+                    name: 'RF Module Board',
+                    type: '4L',
+                    layers: '4',
+                    size: '30x40',
+                    thickness: '0.8',
+                    status: 'Active',
+                    version: 'v2.0',
+                    description: '4-layer RF-optimized PCB with coplanar waveguides and integrated antenna matching network',
+                    files: ['rf_module_v2.kicad_pcb', 'antenna_tuning.pdf', 'emc_test_results.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-02',
+                    pcbComponents: [],
+                    pcbIsPopulated: false,
+                    pcbSystemKN: null
+                },
+                {
+                    id: 1704441600000,
+                    pcbKN: 'PKN-4L-003',
+                    name: 'Motor Control Power Board',
+                    type: '4L',
+                    layers: '4',
+                    size: '90x70',
+                    thickness: '2.0',
+                    status: 'Active',
+                    version: 'v1.5',
+                    description: '4-layer power PCB with heavy copper (2oz) for motor control, thermal vias, and reinforced mounting holes',
+                    files: ['motor_power_v1.5.kicad_pcb', 'thermal_design.pdf', 'current_capacity.xlsx'],
+                    images: [],
+                    dateAdded: '2024-01-03',
+                    pcbComponents: [],
+                    pcbIsPopulated: false,
+                    pcbSystemKN: null
+                },
+                {
+                    id: 1704528000000,
+                    pcbKN: 'PKN-2L-001',
+                    name: 'LED Driver Board',
+                    type: '2L',
+                    layers: '2',
+                    size: '50x30',
+                    thickness: '1.6',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: '2-layer cost-optimized PCB for LED strip driving with current regulation and PWM control',
+                    files: ['led_driver_v1.kicad_pcb', 'cost_analysis.xlsx'],
+                    images: [],
+                    dateAdded: '2024-01-04',
+                    pcbComponents: [],
+                    pcbIsPopulated: false,
+                    pcbSystemKN: null
+                },
+                {
+                    id: 1704614400000,
+                    pcbKN: 'PKN-RIGID-001',
+                    name: 'Multi-Section Rigid-Flex',
+                    type: 'RIGID',
+                    layers: '4',
+                    size: '80x120',
+                    thickness: '1.2',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: '4-layer rigid-flex PCB with 3 rigid sections connected by flexible links for compact folding applications',
+                    files: ['rigid_flex_v1.kicad_pcb', 'fold_simulation.pdf', 'flex_life_test.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-05',
+                    pcbComponents: [],
+                    pcbIsPopulated: false,
+                    pcbSystemKN: null
+                }
+            ],         
+            '3d-parts': [     // 3PN - 3D printed components
+                {
+                    id: 1704097200000,
+                    partKN: '3PN-ENCL-001',
+                    name: 'Main Enclosure Bottom',
+                    type: 'ENCL',
+                    material: 'ABS',
+                    status: 'Active',
+                    version: 'v1.2',
+                    description: 'Bottom half of main system enclosure with mounting posts, cable routing channels, and gasket groove for IP65 rating',
+                    files: ['enclosure_bottom_v1.2.stl', 'enclosure_drawing.pdf', 'ip65_test_report.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01'
+                },
+                {
+                    id: 1704183600000,
+                    partKN: '3PN-ENCL-002',
+                    name: 'Main Enclosure Top',
+                    type: 'ENCL',
+                    material: 'ABS',
+                    status: 'Active',
+                    version: 'v1.2',
+                    description: 'Top half of main enclosure with integrated antenna housing, status LED light pipe, and ventilation slots',
+                    files: ['enclosure_top_v1.2.stl', 'antenna_clearance.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01'
+                },
+                {
+                    id: 1704270000000,
+                    partKN: '3PN-BRKT-001',
+                    name: 'Sensor Mount Bracket',
+                    type: 'BRKT',
+                    material: 'PETG',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: 'Adjustable sensor mounting bracket with 15-degree tilt range and vibration dampening features',
+                    files: ['sensor_bracket_v1.stl', 'adjustment_mechanism.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01'
+                },
+                {
+                    id: 1704356400000,
+                    partKN: '3PN-ENCL-003',
+                    name: 'Gateway Enclosure',
+                    type: 'ENCL',
+                    material: 'PC',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: 'High-temperature polycarbonate enclosure for gateway with integrated heat dissipation fins and antenna mounts',
+                    files: ['gateway_enclosure_v1.stl', 'thermal_simulation.pdf', 'uv_resistance_test.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-02'
+                },
+                {
+                    id: 1704442800000,
+                    partKN: '3PN-BRKT-002',
+                    name: 'Heat Sink Mount',
+                    type: 'BRKT',
+                    material: 'NYLON',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: 'Nylon mounting bracket for aluminum heat sink with thermal isolation and vibration resistance',
+                    files: ['heatsink_mount_v1.stl', 'thermal_isolation_analysis.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-03'
+                },
+                {
+                    id: 1704529200000,
+                    partKN: '3PN-BRKT-003',
+                    name: 'Wall Mount Main Bracket',
+                    type: 'BRKT',
+                    material: 'ABS',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: 'Main structural bracket for wall mounting with integrated cable management and weatherproofing',
+                    files: ['wall_bracket_main_v1.stl', 'load_test_results.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01'
+                },
+                {
+                    id: 1704615600000,
+                    partKN: '3PN-BRKT-004',
+                    name: 'Adjustable Pivot Arm',
+                    type: 'BRKT',
+                    material: 'PETG',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: 'Pivot arm for adjustable mounting with 90-degree rotation range and locking mechanism',
+                    files: ['pivot_arm_v1.stl', 'pivot_mechanism.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01'
+                },
+                {
+                    id: 1704702000000,
+                    partKN: '3PN-CONN-001',
+                    name: 'Waterproof Cable Gland',
+                    type: 'CONN',
+                    material: 'TPU',
+                    status: 'Active',
+                    version: 'v1.1',
+                    description: 'Flexible TPU cable gland for waterproof cable entry with strain relief for 6-12mm cable diameter',
+                    files: ['cable_gland_v1.1.stl', 'waterproof_test_results.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-06'
+                },
+                {
+                    id: 1704788400000,
+                    partKN: '3PN-ENCL-004',
+                    name: 'LED Strip Diffuser',
+                    type: 'ENCL',
+                    material: 'PLA',
+                    status: 'Active',
+                    version: 'v1.0',
+                    description: 'Translucent PLA diffuser for LED strips with mounting clips and heat dissipation slots',
+                    files: ['led_diffuser_v1.stl', 'light_transmission_test.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-07'
+                }
+            ],   
+            'cable-assemblies': [ // CAN - Cable harnesses
+                {
+                    id: 1704097800000,
+                    cableKN: 'CAN-DATA-001',
+                    name: 'Sensor Data Cable',
+                    type: 'DATA',
+                    length: '200mm',
+                    connectors: 'JST-PH 6-pin to JST-XH 6-pin',
+                    status: 'Active',
+                    description: '6-wire data cable for sensor communication with color-coded wires and strain relief boots',
+                    files: ['cable_wiring_diagram.pdf', 'continuity_test_results.xlsx'],
+                    images: [],
+                    dateAdded: '2024-01-01',
+                    cableComponents: [
+                        {kpn: 'CON-JST-006', name: 'JST-PH 6-pin Connector', quantity: 1},
+                        {kpn: 'CON-JST-007', name: 'JST-XH 6-pin Connector', quantity: 1},
+                        {kpn: 'CBL-SIG-002', name: '28AWG 6-conductor Cable', quantity: 1}
+                    ]
+                },
+                {
+                    id: 1704184200000,
+                    cableKN: 'CAN-PWR-001',
+                    name: 'Power Distribution Cable',
+                    type: 'PWR',
+                    length: '300mm',
+                    connectors: 'XT60 to 2x JST-VH 2-pin',
+                    status: 'Active',
+                    description: 'Power distribution harness from main power input to system modules with overcurrent protection',
+                    files: ['power_harness_diagram.pdf', 'current_rating_test.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-01',
+                    cableComponents: [
+                        {kpn: 'CON-XT60-001', name: 'XT60 Power Connector', quantity: 1},
+                        {kpn: 'CON-JST-VH-002', name: 'JST-VH 2-pin Connector', quantity: 2},
+                        {kpn: 'CBL-PWR-005', name: '16AWG Power Cable Red/Black', quantity: 1}
+                    ]
+                },
+                {
+                    id: 1704270600000,
+                    cableKN: 'CAN-RF-001',
+                    name: 'Antenna Coax Cable',
+                    type: 'RF',
+                    length: '100mm',
+                    connectors: 'U.FL to SMA Female',
+                    status: 'Active',
+                    description: 'Low-loss coaxial cable for antenna connections with 50-ohm impedance and flexible jacket',
+                    files: ['rf_cable_specs.pdf', 'insertion_loss_measurements.xlsx'],
+                    images: [],
+                    dateAdded: '2024-01-02',
+                    cableComponents: [
+                        {kpn: 'CON-UFL-001', name: 'U.FL Connector Male', quantity: 1},
+                        {kpn: 'CON-SMA-002', name: 'SMA Female Connector', quantity: 1},
+                        {kpn: 'CBL-COA-003', name: 'RG178 Coaxial Cable', quantity: 1}
+                    ]
+                },
+                {
+                    id: 1704357000000,
+                    cableKN: 'CAN-CTRL-001',
+                    name: 'Motor Phase Cable',
+                    type: 'CTRL',
+                    length: '500mm',
+                    connectors: 'Phoenix 3-pin to Motor Terminal',
+                    status: 'Active',
+                    description: 'Three-phase motor cable with heavy-duty conductors and EMI shielding for power transmission',
+                    files: ['motor_cable_specs.pdf', 'emi_shielding_test.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-03',
+                    cableComponents: [
+                        {kpn: 'CON-PHX-003', name: 'Phoenix 3-pin Terminal', quantity: 1},
+                        {kpn: 'CON-MOTOR-001', name: 'Motor Terminal Block', quantity: 1},
+                        {kpn: 'CBL-PWR-012', name: '12AWG 3-conductor Shielded Cable', quantity: 1}
+                    ]
+                },
+                {
+                    id: 1704443400000,
+                    cableKN: 'CAN-DATA-002',
+                    name: 'CAN Bus Cable',
+                    type: 'DATA',
+                    length: '250mm',
+                    connectors: 'DB9 to 4-pin Terminal',
+                    status: 'Active',
+                    description: 'CAN bus communication cable with 120-ohm termination and twisted pair construction',
+                    files: ['can_bus_wiring.pdf', 'impedance_verification.xlsx'],
+                    images: [],
+                    dateAdded: '2024-01-03',
+                    cableComponents: [
+                        {kpn: 'CON-DB9-001', name: 'DB9 Male Connector', quantity: 1},
+                        {kpn: 'CON-TERM-004', name: '4-pin Screw Terminal', quantity: 1},
+                        {kpn: 'CBL-SIG-008', name: 'CANbus Twisted Pair Cable', quantity: 1}
+                    ]
+                },
+                {
+                    id: 1704529800000,
+                    cableKN: 'CAN-PWR-002',
+                    name: 'USB-C Power Cable',
+                    type: 'PWR',
+                    length: '1500mm',
+                    connectors: 'USB-C to USB-A',
+                    status: 'Active',
+                    description: 'USB-C power delivery cable supporting up to 60W with data lines for configuration',
+                    files: ['usb_pd_cable_specs.pdf', 'pd_compliance_test.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-04',
+                    cableComponents: [
+                        {kpn: 'CON-USBC-001', name: 'USB-C Connector Male', quantity: 1},
+                        {kpn: 'CON-USBA-001', name: 'USB-A Connector Male', quantity: 1},
+                        {kpn: 'CBL-USB-003', name: 'USB 3.1 Cable 20AWG', quantity: 1}
+                    ]
+                },
+                {
+                    id: 1704616200000,
+                    cableKN: 'CAN-DATA-003',
+                    name: 'Ethernet Patch Cable',
+                    type: 'DATA',
+                    length: '2000mm',
+                    connectors: 'RJ45 to RJ45',
+                    status: 'Active',
+                    description: 'Cat6A ethernet cable with gold-plated connectors for gigabit data transmission',
+                    files: ['ethernet_cable_specs.pdf', 'tdr_test_results.pdf'],
+                    images: [],
+                    dateAdded: '2024-01-05',
+                    cableComponents: [
+                        {kpn: 'CON-RJ45-001', name: 'RJ45 Connector', quantity: 2},
+                        {kpn: 'CBL-ETH-006', name: 'Cat6A Ethernet Cable', quantity: 1}
+                    ]
+                },
+                {
+                    id: 1704702600000,
+                    cableKN: 'CAN-RF-002',
+                    name: 'WiFi Antenna Cable',
+                    type: 'RF',
+                    length: '150mm',
+                    connectors: 'MMCX to RP-SMA',
+                    status: 'Active',
+                    description: 'Low-profile WiFi antenna cable for compact installations with bend-tolerant design',
+                    files: ['wifi_antenna_cable_specs.pdf', 'vswr_measurements.xlsx'],
+                    images: [],
+                    dateAdded: '2024-01-06',
+                    cableComponents: [
+                        {kpn: 'CON-MMCX-001', name: 'MMCX Connector Male', quantity: 1},
+                        {kpn: 'CON-RPSMA-001', name: 'RP-SMA Female Connector', quantity: 1},
+                        {kpn: 'CBL-COA-001', name: 'RG316 Coaxial Cable', quantity: 1}
+                    ]
+                }
+            ] 
         };
         
         // Category configurations
@@ -348,6 +955,7 @@
         const systemConfigs = {
             systems: { code: 'SKN', subcategories: ['PROD', 'PROTO', 'EVAL', 'TEST'] },
             assemblies: { code: 'AKN', subcategories: ['PCBA', 'MECH', 'OPT', 'SENS'] },
+            pcbs: { code: 'PKN', subcategories: ['2L', '4L', '6L', '8L', 'FLEX', 'RIGID'] },
             '3d-parts': { code: '3PN', subcategories: ['ENCL', 'BRKT', 'SPAC', 'CONN'] },
             'cable-assemblies': { code: 'CAN', subcategories: ['PWR', 'DATA', 'CTRL', 'RF'] }
         };
@@ -361,7 +969,7 @@
             
             let maxSequence = 0;
             systemData[category].forEach(item => {
-                const kn = item.systemKN || item.assemblyKN || item.partKN || item.cableKN;
+                const kn = item.systemKN || item.assemblyKN || item.partKN || item.cableKN || item.pcbKN;
                 if (kn && kn.startsWith(config.code)) {
                     const parts = kn.split('-');
                     if (parts.length >= 3) {
@@ -467,6 +1075,21 @@
                             <td>${item.description}</td>
                             <td><div class="file-attachments">${(item.files || []).map(f => `<a href="#" class="file-badge">${f}</a>`).join('')}</div></td>
                             <td><button class="btn btn-sm btn-info" onclick="viewSystemDetails('${item.partKN}')">View</button></td>
+                        `;
+                        break;
+                    case 'pcbs':
+                        row.innerHTML = `
+                            <td>${item.pcbKN}</td>
+                            <td>${item.name}</td>
+                            <td>${item.type}</td>
+                            <td>${item.layers || 'N/A'}</td>
+                            <td>${item.size || 'N/A'}</td>
+                            <td>${item.thickness || 'N/A'}</td>
+                            <td><span class="status-${item.status.toLowerCase()}">${item.status}</span></td>
+                            <td>${item.version}</td>
+                            <td>${item.description}</td>
+                            <td><div class="file-attachments">${(item.files || []).map(f => `<a href="#" class="file-badge">${f}</a>`).join('')}</div></td>
+                            <td><button class="btn btn-sm btn-info" onclick="viewSystemDetails('${item.pcbKN}')">View</button></td>
                         `;
                         break;
                     case 'cable-assemblies':
@@ -594,6 +1217,17 @@
                                 <label>Design Files (Optional)</label>
                                 <input type="text" id="systemFiles" placeholder="Comma-separated file names (e.g., schematic.pdf, assembly.dwg)">
                             </div>
+                            <div class="form-group">
+                                <label>System Images (Optional)</label>
+                                <div class="image-upload-container">
+                                    <input type="file" id="systemImages" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'system-image-preview')">
+                                    <div class="image-upload-text" onclick="document.getElementById('systemImages').click()">
+                                        📷 Click to add images or drag & drop<br>
+                                        <small>Supports: JPG, PNG, GIF (max 5MB each)</small>
+                                    </div>
+                                    <div id="system-image-preview" class="image-grid"></div>
+                                </div>
+                            </div>
                             <div class="form-actions">
                                 <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
                                 <button type="submit" class="btn btn-success">Add System</button>
@@ -638,6 +1272,17 @@
                             <div class="form-group">
                                 <label>Design Files (Optional)</label>
                                 <input type="text" id="assemblyFiles" placeholder="Comma-separated file names (e.g., pcb.kicad_pcb, bom.csv)">
+                            </div>
+                            <div class="form-group">
+                                <label>Assembly Images (Optional)</label>
+                                <div class="image-upload-container">
+                                    <input type="file" id="assemblyImages" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'assembly-image-preview')">
+                                    <div class="image-upload-text" onclick="document.getElementById('assemblyImages').click()">
+                                        📷 Click to add images or drag & drop<br>
+                                        <small>Supports: JPG, PNG, GIF (max 5MB each)</small>
+                                    </div>
+                                    <div id="assembly-image-preview" class="image-grid"></div>
+                                </div>
                             </div>
                             <div class="form-actions">
                                 <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
@@ -692,9 +1337,88 @@
                                 <label>Design Files (Optional)</label>
                                 <input type="text" id="partFiles" placeholder="Comma-separated file names (e.g., part.stl, drawing.pdf)">
                             </div>
+                            <div class="form-group">
+                                <label>Part Images (Optional)</label>
+                                <div class="image-upload-container">
+                                    <input type="file" id="partImages" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'part-image-preview')">
+                                    <div class="image-upload-text" onclick="document.getElementById('partImages').click()">
+                                        📷 Click to add images or drag & drop<br>
+                                        <small>Supports: JPG, PNG, GIF (max 5MB each)</small>
+                                    </div>
+                                    <div id="part-image-preview" class="image-grid"></div>
+                                </div>
+                            </div>
                             <div class="form-actions">
                                 <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
                                 <button type="submit" class="btn btn-warning">Add 3D Part</button>
+                            </div>
+                        </form>
+                    `;
+                    break;
+                    
+                case 'pcbs':
+                    title = '🟩 Add New PCB (PKN)';
+                    fields = `
+                        <h3>${title}</h3>
+                        <form id="pcbForm">
+                            <div class="form-group">
+                                <label>PCB Name *</label>
+                                <input type="text" id="pcbName" required placeholder="e.g., Main Controller Board">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Type *</label>
+                                    <select id="pcbType" required>
+                                        <option value="">Select type...</option>
+                                        <option value="2L">2-Layer PCB</option>
+                                        <option value="4L">4-Layer PCB</option>
+                                        <option value="6L">6-Layer PCB</option>
+                                        <option value="8L">8-Layer PCB</option>
+                                        <option value="FLEX">Flexible PCB</option>
+                                        <option value="RIGID">Rigid-Flex PCB</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Layer Count</label>
+                                    <input type="number" id="pcbLayers" min="1" max="20" placeholder="Number of layers">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Size (mm)</label>
+                                    <input type="text" id="pcbSize" placeholder="e.g., 50x30, 100x80">
+                                </div>
+                                <div class="form-group">
+                                    <label>Thickness (mm)</label>
+                                    <input type="text" id="pcbThickness" placeholder="e.g., 1.6, 0.8, 2.0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Version *</label>
+                                <input type="text" id="pcbVersion" required placeholder="e.g., v1.0, Rev A">
+                            </div>
+                            <div class="form-group">
+                                <label>Description *</label>
+                                <textarea id="pcbDescription" required placeholder="PCB description, specifications, and special requirements"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Design Files (Optional)</label>
+                                <input type="text" id="pcbFiles" placeholder="Comma-separated file names (e.g., pcb.kicad_pcb, gerbers.zip, fab.pdf)">
+                            </div>
+                            <div class="form-group">
+                                <label>PCB Images (Optional)</label>
+                                <div class="image-upload-container">
+                                    <input type="file" id="pcbImages" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'pcb-image-preview')">
+                                    <div class="image-upload-text" onclick="document.getElementById('pcbImages').click()">
+                                        📷 Click to add images or drag & drop<br>
+                                        <small>Supports: JPG, PNG, GIF (max 5MB each)</small>
+                                    </div>
+                                    <div id="pcb-image-preview" class="image-grid"></div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
+                                <button type="submit" class="btn btn-success">Add PCB</button>
                             </div>
                         </form>
                     `;
@@ -736,6 +1460,17 @@
                             <div class="form-group">
                                 <label>Design Files (Optional)</label>
                                 <input type="text" id="cableFiles" placeholder="Comma-separated file names (e.g., wiring.pdf, diagram.dwg)">
+                            </div>
+                            <div class="form-group">
+                                <label>Cable Images (Optional)</label>
+                                <div class="image-upload-container">
+                                    <input type="file" id="cableImages" multiple accept="image/*" style="display: none;" onchange="handleImageUpload(this, 'cable-image-preview')">
+                                    <div class="image-upload-text" onclick="document.getElementById('cableImages').click()">
+                                        📷 Click to add images or drag & drop<br>
+                                        <small>Supports: JPG, PNG, GIF (max 5MB each)</small>
+                                    </div>
+                                    <div id="cable-image-preview" class="image-grid"></div>
+                                </div>
                             </div>
                             <div class="form-actions">
                                 <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
@@ -1151,6 +1886,7 @@
                         description: systemDescription,
                         owner: document.getElementById('systemOwner').value.trim(),
                         files: document.getElementById('systemFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        images: getImageData('system-image-preview'),
                         dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
                         dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined,
                         // Enhanced system composition
@@ -1168,6 +1904,7 @@
                             item.systemComponents = existingItem.systemComponents || [];
                             item.system3DParts = existingItem.system3DParts || [];
                             item.systemCables = existingItem.systemCables || [];
+                            item.images = item.images.length > 0 ? item.images : (existingItem.images || []);
                         }
                     }
                     break;
@@ -1194,6 +1931,7 @@
                         components: parseInt(document.getElementById('assemblyComponents').value) || 0,
                         description: assemblyDescription,
                         files: document.getElementById('assemblyFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        images: getImageData('assembly-image-preview'),
                         dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
                         dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined,
                         // Enhanced assembly composition
@@ -1209,6 +1947,7 @@
                             item.assemblyComponents = existingItem.assemblyComponents || [];
                             item.assembly3DParts = existingItem.assembly3DParts || [];
                             item.assemblyCables = existingItem.assemblyCables || [];
+                            item.images = item.images.length > 0 ? item.images : (existingItem.images || []);
                         }
                     }
                     break;
@@ -1235,9 +1974,55 @@
                         version: document.getElementById('partVersion').value.trim() || 'v1.0',
                         description: partDescription,
                         files: document.getElementById('partFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        images: getImageData('part-image-preview'),
                         dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
                         dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined
                     };
+                    break;
+                    
+                case 'pcbs':
+                    const pcbName = document.getElementById('pcbName').value.trim();
+                    const pcbType = document.getElementById('pcbType').value;
+                    const pcbVersion = document.getElementById('pcbVersion').value.trim();
+                    const pcbDescription = document.getElementById('pcbDescription').value.trim();
+                    
+                    if (!pcbName || !pcbType || !pcbVersion || !pcbDescription) {
+                        alert('Please fill in all required fields');
+                        isValid = false;
+                        break;
+                    }
+                    
+                    item = {
+                        id: isEditing ? parseInt(form.getAttribute('data-edit-id')) : Date.now(),
+                        pcbKN: isEditing ? editKN : generateSystemKN('pcbs', pcbType),
+                        name: pcbName,
+                        type: pcbType,
+                        layers: document.getElementById('pcbLayers').value.trim(),
+                        size: document.getElementById('pcbSize').value.trim(),
+                        thickness: document.getElementById('pcbThickness').value.trim(),
+                        status: 'Active',
+                        version: pcbVersion,
+                        description: pcbDescription,
+                        files: document.getElementById('pcbFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        images: getImageData('pcb-image-preview'),
+                        dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
+                        dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined,
+                        // PCB can become a PCBA (system)
+                        pcbComponents: [],      // Components mounted on this PCB {kpn, name, quantity, refdes}
+                        pcbIsPopulated: false,  // Whether this PCB has components (becomes PCBA)
+                        pcbSystemKN: null       // If populated, this becomes a system with this KN
+                    };
+                    
+                    // Preserve existing composition data if editing
+                    if (isEditing) {
+                        const existingItem = systemData[category].find(i => i.id == item.id);
+                        if (existingItem) {
+                            item.pcbComponents = existingItem.pcbComponents || [];
+                            item.pcbIsPopulated = existingItem.pcbIsPopulated || false;
+                            item.pcbSystemKN = existingItem.pcbSystemKN || null;
+                            item.images = item.images.length > 0 ? item.images : (existingItem.images || []);
+                        }
+                    }
                     break;
                     
                 case 'cable-assemblies':
@@ -1261,6 +2046,7 @@
                         status: 'Active',
                         description: cableDescription,
                         files: document.getElementById('cableFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        images: getImageData('cable-image-preview'),
                         dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
                         dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined,
                         // Enhanced cable composition  
@@ -1272,6 +2058,7 @@
                         const existingItem = systemData[category].find(i => i.id == item.id);
                         if (existingItem) {
                             item.cableComponents = existingItem.cableComponents || [];
+                            item.images = item.images.length > 0 ? item.images : (existingItem.images || []);
                         }
                     }
                     break;
@@ -1312,7 +2099,7 @@
             let item = null;
             for (const [cat, items] of Object.entries(systemData)) {
                 item = items.find(i => 
-                    i.systemKN === kn || i.assemblyKN === kn || i.partKN === kn || i.cableKN === kn
+                    i.systemKN === kn || i.assemblyKN === kn || i.partKN === kn || i.cableKN === kn || i.pcbKN === kn
                 );
                 if (item) {
                     category = cat;
@@ -1343,6 +2130,7 @@
                             document.getElementById('systemOwner').value = item.owner || '';
                             document.getElementById('systemDescription').value = item.description || '';
                             document.getElementById('systemFiles').value = (item.files || []).join(', ');
+                            displayImagesInPreview(item.images || [], 'system-image-preview');
                             break;
                             
                         case 'assemblies':
@@ -1352,6 +2140,7 @@
                             document.getElementById('assemblyComponents').value = item.components || 0;
                             document.getElementById('assemblyDescription').value = item.description || '';
                             document.getElementById('assemblyFiles').value = (item.files || []).join(', ');
+                            displayImagesInPreview(item.images || [], 'assembly-image-preview');
                             break;
                             
                         case '3d-parts':
@@ -1361,6 +2150,19 @@
                             document.getElementById('partVersion').value = item.version || '';
                             document.getElementById('partDescription').value = item.description || '';
                             document.getElementById('partFiles').value = (item.files || []).join(', ');
+                            displayImagesInPreview(item.images || [], 'part-image-preview');
+                            break;
+                            
+                        case 'pcbs':
+                            document.getElementById('pcbName').value = item.name || '';
+                            document.getElementById('pcbType').value = item.type || '';
+                            document.getElementById('pcbLayers').value = item.layers || '';
+                            document.getElementById('pcbSize').value = item.size || '';
+                            document.getElementById('pcbThickness').value = item.thickness || '';
+                            document.getElementById('pcbVersion').value = item.version || '';
+                            document.getElementById('pcbDescription').value = item.description || '';
+                            document.getElementById('pcbFiles').value = (item.files || []).join(', ');
+                            displayImagesInPreview(item.images || [], 'pcb-image-preview');
                             break;
                             
                         case 'cable-assemblies':
@@ -1370,6 +2172,7 @@
                             document.getElementById('cableConnectors').value = item.connectors || '';
                             document.getElementById('cableDescription').value = item.description || '';
                             document.getElementById('cableFiles').value = (item.files || []).join(', ');
+                            displayImagesInPreview(item.images || [], 'cable-image-preview');
                             break;
                     }
                     
@@ -1402,7 +2205,7 @@
             
             // Find and remove the item
             const itemIndex = systemData[category].findIndex(item => 
-                item.systemKN === kn || item.assemblyKN === kn || item.partKN === kn || item.cableKN === kn
+                item.systemKN === kn || item.assemblyKN === kn || item.partKN === kn || item.cableKN === kn || item.pcbKN === kn
             );
             
             if (itemIndex !== -1) {
@@ -2175,6 +2978,66 @@ Navigate to the Systems tab to view and manage your new multiboard system!`);
         
         function closeAddComponentModal() {
             document.getElementById('addComponentModal').style.display = 'none';
+        }
+        
+        // Image upload handling
+        function handleImageUpload(input, previewId) {
+            const files = input.files;
+            const previewContainer = document.getElementById(previewId);
+            
+            Array.from(files).forEach((file, index) => {
+                if (file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024) { // 5MB limit
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imageItem = document.createElement('div');
+                        imageItem.className = 'image-item';
+                        imageItem.innerHTML = `
+                            <img src="${e.target.result}" class="image-preview" alt="Preview">
+                            <button class="image-remove" onclick="removeImagePreview(this)">×</button>
+                            <div class="image-caption">${file.name}</div>
+                        `;
+                        previewContainer.appendChild(imageItem);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        function removeImagePreview(button) {
+            button.parentElement.remove();
+        }
+        
+        function getImageData(previewId) {
+            const previewContainer = document.getElementById(previewId);
+            const images = [];
+            previewContainer.querySelectorAll('.image-item').forEach(item => {
+                const img = item.querySelector('img');
+                const caption = item.querySelector('.image-caption');
+                if (img && caption) {
+                    images.push({
+                        data: img.src,
+                        name: caption.textContent
+                    });
+                }
+            });
+            return images;
+        }
+        
+        function displayImagesInPreview(images, previewId) {
+            const previewContainer = document.getElementById(previewId);
+            if (previewContainer && images && images.length > 0) {
+                previewContainer.innerHTML = '';
+                images.forEach(img => {
+                    const imageItem = document.createElement('div');
+                    imageItem.className = 'image-item';
+                    imageItem.innerHTML = `
+                        <img src="${img.data}" class="image-preview" alt="${img.name}">
+                        <button class="image-remove" onclick="removeImagePreview(this)">×</button>
+                        <div class="image-caption">${img.name}</div>
+                    `;
+                    previewContainer.appendChild(imageItem);
+                });
+            }
         }
         
         function updateSubcategories() {
@@ -3338,6 +4201,7 @@ Navigate to the Systems tab to view and manage your new multiboard system!`);
             <div class="tab active" onclick="showSheet('landing')">📊 Dashboard</div>
             <div class="tab" onclick="showSheet('systems')" style="border-left: 3px solid #28a745;">🏗️ SYSTEMS</div>
             <div class="tab" onclick="showSheet('assemblies')" style="border-left: 3px solid #28a745;">🔧 ASSEMBLIES</div>
+            <div class="tab" onclick="showSheet('pcbs')" style="border-left: 3px solid #28a745;">🟩 PCBs</div>
             <div class="tab" onclick="showSheet('3d-parts')" style="border-left: 3px solid #28a745;">🖨️ 3D PARTS</div>
             <div class="tab" onclick="showSheet('cable-assemblies')" style="border-left: 3px solid #28a745;">🔗 CABLE ASSY</div>
             <div class="tab" onclick="showSheet('add-component')">➕ Add Component</div>
@@ -4166,6 +5030,46 @@ Navigate to the Systems tab to view and manage your new multiboard system!`);
                 </thead>
                 <tbody>
                     <tr><td colspan="9" style="text-align: center; color: #666; padding: 20px;">No assemblies added yet. Click "Add Assembly" to get started!</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PCBs Management Sheet -->
+        <div id="pcbs" class="sheet">
+            <div class="section-header">🟩 PRINTED CIRCUIT BOARDS - Blank PCBs & PCBAs (PKN)</div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="openAddSystemModal('pcbs')">➕ Add PCB</button>
+                <button class="btn btn-success export-button" onclick="exportSystemData('csv', 'pcbs')">📄 Export CSV</button>
+                <button class="btn btn-info export-button" onclick="exportSystemData('json', 'pcbs')">📄 Export JSON</button>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="pcbs-count">0</div>
+                    <div class="stat-label">Total PCBs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pcbs-active">0</div>
+                    <div class="stat-label">Active PCBs</div>
+                </div>
+            </div>
+            <table class="component-table">
+                <thead>
+                    <tr>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'partKN')">PCB KN</th>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'name')">PCB Name</th>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'type')">Type</th>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'layers')">Layers</th>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'size')">Size (mm)</th>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'thickness')">Thickness</th>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'status')">Status</th>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'version')">Version</th>
+                        <th class="sortable-header" onclick="sortSystemTable('pcbs', 'description')">Description</th>
+                        <th>Files</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="11" style="text-align: center; color: #666; padding: 20px;">No PCBs added yet. Click "Add PCB" to get started!</td></tr>
                 </tbody>
             </table>
         </div>

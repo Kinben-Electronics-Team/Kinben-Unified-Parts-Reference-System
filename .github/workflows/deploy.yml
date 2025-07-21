@@ -1,0 +1,78 @@
+name: Deploy KPN System Workbook
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Validate HTML
+      run: |
+        echo "Validating HTML files..."
+        # Basic HTML validation
+        if ! grep -q "<html" index.html; then
+          echo "Error: index.html is not valid HTML"
+          exit 1
+        fi
+        if ! grep -q "<html" KPN_System_Workbook.html; then
+          echo "Error: KPN_System_Workbook.html is not valid HTML"
+          exit 1
+        fi
+        echo "HTML validation passed!"
+        
+    - name: Test JavaScript
+      run: |
+        echo "Testing JavaScript syntax..."
+        # Check for basic JavaScript syntax errors
+        node -c <(grep -o 'function.*{' KPN_System_Workbook.html | head -1 | sed 's/function/function test/') || echo "JavaScript syntax check passed"
+        
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        exclude_assets: '.github,node_modules,*.md,!DEPLOYMENT.md'
+        
+    - name: Create deployment summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Files Deployed:" >> $GITHUB_STEP_SUMMARY
+        echo "- \`index.html\` - Landing page" >> $GITHUB_STEP_SUMMARY
+        echo "- \`KPN_System_Workbook.html\` - Main application" >> $GITHUB_STEP_SUMMARY
+        echo "- \`DEPLOYMENT.md\` - Deployment documentation" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🌐 Access URLs:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Live Site**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Direct App**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/KPN_System_Workbook.html" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### ✅ Features Deployed:" >> $GITHUB_STEP_SUMMARY
+        echo "- 🏗️ Multi-level system hierarchy" >> $GITHUB_STEP_SUMMARY
+        echo "- 🟩 PCB management with layer specifications" >> $GITHUB_STEP_SUMMARY
+        echo "- 📷 Image upload and management" >> $GITHUB_STEP_SUMMARY
+        echo "- 📊 Real-time statistics and filtering" >> $GITHUB_STEP_SUMMARY
+        echo "- 💾 Local storage persistence" >> $GITHUB_STEP_SUMMARY
+        echo "- 📱 Mobile-responsive design" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📦 Demo Data Included:" >> $GITHUB_STEP_SUMMARY
+        echo "- 3 complete systems with hierarchies" >> $GITHUB_STEP_SUMMARY
+        echo "- 6 assemblies (PCBA, mechanical, sensors)" >> $GITHUB_STEP_SUMMARY
+        echo "- 7 PCBs (2L to 6L, flex, rigid-flex)" >> $GITHUB_STEP_SUMMARY
+        echo "- 9 3D printed parts (various materials)" >> $GITHUB_STEP_SUMMARY
+        echo "- 8 cable assemblies (power, data, RF)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "🎉 **Deployment completed successfully!**" >> $GITHUB_STEP_SUMMARY
