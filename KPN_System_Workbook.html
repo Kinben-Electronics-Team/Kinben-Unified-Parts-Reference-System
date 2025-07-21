@@ -88,6 +88,27 @@
         /* Export styles */
         .export-options { background: white; padding: 20px; border-radius: 8px; margin: 10px 0; }
         .export-button { margin: 5px; }
+        
+        /* Search Results styles */
+        .search-results-header { display: flex; justify-content: between; align-items: center; margin-bottom: 20px; }
+        .search-results-info { flex: 1; }
+        .search-results-actions { display: flex; gap: 10px; }
+        .search-results-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .search-results-table th { background: #28a745; color: white; padding: 12px; text-align: left; font-weight: bold; }
+        .search-results-table td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+        .search-results-table tr:nth-child(even) { background: #f8f9fa; }
+        .search-results-table tr:hover { background: #e3f2fd; }
+        .category-badge { background: #007bff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .search-highlight { background-color: #ffeb3b; font-weight: bold; }
+        mark { background-color: #ffeb3b; padding: 1px 2px; border-radius: 2px; }
+        
+        /* Real-time search */
+        .search-input-container { position: relative; display: inline-block; }
+        .search-suggestions { position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 100; max-height: 200px; overflow-y: auto; display: none; }
+        .search-suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .search-suggestion-item:hover { background: #f0f0f0; }
+        .search-suggestion-item:last-child { border-bottom: none; }
     </style>
     <script>
         // Component data storage
@@ -373,11 +394,143 @@
         }
         
         function searchComponents() {
-            const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+            const searchTerm = document.getElementById('globalSearch').value.toLowerCase().trim();
             const categoryFilter = document.getElementById('categoryFilter').value;
             
-            // Implementation for global search across all components
-            console.log('Searching for:', searchTerm, 'in category:', categoryFilter);
+            if (!searchTerm) {
+                alert('Please enter a search term');
+                return;
+            }
+            
+            // Search across all components or specific category
+            let searchResults = [];
+            const categoriesToSearch = categoryFilter ? [categoryFilter] : Object.keys(componentData);
+            
+            categoriesToSearch.forEach(category => {
+                const components = componentData[category] || [];
+                components.forEach(component => {
+                    // Search in all text fields of the component
+                    const searchableText = [
+                        component.kinbenPN, component.value, component.voltage, component.current, 
+                        component.power, component.tolerance, component.package, component.mounting,
+                        component.temperature, component.manufacturer, component.manufacturerPN,
+                        component.description, component.supplier, component.mouserPN, 
+                        component.digikeyPN, component.status, component.notes
+                    ].join(' ').toLowerCase();
+                    
+                    if (searchableText.includes(searchTerm)) {
+                        searchResults.push({
+                            ...component,
+                            category: category,
+                            categoryName: getCategoryDisplayName(category)
+                        });
+                    }
+                });
+            });
+            
+            displaySearchResults(searchResults, searchTerm);
+        }
+        
+        function getCategoryDisplayName(category) {
+            const categoryNames = {
+                capacitors: 'Capacitors', resistors: 'Resistors', inductors: 'Inductors',
+                diodes: 'Diodes', transistors: 'Transistors', ics: 'Integrated Circuits',
+                connectors: 'Connectors', crystals: 'Crystals & Oscillators', fuses: 'Fuses',
+                switches: 'Switches', relays: 'Relays', optocouplers: 'Optocouplers',
+                sensors: 'Sensors', mechanical: 'Mechanical', hardware: 'Hardware',
+                cables: 'Cables & Wires'
+            };
+            return categoryNames[category] || category;
+        }
+        
+        function displaySearchResults(results, searchTerm) {
+            // Show search results sheet
+            showSearchResults();
+            
+            // Update search results table
+            const tbody = document.querySelector('#search-results .search-results-table tbody');
+            const resultsCount = document.getElementById('search-results-count');
+            const searchTermDisplay = document.getElementById('search-term-display');
+            
+            resultsCount.textContent = results.length;
+            searchTermDisplay.textContent = searchTerm;
+            
+            if (results.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666; padding: 20px;">No components found matching your search.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            results.forEach(component => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${component.kinbenPN}</strong></td>
+                    <td><span class="category-badge">${component.categoryName}</span></td>
+                    <td>${highlightSearchTerm(component.value || '-', searchTerm)}</td>
+                    <td>${highlightSearchTerm(component.manufacturer || '-', searchTerm)}</td>
+                    <td>${highlightSearchTerm(component.manufacturerPN || '-', searchTerm)}</td>
+                    <td>${highlightSearchTerm(component.description || '-', searchTerm)}</td>
+                    <td><span class="status-${component.status.toLowerCase()}">${component.status}</span></td>
+                    <td><button class="btn btn-primary btn-sm" onclick="viewComponent('${component.category}', '${component.kinbenPN}')">View</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function highlightSearchTerm(text, searchTerm) {
+            if (!text || !searchTerm) return text;
+            const regex = new RegExp(`(${searchTerm})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+        
+        function showSearchResults() {
+            // Hide all sheets
+            const sheets = document.querySelectorAll('.sheet');
+            sheets.forEach(sheet => sheet.classList.remove('active'));
+            
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show search results sheet
+            document.getElementById('search-results').classList.add('active');
+            
+            // Highlight search tab if it exists, otherwise create visual indicator
+            const searchTab = document.querySelector('[onclick="showSheet(\'search-results\')"]');
+            if (searchTab) {
+                searchTab.classList.add('active');
+            }
+        }
+        
+        function viewComponent(category, kinbenPN) {
+            // Switch to the category sheet and highlight the component
+            showSheet(category);
+            
+            // Find and highlight the component in the table
+            setTimeout(() => {
+                const table = document.querySelector(`#${category} .component-table`);
+                if (table) {
+                    const rows = table.querySelectorAll('tbody tr');
+                    rows.forEach(row => {
+                        const firstCell = row.querySelector('td');
+                        if (firstCell && firstCell.textContent === kinbenPN) {
+                            row.style.backgroundColor = '#fff3cd';
+                            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            
+                            // Remove highlight after 3 seconds
+                            setTimeout(() => {
+                                row.style.backgroundColor = '';
+                            }, 3000);
+                        }
+                    });
+                }
+            }, 100);
+        }
+        
+        function clearSearch() {
+            document.getElementById('globalSearch').value = '';
+            document.getElementById('categoryFilter').value = '';
+            showSheet('landing');
         }
         
         // Initialize on page load
@@ -387,6 +540,13 @@
             // Add event listeners
             document.getElementById('categorySelect').addEventListener('change', updateSubcategories);
             document.getElementById('subcategorySelect').addEventListener('change', generateKPNPreview);
+            
+            // Add Enter key support for search
+            document.getElementById('globalSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchComponents();
+                }
+            });
             
             // Close modal when clicking outside
             document.getElementById('addComponentModal').addEventListener('click', function(e) {
@@ -449,7 +609,7 @@
                     <button class="btn btn-primary" onclick="showSheet('add-component')">➕ Add Component</button>
                     <button class="btn btn-success" onclick="exportData('csv')">📄 Export All CSV</button>
                     <button class="btn btn-info" onclick="exportData('json')">📊 Export JSON</button>
-                    <button class="btn btn-warning" onclick="alert('Feature coming soon!')">🔍 Advanced Search</button>
+                    <button class="btn btn-warning" onclick="document.getElementById('globalSearch').focus()">🔍 Advanced Search</button>
                 </div>
                 
                 <div class="info-grid">
@@ -484,7 +644,19 @@
                     <option value="capacitors">Capacitors</option>
                     <option value="resistors">Resistors</option>
                     <option value="inductors">Inductors</option>
-                    <!-- Add more options -->
+                    <option value="diodes">Diodes</option>
+                    <option value="transistors">Transistors</option>
+                    <option value="ics">Integrated Circuits</option>
+                    <option value="connectors">Connectors</option>
+                    <option value="crystals">Crystals & Oscillators</option>
+                    <option value="fuses">Fuses</option>
+                    <option value="switches">Switches</option>
+                    <option value="relays">Relays</option>
+                    <option value="optocouplers">Optocouplers</option>
+                    <option value="sensors">Sensors</option>
+                    <option value="mechanical">Mechanical</option>
+                    <option value="hardware">Hardware</option>
+                    <option value="cables">Cables & Wires</option>
                 </select>
                 <button class="btn btn-primary" onclick="searchComponents()">🔍 Search</button>
             </div>
@@ -943,6 +1115,39 @@
             <table class="component-table">
                 <thead><tr><th>Kinben PN</th><th>Type</th><th>AWG/Size</th><th>Length</th><th>Connector A</th><th>Connector B</th><th>Shielding</th><th>Color</th><th>Manufacturer</th><th>Manufacturer PN</th><th>Description</th><th>Preferred Supplier</th><th>Mouser PN</th><th>DigiKey PN</th><th>Unit Cost</th><th>Status</th><th>Symbol File</th><th>Footprint File</th><th>3D Model File</th><th>Notes</th></tr></thead>
                 <tbody><tr><td colspan="20" style="text-align: center; color: #666; padding: 20px;">No components added yet. Click "Add Cable/Wire" to get started!</td></tr></tbody>
+            </table>
+        </div>
+
+        <!-- Search Results Sheet -->
+        <div id="search-results" class="sheet">
+            <div class="section-header">🔍 Search Results</div>
+            <div class="search-results-header">
+                <div class="search-results-info">
+                    <h3>Found <span id="search-results-count">0</span> results for "<span id="search-term-display">-</span>"</h3>
+                </div>
+                <div class="search-results-actions">
+                    <button class="btn btn-success" onclick="exportData('csv', null)" title="Export search results">📄 Export CSV</button>
+                    <button class="btn btn-warning" onclick="clearSearch()">🔄 New Search</button>
+                    <button class="btn btn-primary" onclick="showSheet('landing')">📊 Back to Dashboard</button>
+                </div>
+            </div>
+            
+            <table class="search-results-table">
+                <thead>
+                    <tr>
+                        <th>Kinben PN</th>
+                        <th>Category</th>
+                        <th>Value</th>
+                        <th>Manufacturer</th>
+                        <th>Manufacturer PN</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="8" style="text-align: center; color: #666; padding: 20px;">Use the search function above to find components across all categories.</td></tr>
+                </tbody>
             </table>
         </div>
 
