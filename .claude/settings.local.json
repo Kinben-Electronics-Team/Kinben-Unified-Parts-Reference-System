@@ -4,7 +4,8 @@
       "Bash(cp:*)",
       "Bash(wc:*)",
       "Bash(git pull:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(python:*)"
     ],
     "deny": []
   }

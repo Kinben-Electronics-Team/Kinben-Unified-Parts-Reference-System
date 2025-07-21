@@ -5159,6 +5159,65 @@ Navigate to the Systems tab to view and manage your new multiboard system!`);
                 <button class="btn btn-primary" onclick="closeAddComponentModal(); showSheet('add-component')">Go to Add Component Sheet</button>
             </div>
         </div>
+
+        // Initialize the application when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing Kinben KPN System...');
+            
+            // Load existing data from localStorage
+            loadSystemData();
+            
+            // Initialize system management
+            initializeSystemManagement();
+            
+            // Update statistics
+            updateSystemStats();
+            
+            // Show default landing sheet
+            showSheet('landing');
+            
+            console.log('✅ Kinben KPN System initialized successfully!');
+        });
+
+        // Additional utility functions for system functionality
+        function showSheet(sheetName) {
+            // Hide all sheets
+            const sheets = document.querySelectorAll('.sheet');
+            sheets.forEach(sheet => sheet.classList.remove('active'));
+            
+            // Hide all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected sheet
+            const selectedSheet = document.getElementById(sheetName);
+            if (selectedSheet) {
+                selectedSheet.classList.add('active');
+            }
+            
+            // Activate corresponding tab
+            const selectedTab = document.querySelector(`[onclick="showSheet('${sheetName}')"]`);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+            
+            // Refresh data for current sheet
+            if (sheetName === 'landing') {
+                updateSystemStats();
+            } else if (['systems', 'assemblies', 'pcbs', '3d-parts', 'cable-assemblies'].includes(sheetName)) {
+                refreshSystemTable(sheetName);
+            }
+        }
+
+        // Close modal function
+        function closeAddComponentModal() {
+            const modal = document.getElementById('addComponentModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+    </script>
     </div>
 </body>
 </html>
