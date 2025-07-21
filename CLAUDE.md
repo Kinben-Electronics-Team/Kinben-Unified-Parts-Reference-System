@@ -26,6 +26,15 @@
      - Search results page with professional display
      - Component highlighting and navigation
      - Enter key support and advanced UI
+   - **🆕 Category Page Filtering**: Individual filters for each component category
+     - Text search within category
+     - Manufacturer, status, package, mounting filters
+     - Active filter badges and live statistics
+     - Clear filters functionality
+   - **🆕 Column Sorting**: Clickable table headers with smart sorting
+     - Ascending/descending indicators
+     - Number, date, and string-aware sorting
+     - Works with filtered data
 
 3. **KPN System Implementation**
    - **Naming Convention**: KPN-[CATEGORY]-[SUBCATEGORY]-[SEQUENCE] format
@@ -103,7 +112,7 @@ Kinben-Unified-Parts-Reference-System/
 5. **User Management**: Role-based access and approval workflows
 6. **Reporting**: Advanced analytics and component usage reports
 
-## 📝 Recent Updates (Session: Advanced Search Implementation)
+## 📝 Recent Updates (Session: Advanced Search & Category Filtering Implementation)
 **Date**: 2025-01-21  
 **Work Done**:
 - ✅ Implemented comprehensive advanced search system
@@ -115,6 +124,21 @@ Kinben-Unified-Parts-Reference-System/
 - ✅ Enhanced category filtering with all 16 categories
 - ✅ Added search result export functionality
 - ✅ Created responsive search interface with professional UI
+- ✅ **NEW: Individual page filters for each component category**
+  - Search field for text-based filtering within category
+  - Manufacturer filter with autocomplete-style input
+  - Status dropdown (Active/Pending/Obsolete)
+  - Package filter for component packages
+  - Mounting type filter (SMD/Through Hole/Both)
+  - Clear filters functionality
+  - Active filter badges with individual remove options
+  - Live filter statistics showing visible/total components
+- ✅ **NEW: Column sorting functionality**
+  - Clickable headers on all component tables
+  - Ascending/descending sort with visual indicators (↑↓)
+  - Smart sorting: numbers, dates, and strings handled appropriately
+  - Sort indicators persist and show current sort direction
+  - Works with filtered data (sorts only visible rows)
 - ✅ Updated work protocol in CLAUDE.md for future sessions
 
 ## Usage Instructions for Resumption

@@ -109,6 +109,30 @@
         .search-suggestion-item { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .search-suggestion-item:hover { background: #f0f0f0; }
         .search-suggestion-item:last-child { border-bottom: none; }
+        
+        /* Category page filters */
+        .category-filters { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #28a745; }
+        .category-filters h4 { margin: 0 0 15px 0; color: #333; font-size: 16px; }
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; align-items: end; }
+        .filter-group { display: flex; flex-direction: column; }
+        .filter-group label { margin-bottom: 5px; font-weight: bold; color: #555; font-size: 14px; }
+        .filter-input, .filter-select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        .filter-actions { display: flex; gap: 10px; align-items: end; }
+        .filter-stats { background: #e3f2fd; padding: 10px 15px; border-radius: 4px; margin-top: 10px; font-size: 14px; color: #1565c0; }
+        .hidden-row { display: none !important; }
+        
+        /* Sortable columns */
+        .sortable-header { cursor: pointer; user-select: none; position: relative; padding-right: 20px !important; }
+        .sortable-header:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .sort-indicator { position: absolute; right: 5px; top: 50%; transform: translateY(-50%); font-size: 12px; opacity: 0.7; }
+        .sort-asc::after { content: " ↑"; }
+        .sort-desc::after { content: " ↓"; }
+        
+        /* Filter badges */
+        .active-filters { margin: 10px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+        .filter-badge { background: #007bff; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+        .filter-badge .remove-filter { cursor: pointer; background: rgba(255,255,255,0.3); border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .filter-badge .remove-filter:hover { background: rgba(255,255,255,0.5); }
     </style>
     <script>
         // Component data storage
@@ -533,9 +557,324 @@
             showSheet('landing');
         }
         
+        // Category page filtering system
+        function filterCategoryComponents(category) {
+            const filters = getCategoryFilters(category);
+            const components = componentData[category] || [];
+            const table = document.querySelector(`#${category} .component-table tbody`);
+            const stats = document.querySelector(`#${category} .filter-stats`);
+            
+            let visibleCount = 0;
+            let totalCount = components.length;
+            
+            if (totalCount === 0) {
+                if (stats) stats.textContent = 'No components to filter';
+                return;
+            }
+            
+            // Filter components
+            const filteredComponents = components.filter(component => {
+                let matches = true;
+                
+                // Text search filter
+                if (filters.search && filters.search.trim() !== '') {
+                    const searchTerm = filters.search.toLowerCase();
+                    const searchableText = [
+                        component.kinbenPN, component.value, component.manufacturer, 
+                        component.manufacturerPN, component.description, component.notes
+                    ].join(' ').toLowerCase();
+                    matches = matches && searchableText.includes(searchTerm);
+                }
+                
+                // Manufacturer filter
+                if (filters.manufacturer && filters.manufacturer !== '') {
+                    matches = matches && (component.manufacturer || '').toLowerCase().includes(filters.manufacturer.toLowerCase());
+                }
+                
+                // Status filter
+                if (filters.status && filters.status !== '') {
+                    matches = matches && (component.status || '').toLowerCase() === filters.status.toLowerCase();
+                }
+                
+                // Package filter
+                if (filters.package && filters.package !== '') {
+                    matches = matches && (component.package || '').toLowerCase().includes(filters.package.toLowerCase());
+                }
+                
+                // Mounting filter
+                if (filters.mounting && filters.mounting !== '') {
+                    matches = matches && (component.mounting || '').toLowerCase() === filters.mounting.toLowerCase();
+                }
+                
+                return matches;
+            });
+            
+            // Hide/show table rows
+            const rows = table.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                if (index === 0 && row.textContent.includes('No components')) {
+                    return; // Skip empty state row
+                }
+                
+                const component = components[index];
+                if (component && filteredComponents.includes(component)) {
+                    row.classList.remove('hidden-row');
+                    visibleCount++;
+                } else if (component) {
+                    row.classList.add('hidden-row');
+                }
+            });
+            
+            // Update stats
+            if (stats) {
+                stats.textContent = `Showing ${visibleCount} of ${totalCount} components`;
+                if (visibleCount !== totalCount) {
+                    stats.textContent += ` (${totalCount - visibleCount} filtered out)`;
+                }
+            }
+            
+            // Update active filters display
+            updateActiveFilters(category, filters);
+        }
+        
+        function getCategoryFilters(category) {
+            const filterPrefix = `${category}-filter`;
+            return {
+                search: (document.getElementById(`${filterPrefix}-search`) || {}).value || '',
+                manufacturer: (document.getElementById(`${filterPrefix}-manufacturer`) || {}).value || '',
+                status: (document.getElementById(`${filterPrefix}-status`) || {}).value || '',
+                package: (document.getElementById(`${filterPrefix}-package`) || {}).value || '',
+                mounting: (document.getElementById(`${filterPrefix}-mounting`) || {}).value || ''
+            };
+        }
+        
+        function clearCategoryFilters(category) {
+            const filterPrefix = `${category}-filter`;
+            const filterIds = ['search', 'manufacturer', 'status', 'package', 'mounting'];
+            
+            filterIds.forEach(filterId => {
+                const element = document.getElementById(`${filterPrefix}-${filterId}`);
+                if (element) element.value = '';
+            });
+            
+            // Clear active filters and refresh
+            updateActiveFilters(category, {});
+            refreshComponentTable(category);
+        }
+        
+        function updateActiveFilters(category, filters) {
+            const activeFiltersContainer = document.querySelector(`#${category} .active-filters`);
+            if (!activeFiltersContainer) return;
+            
+            activeFiltersContainer.innerHTML = '';
+            
+            // Add filter badges for active filters
+            Object.keys(filters).forEach(filterKey => {
+                const filterValue = filters[filterKey];
+                if (filterValue && filterValue.trim() !== '') {
+                    const badge = document.createElement('div');
+                    badge.className = 'filter-badge';
+                    badge.innerHTML = `
+                        <span>${filterKey}: ${filterValue}</span>
+                        <span class="remove-filter" onclick="removeFilter('${category}', '${filterKey}')">&times;</span>
+                    `;
+                    activeFiltersContainer.appendChild(badge);
+                }
+            });
+        }
+        
+        function removeFilter(category, filterKey) {
+            const filterPrefix = `${category}-filter`;
+            const element = document.getElementById(`${filterPrefix}-${filterKey}`);
+            if (element) {
+                element.value = '';
+                filterCategoryComponents(category);
+            }
+        }
+        
+        function sortTable(category, columnIndex, dataType = 'string') {
+            const table = document.querySelector(`#${category} .component-table`);
+            const tbody = table.querySelector('tbody');
+            const thead = table.querySelector('thead');
+            const rows = Array.from(tbody.querySelectorAll('tr')).filter(row => 
+                !row.textContent.includes('No components') && !row.classList.contains('hidden-row')
+            );
+            
+            if (rows.length === 0) return;
+            
+            // Get current sort direction for this column
+            const header = thead.querySelectorAll('th')[columnIndex];
+            const currentDirection = header.dataset.sortDirection || 'asc';
+            const newDirection = currentDirection === 'asc' ? 'desc' : 'asc';
+            
+            // Clear all sort indicators
+            thead.querySelectorAll('th').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+                th.dataset.sortDirection = '';
+            });
+            
+            // Set new sort direction and indicator
+            header.dataset.sortDirection = newDirection;
+            header.classList.add(`sort-${newDirection}`);
+            
+            rows.sort((a, b) => {
+                const aValue = a.cells[columnIndex]?.textContent.trim() || '';
+                const bValue = b.cells[columnIndex]?.textContent.trim() || '';
+                
+                let comparison = 0;
+                
+                if (dataType === 'number') {
+                    // Handle currency and numeric values
+                    const aNum = parseFloat(aValue.replace(/[$,]/g, '')) || 0;
+                    const bNum = parseFloat(bValue.replace(/[$,]/g, '')) || 0;
+                    comparison = aNum - bNum;
+                } else if (dataType === 'date') {
+                    const aDate = new Date(aValue);
+                    const bDate = new Date(bValue);
+                    comparison = aDate - bDate;
+                } else {
+                    // String comparison (default)
+                    comparison = aValue.localeCompare(bValue, undefined, { numeric: true, sensitivity: 'base' });
+                }
+                
+                return newDirection === 'asc' ? comparison : -comparison;
+            });
+            
+            // Reorder rows in DOM
+            rows.forEach(row => tbody.appendChild(row));
+        }
+        
+        // Make table headers sortable
+        function makeSortableHeaders(category) {
+            const table = document.querySelector(`#${category} .component-table`);
+            if (!table) return;
+            
+            const headers = table.querySelectorAll('thead th');
+            const columnConfig = {
+                0: { type: 'string' },    // Kinben PN
+                1: { type: 'string' },    // Value/Type
+                2: { type: 'string' },    // Voltage/Frequency etc.
+                3: { type: 'string' },    // Tolerance/Current etc.
+                4: { type: 'string' },    // Package
+                5: { type: 'string' },    // Mounting
+                6: { type: 'string' },    // Temperature Range
+                7: { type: 'string' },    // Manufacturer
+                8: { type: 'string' },    // Manufacturer PN
+                9: { type: 'string' },    // Description
+                10: { type: 'string' },   // Preferred Supplier
+                11: { type: 'string' },   // Mouser PN
+                12: { type: 'string' },   // DigiKey PN
+                13: { type: 'number' },   // Unit Cost
+                14: { type: 'number' },   // MOQ
+                15: { type: 'string' },   // Status
+                16: { type: 'string' },   // Symbol File
+                17: { type: 'string' },   // Footprint File
+                18: { type: 'string' },   // 3D Model File
+                19: { type: 'string' }    // Notes
+            };
+            
+            headers.forEach((header, index) => {
+                header.classList.add('sortable-header');
+                header.style.cursor = 'pointer';
+                header.title = 'Click to sort';
+                
+                const dataType = columnConfig[index]?.type || 'string';
+                header.onclick = () => sortTable(category, index, dataType);
+            });
+        }
+        
+        // Generate filter HTML for a category
+        function generateCategoryFilters(category, categoryDisplayName) {
+            return `
+                <!-- Category Filters -->
+                <div class="category-filters">
+                    <h4>🔍 Filter ${categoryDisplayName}</h4>
+                    <div class="filter-grid">
+                        <div class="filter-group">
+                            <label>Search</label>
+                            <input type="text" id="${category}-filter-search" class="filter-input" placeholder="Search ${categoryDisplayName.toLowerCase()}..." onkeyup="filterCategoryComponents('${category}')">
+                        </div>
+                        <div class="filter-group">
+                            <label>Manufacturer</label>
+                            <input type="text" id="${category}-filter-manufacturer" class="filter-input" placeholder="e.g. Murata, TI, Vishay..." onkeyup="filterCategoryComponents('${category}')">
+                        </div>
+                        <div class="filter-group">
+                            <label>Status</label>
+                            <select id="${category}-filter-status" class="filter-select" onchange="filterCategoryComponents('${category}')">
+                                <option value="">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="pending">Pending</option>
+                                <option value="obsolete">Obsolete</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Package</label>
+                            <input type="text" id="${category}-filter-package" class="filter-input" placeholder="e.g. 0603, SOT-23, TO-220..." onkeyup="filterCategoryComponents('${category}')">
+                        </div>
+                        <div class="filter-group">
+                            <label>Mounting</label>
+                            <select id="${category}-filter-mounting" class="filter-select" onchange="filterCategoryComponents('${category}')">
+                                <option value="">All Mounting</option>
+                                <option value="smd">SMD</option>
+                                <option value="tht">Through Hole</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn btn-warning btn-sm" onclick="clearCategoryFilters('${category}')">🔄 Clear</button>
+                        </div>
+                    </div>
+                    <div class="active-filters"></div>
+                    <div class="filter-stats">Ready to filter components</div>
+                </div>
+            `;
+        }
+        
+        // Initialize category filters on page load
+        function initializeCategoryFilters() {
+            const categories = [
+                { id: 'capacitors', name: 'Capacitors' }, // Include capacitors since it has manual filters
+                { id: 'resistors', name: 'Resistors' },
+                { id: 'inductors', name: 'Inductors' },
+                { id: 'diodes', name: 'Diodes' },
+                { id: 'transistors', name: 'Transistors' },
+                { id: 'ics', name: 'ICs' },
+                { id: 'connectors', name: 'Connectors' },
+                { id: 'crystals', name: 'Crystals' },
+                { id: 'fuses', name: 'Fuses' },
+                { id: 'switches', name: 'Switches' },
+                { id: 'relays', name: 'Relays' },
+                { id: 'optocouplers', name: 'Optocouplers' },
+                { id: 'sensors', name: 'Sensors' },
+                { id: 'mechanical', name: 'Mechanical' },
+                { id: 'hardware', name: 'Hardware' },
+                { id: 'cables', name: 'Cables' }
+            ];
+            
+            categories.forEach(category => {
+                const categorySheet = document.getElementById(category.id);
+                if (categorySheet) {
+                    const actionButtons = categorySheet.querySelector('.action-buttons');
+                    const table = categorySheet.querySelector('.component-table');
+                    
+                    if (actionButtons && table) {
+                        // Add filters if not already present
+                        if (!categorySheet.querySelector('.category-filters')) {
+                            const filtersHTML = generateCategoryFilters(category.id, category.name);
+                            actionButtons.insertAdjacentHTML('afterend', filtersHTML);
+                        }
+                        
+                        // Make table headers sortable
+                        makeSortableHeaders(category.id);
+                    }
+                }
+            });
+        }
+        
         // Initialize on page load
         window.addEventListener('load', function() {
             updateStats();
+            initializeCategoryFilters(); // Add category filters to all pages
             
             // Add event listeners
             document.getElementById('categorySelect').addEventListener('change', updateSubcategories);
@@ -909,6 +1248,48 @@
                 <button class="btn btn-primary" onclick="openAddComponentModal('capacitors')">➕ Add Capacitor</button>
                 <button class="btn btn-success export-button" onclick="exportData('csv', 'capacitors')">📄 Export CSV</button>
                 <button class="btn btn-info export-button" onclick="exportData('json', 'capacitors')">📊 Export JSON</button>
+            </div>
+            
+            <!-- Category Filters -->
+            <div class="category-filters">
+                <h4>🔍 Filter Capacitors</h4>
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>Search</label>
+                        <input type="text" id="capacitors-filter-search" class="filter-input" placeholder="Search capacitors..." onkeyup="filterCategoryComponents('capacitors')">
+                    </div>
+                    <div class="filter-group">
+                        <label>Manufacturer</label>
+                        <input type="text" id="capacitors-filter-manufacturer" class="filter-input" placeholder="e.g. Murata, Samsung..." onkeyup="filterCategoryComponents('capacitors')">
+                    </div>
+                    <div class="filter-group">
+                        <label>Status</label>
+                        <select id="capacitors-filter-status" class="filter-select" onchange="filterCategoryComponents('capacitors')">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="pending">Pending</option>
+                            <option value="obsolete">Obsolete</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Package</label>
+                        <input type="text" id="capacitors-filter-package" class="filter-input" placeholder="e.g. 0603, 0805..." onkeyup="filterCategoryComponents('capacitors')">
+                    </div>
+                    <div class="filter-group">
+                        <label>Mounting</label>
+                        <select id="capacitors-filter-mounting" class="filter-select" onchange="filterCategoryComponents('capacitors')">
+                            <option value="">All Mounting</option>
+                            <option value="smd">SMD</option>
+                            <option value="tht">Through Hole</option>
+                            <option value="both">Both</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn btn-warning btn-sm" onclick="clearCategoryFilters('capacitors')">🔄 Clear</button>
+                    </div>
+                </div>
+                <div class="active-filters"></div>
+                <div class="filter-stats">Ready to filter components</div>
             </div>
             <table class="component-table">
                 <thead>
