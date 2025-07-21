@@ -201,6 +201,112 @@
         .btn-danger { background: #dc3545; color: white; }
         .btn-secondary:hover { background: #5a6268; }
         .btn-danger:hover { background: #c82333; }
+        
+        /* Multiboard Wizard Styles */
+        .wizard-steps { display: flex; justify-content: center; margin-bottom: 30px; }
+        .wizard-step { 
+            padding: 10px 20px; margin: 0 10px; border-radius: 20px; 
+            background: #e9ecef; color: #6c757d; font-weight: bold;
+            position: relative; transition: all 0.3s;
+        }
+        .wizard-step.active { background: #0078d4; color: white; }
+        .wizard-step.completed { background: #28a745; color: white; }
+        
+        .wizard-content { min-height: 400px; }
+        .wizard-panel { display: none; }
+        .wizard-panel.active { display: block; }
+        
+        .wizard-actions { 
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 30px; padding-top: 20px; border-top: 1px solid #dee2e6;
+        }
+        
+        .wizard-assembly-item, .wizard-component-item {
+            background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px;
+            padding: 15px; margin-bottom: 15px; position: relative;
+        }
+        
+        .assembly-header, .component-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .assembly-header h6, .component-header h6 {
+            margin: 0; color: #495057; font-weight: bold;
+        }
+        
+        .btn-remove {
+            background: #dc3545; color: white; border: none;
+            padding: 4px 8px; border-radius: 4px; cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-remove:hover { background: #c82333; }
+        
+        .wizard-section {
+            background: #ffffff; border: 1px solid #dee2e6;
+            border-radius: 8px; padding: 20px; margin-bottom: 20px;
+        }
+        .wizard-section h5 {
+            margin: 0 0 15px 0; color: #495057;
+            border-bottom: 2px solid #0078d4; padding-bottom: 8px;
+        }
+        
+        .review-section {
+            background: #f8f9fa; border-radius: 8px;
+            padding: 20px; margin-bottom: 20px;
+        }
+        .review-section h5 {
+            margin: 0 0 15px 0; color: #495057;
+            border-bottom: 1px solid #dee2e6; padding-bottom: 8px;
+        }
+        
+        .review-table {
+            width: 100%; border-collapse: collapse;
+        }
+        .review-table td {
+            padding: 8px 0; border-bottom: 1px solid #dee2e6;
+        }
+        .review-table td:first-child {
+            width: 150px; font-weight: bold; color: #495057;
+        }
+        
+        .review-item {
+            padding: 10px; background: white; border-radius: 4px;
+            margin-bottom: 8px; border-left: 3px solid #0078d4;
+        }
+        .review-item small { color: #6c757d; }
+        
+        .review-summary {
+            background: #e3f2fd; border-radius: 8px; padding: 20px;
+            border-left: 4px solid #0078d4;
+        }
+        .review-summary h5 { margin-top: 0; color: #1565c0; }
+        .review-summary ul { margin: 10px 0; }
+        .review-summary li { margin-bottom: 5px; }
+        
+        /* System Composition Styles */
+        .composition-group {
+            background: #ffffff; border: 1px solid #e3f2fd;
+            border-radius: 6px; padding: 15px; margin-bottom: 15px;
+        }
+        .composition-group h5 {
+            margin: 0 0 12px 0; color: #1565c0;
+            font-size: 14px; font-weight: bold;
+        }
+        .composition-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 12px; background: #f8f9fa; border-radius: 4px;
+            margin-bottom: 6px; border-left: 3px solid #0078d4;
+        }
+        .qty-badge {
+            background: #28a745; color: white; padding: 2px 8px;
+            border-radius: 12px; font-size: 12px; font-weight: bold;
+        }
+        .refdes-badge {
+            background: #17a2b8; color: white; padding: 2px 6px;
+            border-radius: 10px; font-size: 11px; font-weight: bold;
+            margin-right: 8px;
+        }
     </style>
     <script>
         // Component data storage
@@ -651,9 +757,130 @@
             });
         }
 
-        // Multiboard project wizard
+        // Multiboard project wizard - Step-by-step system creation
         function openMultiboardWizard() {
-            alert('Multiboard Project Wizard - This will help you create complete systems with multiple PCBAs, cable assemblies, and 3D printed components.');
+            const modal = document.getElementById('addComponentModal');
+            const modalContent = modal.querySelector('.modal-content');
+            
+            modalContent.innerHTML = `
+                <span class="close" onclick="closeAddComponentModal()">&times;</span>
+                <h3>📋 Multiboard Project Wizard</h3>
+                <div id="wizardContainer">
+                    <div class="wizard-steps">
+                        <div class="wizard-step active" data-step="1">1. Project Info</div>
+                        <div class="wizard-step" data-step="2">2. Assemblies</div>
+                        <div class="wizard-step" data-step="3">3. Components</div>
+                        <div class="wizard-step" data-step="4">4. Review & Create</div>
+                    </div>
+                    
+                    <div class="wizard-content">
+                        <!-- Step 1: Project Information -->
+                        <div class="wizard-panel active" id="wizardStep1">
+                            <h4>Step 1: Project Information</h4>
+                            <div class="form-group">
+                                <label>Project Name *</label>
+                                <input type="text" id="wizardProjectName" required placeholder="e.g., IoT Environmental Monitor">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Project Type *</label>
+                                    <select id="wizardProjectType" required>
+                                        <option value="">Select type...</option>
+                                        <option value="PROD">Production System</option>
+                                        <option value="PROTO">Prototype System</option>
+                                        <option value="EVAL">Evaluation Board</option>
+                                        <option value="TEST">Test Fixture</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Version *</label>
+                                    <input type="text" id="wizardVersion" required placeholder="v1.0" value="v1.0">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Project Owner</label>
+                                    <input type="text" id="wizardOwner" placeholder="Lead Engineer">
+                                </div>
+                                <div class="form-group">
+                                    <label>Expected Assembly Count</label>
+                                    <input type="number" id="wizardAssemblyCount" min="1" value="2" placeholder="Number of PCBAs/assemblies">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Project Description *</label>
+                                <textarea id="wizardDescription" required placeholder="Brief description of the complete system and its purpose"></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Assembly Planning -->
+                        <div class="wizard-panel" id="wizardStep2">
+                            <h4>Step 2: Plan Your Assemblies</h4>
+                            <p style="color: #666; margin-bottom: 20px;">Define the PCBAs, mechanical assemblies, and other components your system will contain.</p>
+                            <div id="wizardAssemblyList">
+                                <!-- Dynamic assembly entries will be added here -->
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="addWizardAssembly()">➕ Add Assembly</button>
+                        </div>
+                        
+                        <!-- Step 3: Component Selection -->
+                        <div class="wizard-panel" id="wizardStep3">
+                            <h4>Step 3: Add Supporting Components</h4>
+                            <p style="color: #666; margin-bottom: 20px;">Add 3D printed parts, cable assemblies, and direct components to your system.</p>
+                            
+                            <div class="wizard-section">
+                                <h5>3D Printed Parts</h5>
+                                <div id="wizard3DPartsList">
+                                    <!-- Dynamic 3D parts will be added here -->
+                                </div>
+                                <button type="button" class="btn btn-warning" onclick="addWizard3DPart()">🖨️ Add 3D Part</button>
+                            </div>
+                            
+                            <div class="wizard-section">
+                                <h5>Cable Assemblies</h5>
+                                <div id="wizardCablesList">
+                                    <!-- Dynamic cable assemblies will be added here -->
+                                </div>
+                                <button type="button" class="btn btn-info" onclick="addWizardCable()">🔗 Add Cable Assembly</button>
+                            </div>
+                            
+                            <div class="wizard-section">
+                                <h5>Direct System Components</h5>
+                                <div id="wizardComponentsList">
+                                    <!-- Direct components will be added here -->
+                                </div>
+                                <button type="button" class="btn btn-secondary" onclick="addWizardComponent()">⚙️ Add Component</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 4: Review & Create -->
+                        <div class="wizard-panel" id="wizardStep4">
+                            <h4>Step 4: Review & Create System</h4>
+                            <div id="wizardReview">
+                                <!-- Review content will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="wizard-actions">
+                        <button type="button" class="btn btn-secondary" id="wizardPrevBtn" onclick="previousWizardStep()" style="display: none;">⬅️ Previous</button>
+                        <button type="button" class="btn btn-primary" id="wizardNextBtn" onclick="nextWizardStep()">Next ➡️</button>
+                        <button type="button" class="btn btn-success" id="wizardCreateBtn" onclick="createMultiboardSystem()" style="display: none;">🚀 Create System</button>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+            
+            // Initialize wizard data storage
+            window.wizardData = {
+                step: 1,
+                project: {},
+                assemblies: [],
+                parts3D: [],
+                cables: [],
+                components: []
+            };
         }
 
         // View system details with hierarchical BOM and management
@@ -747,6 +974,109 @@
                         <p>${item.description}</p>
                     </div>
                     
+                    ${item.systemAssemblies || item.systemComponents || item.system3DParts || item.systemCables ? `
+                    <div class="detail-section">
+                        <h4>System Composition</h4>
+                        ${(item.systemAssemblies && item.systemAssemblies.length > 0) ? `
+                            <div class="composition-group">
+                                <h5>🔧 Assemblies (${item.systemAssemblies.length})</h5>
+                                ${item.systemAssemblies.map(asm => `
+                                    <div class="composition-item">
+                                        <strong>${asm.kn}</strong> - ${asm.name} <span class="qty-badge">Qty: ${asm.quantity}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${(item.system3DParts && item.system3DParts.length > 0) ? `
+                            <div class="composition-group">
+                                <h5>🖨️ 3D Parts (${item.system3DParts.length})</h5>
+                                ${item.system3DParts.map(part => `
+                                    <div class="composition-item">
+                                        <strong>${part.kn}</strong> - ${part.name} <span class="qty-badge">Qty: ${part.quantity}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${(item.systemCables && item.systemCables.length > 0) ? `
+                            <div class="composition-group">
+                                <h5>🔗 Cable Assemblies (${item.systemCables.length})</h5>
+                                ${item.systemCables.map(cable => `
+                                    <div class="composition-item">
+                                        <strong>${cable.kn}</strong> - ${cable.name} <span class="qty-badge">Qty: ${cable.quantity}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${(item.systemComponents && item.systemComponents.length > 0) ? `
+                            <div class="composition-group">
+                                <h5>⚙️ Direct Components (${item.systemComponents.length})</h5>
+                                ${item.systemComponents.map(comp => `
+                                    <div class="composition-item">
+                                        <strong>${comp.kpn}</strong> - ${comp.name} <span class="qty-badge">Qty: ${comp.quantity}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+                    
+                    ${item.assemblyComponents || item.assembly3DParts || item.assemblyCables ? `
+                    <div class="detail-section">
+                        <h4>Assembly Composition</h4>
+                        ${(item.assemblyComponents && item.assemblyComponents.length > 0) ? `
+                            <div class="composition-group">
+                                <h5>⚙️ Components (${item.assemblyComponents.length})</h5>
+                                ${item.assemblyComponents.map(comp => `
+                                    <div class="composition-item">
+                                        <strong>${comp.kpn}</strong> - ${comp.name} 
+                                        ${comp.refdes ? `<span class="refdes-badge">${comp.refdes}</span>` : ''}
+                                        <span class="qty-badge">Qty: ${comp.quantity}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${(item.assembly3DParts && item.assembly3DParts.length > 0) ? `
+                            <div class="composition-group">
+                                <h5>🖨️ 3D Parts (${item.assembly3DParts.length})</h5>
+                                ${item.assembly3DParts.map(part => `
+                                    <div class="composition-item">
+                                        <strong>${part.kn}</strong> - ${part.name} <span class="qty-badge">Qty: ${part.quantity}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        
+                        ${(item.assemblyCables && item.assemblyCables.length > 0) ? `
+                            <div class="composition-group">
+                                <h5>🔗 Cables (${item.assemblyCables.length})</h5>
+                                ${item.assemblyCables.map(cable => `
+                                    <div class="composition-item">
+                                        <strong>${cable.kn}</strong> - ${cable.name} <span class="qty-badge">Qty: ${cable.quantity}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    ` : ''}
+                    
+                    ${item.cableComponents && item.cableComponents.length > 0 ? `
+                    <div class="detail-section">
+                        <h4>Cable Components</h4>
+                        <div class="composition-group">
+                            <h5>⚙️ Components (${item.cableComponents.length})</h5>
+                            ${item.cableComponents.map(comp => `
+                                <div class="composition-item">
+                                    <strong>${comp.kpn}</strong> - ${comp.name} <span class="qty-badge">Qty: ${comp.quantity}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
                     <div class="detail-section">
                         <h4>Design Files</h4>
                         <div class="file-attachments">${fileList}</div>
@@ -788,8 +1118,12 @@
             console.log('System-first management initialized for multiboard ordering');
         }
 
-        // Add system-level item (called from modal forms)
+        // Add system-level item (called from modal forms) - handles both add and edit
         function addSystemItem(category) {
+            const form = document.querySelector('.modal-content form');
+            const isEditing = form && form.getAttribute('data-edit-id');
+            const editKN = form ? form.getAttribute('data-edit-kn') : null;
+            
             let item = {};
             let isValid = true;
             
@@ -807,8 +1141,8 @@
                     }
                     
                     item = {
-                        id: Date.now(),
-                        systemKN: generateSystemKN('systems', systemType),
+                        id: isEditing ? parseInt(form.getAttribute('data-edit-id')) : Date.now(),
+                        systemKN: isEditing ? editKN : generateSystemKN('systems', systemType),
                         name: systemName,
                         type: systemType,
                         version: systemVersion,
@@ -817,8 +1151,25 @@
                         description: systemDescription,
                         owner: document.getElementById('systemOwner').value.trim(),
                         files: document.getElementById('systemFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
-                        dateAdded: new Date().toISOString().split('T')[0]
+                        dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
+                        dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined,
+                        // Enhanced system composition
+                        systemAssemblies: [], // Will store {kn, name, quantity} objects
+                        systemComponents: [], // Direct components {kpn, name, quantity}  
+                        system3DParts: [],    // 3D printed parts {kn, name, quantity}
+                        systemCables: []      // Cable assemblies {kn, name, quantity}
                     };
+                    
+                    // Preserve existing composition data if editing
+                    if (isEditing) {
+                        const existingItem = systemData[category].find(i => i.id == item.id);
+                        if (existingItem) {
+                            item.systemAssemblies = existingItem.systemAssemblies || [];
+                            item.systemComponents = existingItem.systemComponents || [];
+                            item.system3DParts = existingItem.system3DParts || [];
+                            item.systemCables = existingItem.systemCables || [];
+                        }
+                    }
                     break;
                     
                 case 'assemblies':
@@ -834,8 +1185,8 @@
                     }
                     
                     item = {
-                        id: Date.now(),
-                        assemblyKN: generateSystemKN('assemblies', assemblyType),
+                        id: isEditing ? parseInt(form.getAttribute('data-edit-id')) : Date.now(),
+                        assemblyKN: isEditing ? editKN : generateSystemKN('assemblies', assemblyType),
                         name: assemblyName,
                         type: assemblyType,
                         version: assemblyVersion,
@@ -843,8 +1194,23 @@
                         components: parseInt(document.getElementById('assemblyComponents').value) || 0,
                         description: assemblyDescription,
                         files: document.getElementById('assemblyFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
-                        dateAdded: new Date().toISOString().split('T')[0]
+                        dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
+                        dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined,
+                        // Enhanced assembly composition
+                        assemblyComponents: [], // Direct components {kpn, name, quantity, refdes}
+                        assembly3DParts: [],    // 3D parts used {kn, name, quantity}
+                        assemblyCables: []      // Cables used {kn, name, quantity}
                     };
+                    
+                    // Preserve existing composition data if editing
+                    if (isEditing) {
+                        const existingItem = systemData[category].find(i => i.id == item.id);
+                        if (existingItem) {
+                            item.assemblyComponents = existingItem.assemblyComponents || [];
+                            item.assembly3DParts = existingItem.assembly3DParts || [];
+                            item.assemblyCables = existingItem.assemblyCables || [];
+                        }
+                    }
                     break;
                     
                 case '3d-parts':
@@ -860,8 +1226,8 @@
                     }
                     
                     item = {
-                        id: Date.now(),
-                        partKN: generateSystemKN('3d-parts', partType),
+                        id: isEditing ? parseInt(form.getAttribute('data-edit-id')) : Date.now(),
+                        partKN: isEditing ? editKN : generateSystemKN('3d-parts', partType),
                         name: partName,
                         type: partType,
                         material: partMaterial,
@@ -869,7 +1235,8 @@
                         version: document.getElementById('partVersion').value.trim() || 'v1.0',
                         description: partDescription,
                         files: document.getElementById('partFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
-                        dateAdded: new Date().toISOString().split('T')[0]
+                        dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
+                        dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined
                     };
                     break;
                     
@@ -885,8 +1252,8 @@
                     }
                     
                     item = {
-                        id: Date.now(),
-                        cableKN: generateSystemKN('cable-assemblies', cableType),
+                        id: isEditing ? parseInt(form.getAttribute('data-edit-id')) : Date.now(),
+                        cableKN: isEditing ? editKN : generateSystemKN('cable-assemblies', cableType),
                         name: cableName,
                         type: cableType,
                         length: document.getElementById('cableLength').value.trim(),
@@ -894,15 +1261,35 @@
                         status: 'Active',
                         description: cableDescription,
                         files: document.getElementById('cableFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
-                        dateAdded: new Date().toISOString().split('T')[0]
+                        dateAdded: isEditing ? (systemData[category].find(i => i.id == item.id)?.dateAdded || new Date().toISOString().split('T')[0]) : new Date().toISOString().split('T')[0],
+                        dateModified: isEditing ? new Date().toISOString().split('T')[0] : undefined,
+                        // Enhanced cable composition  
+                        cableComponents: []     // Components in cable {kpn, name, quantity} (connectors, wires, etc.)
                     };
+                    
+                    // Preserve existing composition data if editing
+                    if (isEditing) {
+                        const existingItem = systemData[category].find(i => i.id == item.id);
+                        if (existingItem) {
+                            item.cableComponents = existingItem.cableComponents || [];
+                        }
+                    }
                     break;
             }
             
             if (!isValid) return;
             
-            // Add to system data
-            systemData[category].push(item);
+            // Handle add vs edit operation
+            if (isEditing) {
+                // Find and replace existing item
+                const itemIndex = systemData[category].findIndex(i => i.id == item.id);
+                if (itemIndex !== -1) {
+                    systemData[category][itemIndex] = item;
+                }
+            } else {
+                // Add new item
+                systemData[category].push(item);
+            }
             
             // Save to localStorage
             localStorage.setItem('kinbenSystemData', JSON.stringify(systemData));
@@ -916,12 +1303,95 @@
             
             // Show success message
             const kn = item.systemKN || item.assemblyKN || item.partKN || item.cableKN;
-            alert(`✅ Successfully added ${kn}!`);
+            alert(`✅ Successfully ${isEditing ? 'updated' : 'added'} ${kn}!`);
         }
 
-        // Edit system item
+        // Edit system item with pre-populated form
         function editSystemItem(kn, category) {
-            alert(`Edit functionality for ${kn} will be implemented in future updates. Currently viewing details only.`);
+            // Find the item to edit
+            let item = null;
+            for (const [cat, items] of Object.entries(systemData)) {
+                item = items.find(i => 
+                    i.systemKN === kn || i.assemblyKN === kn || i.partKN === kn || i.cableKN === kn
+                );
+                if (item) {
+                    category = cat;
+                    break;
+                }
+            }
+            
+            if (!item) {
+                alert('Item not found for editing.');
+                return;
+            }
+            
+            // Close the details modal first
+            closeAddComponentModal();
+            
+            // Open the add modal but pre-populate with existing data
+            setTimeout(() => {
+                openAddSystemModal(category);
+                
+                // Pre-populate the form with existing data
+                setTimeout(() => {
+                    switch(category) {
+                        case 'systems':
+                            document.getElementById('systemName').value = item.name || '';
+                            document.getElementById('systemType').value = item.type || '';
+                            document.getElementById('systemVersion').value = item.version || '';
+                            document.getElementById('systemAssemblies').value = item.assemblies || 1;
+                            document.getElementById('systemOwner').value = item.owner || '';
+                            document.getElementById('systemDescription').value = item.description || '';
+                            document.getElementById('systemFiles').value = (item.files || []).join(', ');
+                            break;
+                            
+                        case 'assemblies':
+                            document.getElementById('assemblyName').value = item.name || '';
+                            document.getElementById('assemblyType').value = item.type || '';
+                            document.getElementById('assemblyVersion').value = item.version || '';
+                            document.getElementById('assemblyComponents').value = item.components || 0;
+                            document.getElementById('assemblyDescription').value = item.description || '';
+                            document.getElementById('assemblyFiles').value = (item.files || []).join(', ');
+                            break;
+                            
+                        case '3d-parts':
+                            document.getElementById('partName').value = item.name || '';
+                            document.getElementById('partType').value = item.type || '';
+                            document.getElementById('partMaterial').value = item.material || '';
+                            document.getElementById('partVersion').value = item.version || '';
+                            document.getElementById('partDescription').value = item.description || '';
+                            document.getElementById('partFiles').value = (item.files || []).join(', ');
+                            break;
+                            
+                        case 'cable-assemblies':
+                            document.getElementById('cableName').value = item.name || '';
+                            document.getElementById('cableType').value = item.type || '';
+                            document.getElementById('cableLength').value = item.length || '';
+                            document.getElementById('cableConnectors').value = item.connectors || '';
+                            document.getElementById('cableDescription').value = item.description || '';
+                            document.getElementById('cableFiles').value = (item.files || []).join(', ');
+                            break;
+                    }
+                    
+                    // Change the modal title and button text to indicate editing
+                    const modalTitle = document.querySelector('.modal-content h3');
+                    if (modalTitle) {
+                        modalTitle.textContent = modalTitle.textContent.replace('Add New', 'Edit');
+                    }
+                    
+                    const submitButton = document.querySelector('.modal-content form button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.textContent = submitButton.textContent.replace('Add', 'Update');
+                    }
+                    
+                    // Store the item ID for updating instead of creating new
+                    const form = document.querySelector('.modal-content form');
+                    if (form) {
+                        form.setAttribute('data-edit-id', item.id);
+                        form.setAttribute('data-edit-kn', kn);
+                    }
+                }, 100);
+            }, 100);
         }
 
         // Delete system item
@@ -1074,6 +1544,551 @@
             URL.revokeObjectURL(url);
             
             alert(`✅ Successfully exported ${items.length} ${category.replace('-', ' ')} to ${filename}!`);
+        }
+
+        // ==================== MULTIBOARD WIZARD FUNCTIONS ====================
+        
+        // Navigate wizard steps
+        function nextWizardStep() {
+            const currentStep = window.wizardData.step;
+            
+            // Validate current step before proceeding
+            if (!validateWizardStep(currentStep)) return;
+            
+            // Save current step data
+            saveWizardStepData(currentStep);
+            
+            if (currentStep < 4) {
+                window.wizardData.step++;
+                updateWizardDisplay();
+            }
+        }
+        
+        function previousWizardStep() {
+            if (window.wizardData.step > 1) {
+                window.wizardData.step--;
+                updateWizardDisplay();
+            }
+        }
+        
+        function updateWizardDisplay() {
+            const step = window.wizardData.step;
+            
+            // Update step indicators
+            document.querySelectorAll('.wizard-step').forEach((el, index) => {
+                el.classList.toggle('active', index + 1 === step);
+                el.classList.toggle('completed', index + 1 < step);
+            });
+            
+            // Show/hide panels
+            document.querySelectorAll('.wizard-panel').forEach((panel, index) => {
+                panel.classList.toggle('active', index + 1 === step);
+            });
+            
+            // Update navigation buttons
+            const prevBtn = document.getElementById('wizardPrevBtn');
+            const nextBtn = document.getElementById('wizardNextBtn');
+            const createBtn = document.getElementById('wizardCreateBtn');
+            
+            prevBtn.style.display = step === 1 ? 'none' : 'inline-block';
+            nextBtn.style.display = step === 4 ? 'none' : 'inline-block';
+            createBtn.style.display = step === 4 ? 'inline-block' : 'none';
+            
+            // Special handling for step 4 (review)
+            if (step === 4) {
+                generateWizardReview();
+            }
+        }
+        
+        function validateWizardStep(step) {
+            switch(step) {
+                case 1:
+                    const name = document.getElementById('wizardProjectName').value.trim();
+                    const type = document.getElementById('wizardProjectType').value;
+                    const desc = document.getElementById('wizardDescription').value.trim();
+                    
+                    if (!name || !type || !desc) {
+                        alert('Please fill in all required fields (Name, Type, Description)');
+                        return false;
+                    }
+                    return true;
+                    
+                case 2:
+                    if (window.wizardData.assemblies.length === 0) {
+                        alert('Please add at least one assembly to your system');
+                        return false;
+                    }
+                    return true;
+                    
+                case 3:
+                    // Step 3 is optional - components/parts can be empty
+                    return true;
+                    
+                default:
+                    return true;
+            }
+        }
+        
+        function saveWizardStepData(step) {
+            switch(step) {
+                case 1:
+                    window.wizardData.project = {
+                        name: document.getElementById('wizardProjectName').value.trim(),
+                        type: document.getElementById('wizardProjectType').value,
+                        version: document.getElementById('wizardVersion').value.trim(),
+                        owner: document.getElementById('wizardOwner').value.trim(),
+                        assemblyCount: parseInt(document.getElementById('wizardAssemblyCount').value) || 1,
+                        description: document.getElementById('wizardDescription').value.trim()
+                    };
+                    break;
+                case 2:
+                    // Assembly data is saved dynamically when assemblies are added
+                    break;
+                case 3:
+                    // Component data is saved dynamically when components are added
+                    break;
+            }
+        }
+        
+        // Add assembly to wizard
+        function addWizardAssembly() {
+            const assemblyId = Date.now();
+            const assemblyList = document.getElementById('wizardAssemblyList');
+            
+            const assemblyDiv = document.createElement('div');
+            assemblyDiv.className = 'wizard-assembly-item';
+            assemblyDiv.innerHTML = `
+                <div class="assembly-header">
+                    <h6>Assembly ${window.wizardData.assemblies.length + 1}</h6>
+                    <button type="button" class="btn-remove" onclick="removeWizardAssembly(${assemblyId})">❌</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Assembly Name *</label>
+                        <input type="text" id="wizardAsmName${assemblyId}" required placeholder="e.g., Main Controller PCBA">
+                    </div>
+                    <div class="form-group">
+                        <label>Type *</label>
+                        <select id="wizardAsmType${assemblyId}" required>
+                            <option value="">Select type...</option>
+                            <option value="PCBA">PCB Assembly</option>
+                            <option value="MECH">Mechanical Assembly</option>
+                            <option value="OPT">Optical Assembly</option>
+                            <option value="SENS">Sensor Assembly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="wizardAsmQty${assemblyId}" min="1" value="1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="wizardAsmDesc${assemblyId}" placeholder="Assembly purpose and functionality"></textarea>
+                </div>
+            `;
+            
+            assemblyList.appendChild(assemblyDiv);
+            
+            // Add to wizard data
+            window.wizardData.assemblies.push({
+                id: assemblyId,
+                name: '',
+                type: '',
+                quantity: 1,
+                description: ''
+            });
+        }
+        
+        function removeWizardAssembly(id) {
+            document.querySelector(`[data-assembly-id="${id}"]`)?.remove();
+            window.wizardData.assemblies = window.wizardData.assemblies.filter(a => a.id !== id);
+        }
+        
+        // Add 3D part to wizard
+        function addWizard3DPart() {
+            const partId = Date.now();
+            const partsList = document.getElementById('wizard3DPartsList');
+            
+            const partDiv = document.createElement('div');
+            partDiv.className = 'wizard-component-item';
+            partDiv.innerHTML = `
+                <div class="component-header">
+                    <h6>3D Part ${window.wizardData.parts3D.length + 1}</h6>
+                    <button type="button" class="btn-remove" onclick="removeWizard3DPart(${partId})">❌</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Part Name</label>
+                        <input type="text" id="wizard3DName${partId}" placeholder="e.g., Custom Enclosure">
+                    </div>
+                    <div class="form-group">
+                        <label>Material</label>
+                        <select id="wizard3DMat${partId}">
+                            <option value="PLA">PLA</option>
+                            <option value="ABS">ABS</option>
+                            <option value="PETG">PETG</option>
+                            <option value="TPU">TPU</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="wizard3DQty${partId}" min="1" value="1">
+                    </div>
+                </div>
+            `;
+            
+            partsList.appendChild(partDiv);
+            
+            window.wizardData.parts3D.push({
+                id: partId,
+                name: '',
+                material: 'PLA',
+                quantity: 1
+            });
+        }
+        
+        function removeWizard3DPart(id) {
+            event.target.closest('.wizard-component-item').remove();
+            window.wizardData.parts3D = window.wizardData.parts3D.filter(p => p.id !== id);
+        }
+        
+        // Add cable assembly to wizard
+        function addWizardCable() {
+            const cableId = Date.now();
+            const cablesList = document.getElementById('wizardCablesList');
+            
+            const cableDiv = document.createElement('div');
+            cableDiv.className = 'wizard-component-item';
+            cableDiv.innerHTML = `
+                <div class="component-header">
+                    <h6>Cable ${window.wizardData.cables.length + 1}</h6>
+                    <button type="button" class="btn-remove" onclick="removeWizardCable(${cableId})">❌</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Cable Name</label>
+                        <input type="text" id="wizardCableName${cableId}" placeholder="e.g., Power Harness">
+                    </div>
+                    <div class="form-group">
+                        <label>Length</label>
+                        <input type="text" id="wizardCableLen${cableId}" placeholder="e.g., 150mm">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="wizardCableQty${cableId}" min="1" value="1">
+                    </div>
+                </div>
+            `;
+            
+            cablesList.appendChild(cableDiv);
+            
+            window.wizardData.cables.push({
+                id: cableId,
+                name: '',
+                length: '',
+                quantity: 1
+            });
+        }
+        
+        function removeWizardCable(id) {
+            event.target.closest('.wizard-component-item').remove();
+            window.wizardData.cables = window.wizardData.cables.filter(c => c.id !== id);
+        }
+        
+        // Add direct component to wizard  
+        function addWizardComponent() {
+            const compId = Date.now();
+            const compsList = document.getElementById('wizardComponentsList');
+            
+            const compDiv = document.createElement('div');
+            compDiv.className = 'wizard-component-item';
+            compDiv.innerHTML = `
+                <div class="component-header">
+                    <h6>Component ${window.wizardData.components.length + 1}</h6>
+                    <button type="button" class="btn-remove" onclick="removeWizardComponent(${compId})">❌</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Component Name</label>
+                        <input type="text" id="wizardCompName${compId}" placeholder="e.g., Power Supply Module">
+                    </div>
+                    <div class="form-group">
+                        <label>KPN (if available)</label>
+                        <input type="text" id="wizardCompKPN${compId}" placeholder="KPN-XXX-XXX-XXX">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="wizardCompQty${compId}" min="1" value="1">
+                    </div>
+                </div>
+            `;
+            
+            compsList.appendChild(compDiv);
+            
+            window.wizardData.components.push({
+                id: compId,
+                name: '',
+                kpn: '',
+                quantity: 1
+            });
+        }
+        
+        function removeWizardComponent(id) {
+            event.target.closest('.wizard-component-item').remove();
+            window.wizardData.components = window.wizardData.components.filter(c => c.id !== id);
+        }
+        
+        // Generate review content
+        function generateWizardReview() {
+            const reviewDiv = document.getElementById('wizardReview');
+            const data = window.wizardData;
+            
+            reviewDiv.innerHTML = `
+                <div class="review-section">
+                    <h5>Project Information</h5>
+                    <table class="review-table">
+                        <tr><td><strong>Project Name:</strong></td><td>${data.project.name}</td></tr>
+                        <tr><td><strong>Type:</strong></td><td>${data.project.type}</td></tr>
+                        <tr><td><strong>Version:</strong></td><td>${data.project.version}</td></tr>
+                        <tr><td><strong>Owner:</strong></td><td>${data.project.owner || 'Not specified'}</td></tr>
+                        <tr><td><strong>Description:</strong></td><td>${data.project.description}</td></tr>
+                    </table>
+                </div>
+                
+                <div class="review-section">
+                    <h5>Assemblies (${data.assemblies.length})</h5>
+                    ${data.assemblies.length === 0 ? '<p><em>No assemblies added</em></p>' : 
+                        data.assemblies.map(asm => `
+                            <div class="review-item">
+                                <strong>${asm.name}</strong> (${asm.type}) - Qty: ${asm.quantity}
+                                ${asm.description ? `<br><small>${asm.description}</small>` : ''}
+                            </div>
+                        `).join('')
+                    }
+                </div>
+                
+                <div class="review-section">
+                    <h5>3D Printed Parts (${data.parts3D.length})</h5>
+                    ${data.parts3D.length === 0 ? '<p><em>No 3D parts added</em></p>' : 
+                        data.parts3D.map(part => `
+                            <div class="review-item">
+                                <strong>${part.name}</strong> (${part.material}) - Qty: ${part.quantity}
+                            </div>
+                        `).join('')
+                    }
+                </div>
+                
+                <div class="review-section">
+                    <h5>Cable Assemblies (${data.cables.length})</h5>
+                    ${data.cables.length === 0 ? '<p><em>No cables added</em></p>' : 
+                        data.cables.map(cable => `
+                            <div class="review-item">
+                                <strong>${cable.name}</strong> (${cable.length}) - Qty: ${cable.quantity}
+                            </div>
+                        `).join('')
+                    }
+                </div>
+                
+                <div class="review-section">
+                    <h5>Direct Components (${data.components.length})</h5>
+                    ${data.components.length === 0 ? '<p><em>No direct components added</em></p>' : 
+                        data.components.map(comp => `
+                            <div class="review-item">
+                                <strong>${comp.name}</strong> ${comp.kpn ? `(${comp.kpn})` : ''} - Qty: ${comp.quantity}
+                            </div>
+                        `).join('')
+                    }
+                </div>
+                
+                <div class="review-summary">
+                    <h5>Summary</h5>
+                    <p>This wizard will create:</p>
+                    <ul>
+                        <li><strong>1 System</strong> (${data.project.name})</li>
+                        ${data.assemblies.length > 0 ? `<li><strong>${data.assemblies.length} Assembly${data.assemblies.length > 1 ? 'ies' : ''}</strong></li>` : ''}
+                        ${data.parts3D.length > 0 ? `<li><strong>${data.parts3D.length} 3D Part${data.parts3D.length > 1 ? 's' : ''}</strong></li>` : ''}
+                        ${data.cables.length > 0 ? `<li><strong>${data.cables.length} Cable Assembly${data.cables.length > 1 ? 'ies' : ''}</strong></li>` : ''}
+                    </ul>
+                    <p><strong>Total items to be created:</strong> ${1 + data.assemblies.length + data.parts3D.length + data.cables.length}</p>
+                </div>
+            `;
+        }
+        
+        // Create the complete multiboard system
+        function createMultiboardSystem() {
+            const data = window.wizardData;
+            
+            try {
+                // Collect current form data for assemblies
+                data.assemblies.forEach(asm => {
+                    asm.name = document.getElementById(`wizardAsmName${asm.id}`)?.value || '';
+                    asm.type = document.getElementById(`wizardAsmType${asm.id}`)?.value || '';
+                    asm.quantity = parseInt(document.getElementById(`wizardAsmQty${asm.id}`)?.value) || 1;
+                    asm.description = document.getElementById(`wizardAsmDesc${asm.id}`)?.value || '';
+                });
+                
+                // Create all assemblies first
+                const createdAssemblies = [];
+                data.assemblies.forEach(asmData => {
+                    if (asmData.name && asmData.type) {
+                        const assembly = {
+                            id: Date.now() + Math.random(),
+                            assemblyKN: generateSystemKN('assemblies', asmData.type),
+                            name: asmData.name,
+                            type: asmData.type,
+                            version: 'v1.0',
+                            status: 'Active',
+                            components: 0,
+                            description: asmData.description,
+                            files: [],
+                            dateAdded: new Date().toISOString().split('T')[0],
+                            assemblyComponents: [],
+                            assembly3DParts: [],
+                            assemblyCables: []
+                        };
+                        
+                        systemData.assemblies.push(assembly);
+                        createdAssemblies.push({
+                            kn: assembly.assemblyKN,
+                            name: assembly.name,
+                            quantity: asmData.quantity
+                        });
+                    }
+                });
+                
+                // Create 3D parts
+                const created3DParts = [];
+                data.parts3D.forEach(partData => {
+                    const name = document.getElementById(`wizard3DName${partData.id}`)?.value;
+                    const material = document.getElementById(`wizard3DMat${partData.id}`)?.value;
+                    const quantity = parseInt(document.getElementById(`wizard3DQty${partData.id}`)?.value) || 1;
+                    
+                    if (name) {
+                        const part = {
+                            id: Date.now() + Math.random(),
+                            partKN: generateSystemKN('3d-parts', 'MISC'),
+                            name: name,
+                            type: 'MISC',
+                            material: material,
+                            status: 'Active',
+                            version: 'v1.0',
+                            description: `3D printed part for ${data.project.name}`,
+                            files: [],
+                            dateAdded: new Date().toISOString().split('T')[0]
+                        };
+                        
+                        systemData['3d-parts'].push(part);
+                        created3DParts.push({
+                            kn: part.partKN,
+                            name: part.name,
+                            quantity: quantity
+                        });
+                    }
+                });
+                
+                // Create cable assemblies
+                const createdCables = [];
+                data.cables.forEach(cableData => {
+                    const name = document.getElementById(`wizardCableName${cableData.id}`)?.value;
+                    const length = document.getElementById(`wizardCableLen${cableData.id}`)?.value;
+                    const quantity = parseInt(document.getElementById(`wizardCableQty${cableData.id}`)?.value) || 1;
+                    
+                    if (name) {
+                        const cable = {
+                            id: Date.now() + Math.random(),
+                            cableKN: generateSystemKN('cable-assemblies', 'DATA'),
+                            name: name,
+                            type: 'DATA',
+                            length: length,
+                            connectors: 'TBD',
+                            status: 'Active',
+                            description: `Cable assembly for ${data.project.name}`,
+                            files: [],
+                            dateAdded: new Date().toISOString().split('T')[0],
+                            cableComponents: []
+                        };
+                        
+                        systemData['cable-assemblies'].push(cable);
+                        createdCables.push({
+                            kn: cable.cableKN,
+                            name: cable.name,
+                            quantity: quantity
+                        });
+                    }
+                });
+                
+                // Create direct components list
+                const systemComponents = [];
+                data.components.forEach(compData => {
+                    const name = document.getElementById(`wizardCompName${compData.id}`)?.value;
+                    const kpn = document.getElementById(`wizardCompKPN${compData.id}`)?.value;
+                    const quantity = parseInt(document.getElementById(`wizardCompQty${compData.id}`)?.value) || 1;
+                    
+                    if (name) {
+                        systemComponents.push({
+                            kpn: kpn || 'TBD',
+                            name: name,
+                            quantity: quantity
+                        });
+                    }
+                });
+                
+                // Create the main system
+                const system = {
+                    id: Date.now(),
+                    systemKN: generateSystemKN('systems', data.project.type),
+                    name: data.project.name,
+                    type: data.project.type,
+                    version: data.project.version,
+                    status: 'Active',
+                    assemblies: createdAssemblies.length,
+                    description: data.project.description,
+                    owner: data.project.owner,
+                    files: [],
+                    dateAdded: new Date().toISOString().split('T')[0],
+                    // Enhanced system composition with relationships
+                    systemAssemblies: createdAssemblies,
+                    systemComponents: systemComponents,
+                    system3DParts: created3DParts,
+                    systemCables: createdCables
+                };
+                
+                systemData.systems.push(system);
+                
+                // Save everything to localStorage
+                localStorage.setItem('kinbenSystemData', JSON.stringify(systemData));
+                
+                // Refresh all displays
+                updateSystemStats();
+                Object.keys(systemData).forEach(category => {
+                    refreshSystemTable(category);
+                });
+                
+                // Close modal
+                closeAddComponentModal();
+                
+                // Success message with summary
+                const totalCreated = 1 + createdAssemblies.length + created3DParts.length + createdCables.length;
+                alert(`✅ Multiboard System Created Successfully!
+                
+System: ${system.systemKN} - ${system.name}
+Created: ${totalCreated} total items
+- 1 System
+- ${createdAssemblies.length} Assemblies  
+- ${created3DParts.length} 3D Parts
+- ${createdCables.length} Cable Assemblies
+- ${systemComponents.length} Direct Components
+
+Navigate to the Systems tab to view and manage your new multiboard system!`);
+                
+                // Automatically switch to systems view
+                showSheet('systems');
+                
+            } catch (error) {
+                console.error('Error creating multiboard system:', error);
+                alert('❌ Error creating system. Please try again or contact support.');
+            }
         }
 
         function showSheet(sheetName) {
