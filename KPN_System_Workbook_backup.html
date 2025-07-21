@@ -133,39 +133,6 @@
         .filter-badge { background: #007bff; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; display: flex; align-items: center; gap: 6px; }
         .filter-badge .remove-filter { cursor: pointer; background: rgba(255,255,255,0.3); border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; font-weight: bold; }
         .filter-badge .remove-filter:hover { background: rgba(255,255,255,0.5); }
-        
-        /* System-level management styles */
-        .system-card { background: white; border-radius: 8px; padding: 20px; margin: 15px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #28a745; }
-        .system-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .system-title { font-size: 18px; font-weight: bold; color: #333; }
-        .system-kn { background: #28a745; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .system-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 10px 0; font-size: 14px; }
-        .meta-item { display: flex; flex-direction: column; }
-        .meta-label { font-weight: bold; color: #666; font-size: 12px; }
-        .meta-value { color: #333; }
-        .hierarchy-view { background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
-        .hierarchy-level { margin-left: 20px; border-left: 2px solid #dee2e6; padding-left: 15px; margin-bottom: 10px; }
-        .file-attachments { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
-        .file-badge { background: #17a2b8; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; text-decoration: none; }
-        .file-badge:hover { background: #138496; color: white; }
-        
-        /* BOM hierarchy styles */
-        .bom-tree { font-family: monospace; font-size: 12px; background: #f8f9fa; padding: 15px; border-radius: 6px; margin: 10px 0; }
-        .bom-level-0 { font-weight: bold; color: #28a745; }
-        .bom-level-1 { margin-left: 20px; color: #0078d4; }
-        .bom-level-2 { margin-left: 40px; color: #6c757d; }
-        .bom-level-3 { margin-left: 60px; color: #6c757d; font-style: italic; }
-        
-        /* Enhanced dashboard for system-level */
-        .system-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0; }
-        .overview-card { background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 20px; border-radius: 10px; text-align: center; }
-        .overview-number { font-size: 24px; font-weight: bold; }
-        .overview-label { font-size: 14px; opacity: 0.9; }
-        
-        /* Migration-ready data attributes */
-        [data-system-id] { cursor: pointer; }
-        [data-assembly-id] { border-left: 3px solid #0078d4; }
-        [data-component-id] { border-left: 2px solid #6c757d; }
     </style>
     <script>
         // Component data storage
@@ -173,14 +140,6 @@
             capacitors: [], resistors: [], inductors: [], diodes: [], transistors: [],
             ics: [], connectors: [], crystals: [], fuses: [], switches: [],
             relays: [], optocouplers: [], sensors: [], mechanical: [], hardware: [], cables: []
-        };
-        
-        // System-level data storage
-        let systemData = {
-            systems: [],      // SKN - Complete products/projects
-            assemblies: [],   // AKN - PCBAs, mechanical assemblies
-            '3d-parts': [],   // 3PN - 3D printed components
-            'cable-assemblies': [] // CAN - Cable harnesses
         };
         
         // Category configurations
@@ -201,14 +160,6 @@
             mechanical: { code: 'MEC', subcategories: ['ENC', 'FAN', 'HEA', 'SPK'] },
             hardware: { code: 'HWR', subcategories: ['SCR', 'NUT', 'WSH', 'SPC'] },
             cables: { code: 'CBL', subcategories: ['PWR', 'SIG', 'COA', 'FFC'] }
-        };
-        
-        // System-level configurations
-        const systemConfigs = {
-            systems: { code: 'SKN', subcategories: ['PROD', 'PROTO', 'EVAL', 'TEST'] },
-            assemblies: { code: 'AKN', subcategories: ['PCBA', 'MECH', 'OPT', 'SENS'] },
-            '3d-parts': { code: '3PN', subcategories: ['ENCL', 'BRKT', 'SPAC', 'CONN'] },
-            'cable-assemblies': { code: 'CAN', subcategories: ['PWR', 'DATA', 'CTRL', 'RF'] }
         };
 
         function showSheet(sheetName) {
@@ -966,11 +917,6 @@
             <div class="tab" onclick="showSheet('mechanical')">⚙️ MECHANICAL</div>
             <div class="tab" onclick="showSheet('hardware')">🔩 HARDWARE</div>
             <div class="tab" onclick="showSheet('cables')">🔌 CABLES</div>
-            <!-- System-Level Management Tabs -->
-            <div class="tab" onclick="showSheet('systems')" style="border-left: 3px solid #28a745;">🏗️ SYSTEMS</div>
-            <div class="tab" onclick="showSheet('assemblies')" style="border-left: 3px solid #28a745;">🔧 ASSEMBLIES</div>
-            <div class="tab" onclick="showSheet('3d-parts')" style="border-left: 3px solid #28a745;">🖨️ 3D PARTS</div>
-            <div class="tab" onclick="showSheet('cable-assemblies')" style="border-left: 3px solid #28a745;">🔗 CABLE ASSY</div>
         </div>
 
         <!-- Enhanced Dashboard -->
@@ -1582,159 +1528,6 @@
                 </thead>
                 <tbody>
                     <tr><td colspan="8" style="text-align: center; color: #666; padding: 20px;">Use the search function above to find components across all categories.</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- SYSTEMS Management Sheet -->
-        <div id="systems" class="sheet">
-            <div class="section-header">🏗️ SYSTEMS - Complete Products & Projects (SKN)</div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="openAddSystemModal('systems')">➕ Add System</button>
-                <button class="btn btn-success export-button" onclick="exportSystemData('csv', 'systems')">📄 Export CSV</button>
-                <button class="btn btn-info export-button" onclick="exportSystemData('json', 'systems')">📄 Export JSON</button>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="systems-count">0</div>
-                    <div class="stat-label">Total Systems</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="systems-active">0</div>
-                    <div class="stat-label">Active Systems</div>
-                </div>
-            </div>
-            <table class="component-table">
-                <thead>
-                    <tr>
-                        <th class="sortable-header" onclick="sortSystemTable('systems', 'systemKN')">System KN</th>
-                        <th class="sortable-header" onclick="sortSystemTable('systems', 'name')">System Name</th>
-                        <th class="sortable-header" onclick="sortSystemTable('systems', 'version')">Version</th>
-                        <th class="sortable-header" onclick="sortSystemTable('systems', 'type')">Type</th>
-                        <th class="sortable-header" onclick="sortSystemTable('systems', 'status')">Status</th>
-                        <th class="sortable-header" onclick="sortSystemTable('systems', 'assemblies')">Assemblies</th>
-                        <th class="sortable-header" onclick="sortSystemTable('systems', 'description')">Description</th>
-                        <th class="sortable-header" onclick="sortSystemTable('systems', 'owner')">Owner</th>
-                        <th>Documentation</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="10" style="text-align: center; color: #666; padding: 20px;">No systems added yet. Click "Add System" to get started!</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- ASSEMBLIES Management Sheet -->
-        <div id="assemblies" class="sheet">
-            <div class="section-header">🔧 ASSEMBLIES - PCBAs & Mechanical Assemblies (AKN)</div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="openAddSystemModal('assemblies')">➕ Add Assembly</button>
-                <button class="btn btn-success export-button" onclick="exportSystemData('csv', 'assemblies')">📄 Export CSV</button>
-                <button class="btn btn-info export-button" onclick="exportSystemData('json', 'assemblies')">📄 Export JSON</button>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="assemblies-count">0</div>
-                    <div class="stat-label">Total Assemblies</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="assemblies-active">0</div>
-                    <div class="stat-label">Active Assemblies</div>
-                </div>
-            </div>
-            <table class="component-table">
-                <thead>
-                    <tr>
-                        <th class="sortable-header" onclick="sortSystemTable('assemblies', 'assemblyKN')">Assembly KN</th>
-                        <th class="sortable-header" onclick="sortSystemTable('assemblies', 'name')">Assembly Name</th>
-                        <th class="sortable-header" onclick="sortSystemTable('assemblies', 'type')">Type</th>
-                        <th class="sortable-header" onclick="sortSystemTable('assemblies', 'version')">Version</th>
-                        <th class="sortable-header" onclick="sortSystemTable('assemblies', 'status')">Status</th>
-                        <th class="sortable-header" onclick="sortSystemTable('assemblies', 'components')">Components</th>
-                        <th class="sortable-header" onclick="sortSystemTable('assemblies', 'description')">Description</th>
-                        <th>Files</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="9" style="text-align: center; color: #666; padding: 20px;">No assemblies added yet. Click "Add Assembly" to get started!</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- 3D PARTS Management Sheet -->
-        <div id="3d-parts" class="sheet">
-            <div class="section-header">🖨️ 3D PRINTED PARTS - Custom 3D Components (3PN)</div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="openAddSystemModal('3d-parts')">➕ Add 3D Part</button>
-                <button class="btn btn-success export-button" onclick="exportSystemData('csv', '3d-parts')">📄 Export CSV</button>
-                <button class="btn btn-info export-button" onclick="exportSystemData('json', '3d-parts')">📄 Export JSON</button>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="3d-parts-count">0</div>
-                    <div class="stat-label">Total 3D Parts</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="3d-parts-active">0</div>
-                    <div class="stat-label">Active 3D Parts</div>
-                </div>
-            </div>
-            <table class="component-table">
-                <thead>
-                    <tr>
-                        <th class="sortable-header" onclick="sortSystemTable('3d-parts', 'partKN')">3D Part KN</th>
-                        <th class="sortable-header" onclick="sortSystemTable('3d-parts', 'name')">Part Name</th>
-                        <th class="sortable-header" onclick="sortSystemTable('3d-parts', 'type')">Type</th>
-                        <th class="sortable-header" onclick="sortSystemTable('3d-parts', 'material')">Material</th>
-                        <th class="sortable-header" onclick="sortSystemTable('3d-parts', 'status')">Status</th>
-                        <th class="sortable-header" onclick="sortSystemTable('3d-parts', 'version')">Version</th>
-                        <th class="sortable-header" onclick="sortSystemTable('3d-parts', 'description')">Description</th>
-                        <th>STL/CAD Files</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="9" style="text-align: center; color: #666; padding: 20px;">No 3D parts added yet. Click "Add 3D Part" to get started!</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- CABLE ASSEMBLIES Management Sheet -->
-        <div id="cable-assemblies" class="sheet">
-            <div class="section-header">🔗 CABLE ASSEMBLIES - Custom Cable Harnesses (CAN)</div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="openAddSystemModal('cable-assemblies')">➕ Add Cable Assembly</button>
-                <button class="btn btn-success export-button" onclick="exportSystemData('csv', 'cable-assemblies')">📄 Export CSV</button>
-                <button class="btn btn-info export-button" onclick="exportSystemData('json', 'cable-assemblies')">📄 Export JSON</button>
-            </div>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-number" id="cable-assemblies-count">0</div>
-                    <div class="stat-label">Total Cable Assemblies</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="cable-assemblies-active">0</div>
-                    <div class="stat-label">Active Cable Assemblies</div>
-                </div>
-            </div>
-            <table class="component-table">
-                <thead>
-                    <tr>
-                        <th class="sortable-header" onclick="sortSystemTable('cable-assemblies', 'cableKN')">Cable KN</th>
-                        <th class="sortable-header" onclick="sortSystemTable('cable-assemblies', 'name')">Cable Name</th>
-                        <th class="sortable-header" onclick="sortSystemTable('cable-assemblies', 'type')">Type</th>
-                        <th class="sortable-header" onclick="sortSystemTable('cable-assemblies', 'length')">Length</th>
-                        <th class="sortable-header" onclick="sortSystemTable('cable-assemblies', 'connectors')">Connectors</th>
-                        <th class="sortable-header" onclick="sortSystemTable('cable-assemblies', 'status')">Status</th>
-                        <th class="sortable-header" onclick="sortSystemTable('cable-assemblies', 'description')">Description</th>
-                        <th>Diagram</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr><td colspan="9" style="text-align: center; color: #666; padding: 20px;">No cable assemblies added yet. Click "Add Cable Assembly" to get started!</td></tr>
                 </tbody>
             </table>
         </div>
