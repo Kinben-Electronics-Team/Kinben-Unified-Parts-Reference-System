@@ -187,6 +187,20 @@
         [data-system-id] { cursor: pointer; }
         [data-assembly-id] { border-left: 3px solid #0078d4; }
         [data-component-id] { border-left: 2px solid #6c757d; }
+        
+        /* System details modal */
+        .system-details { max-width: 100%; }
+        .detail-section { margin: 20px 0; }
+        .detail-section h4 { color: #333; border-bottom: 2px solid #0078d4; padding-bottom: 5px; margin-bottom: 15px; }
+        .detail-table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        .detail-table td { padding: 8px 12px; border-bottom: 1px solid #eee; }
+        .detail-table td:first-child { font-weight: bold; width: 150px; color: #555; }
+        .detail-table td:last-child { color: #333; }
+        .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-danger:hover { background: #c82333; }
     </style>
     <script>
         // Component data storage
@@ -419,79 +433,222 @@
             
             refreshSystemTable(category);
         }
-
-        // Export system-level data
-        function exportSystemData(format, category) {
-            const items = systemData[category] || [];
-            if (items.length === 0) {
-                alert(`No ${category.replace('-', ' ')} to export.`);
-                return;
-            }
-            
-            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-            let filename = `${category}_${timestamp}`;
-            let content, mimeType;
-            
-            if (format === 'csv') {
-                // Generate CSV headers based on category
-                let headers = [];
-                switch(category) {
-                    case 'systems':
-                        headers = ['System KN', 'Name', 'Version', 'Type', 'Status', 'Assemblies', 'Description', 'Owner', 'Files'];
-                        break;
-                    case 'assemblies':
-                        headers = ['Assembly KN', 'Name', 'Type', 'Version', 'Status', 'Components', 'Description', 'Files'];
-                        break;
-                    case '3d-parts':
-                        headers = ['Part KN', 'Name', 'Type', 'Material', 'Status', 'Version', 'Description', 'Files'];
-                        break;
-                    case 'cable-assemblies':
-                        headers = ['Cable KN', 'Name', 'Type', 'Length', 'Connectors', 'Status', 'Description', 'Files'];
-                        break;
-                }
-                
-                content = headers.join(',') + '\n';
-                items.forEach(item => {
-                    const row = headers.map(header => {
-                        const key = header.toLowerCase().replace(/\s+/g, '').replace('kn', 'KN');
-                        let value = '';
-                        switch(key) {
-                            case 'systemKN': value = item.systemKN || ''; break;
-                            case 'assemblyKN': value = item.assemblyKN || ''; break;
-                            case 'partKN': value = item.partKN || ''; break;
-                            case 'cableKN': value = item.cableKN || ''; break;
-                            case 'files': value = (item.files || []).join(';'); break;
-                            default:
-                                const prop = key.charAt(0).toLowerCase() + key.slice(1);
-                                value = item[prop] || '';
-                        }
-                        return `"${value.toString().replace(/"/g, '""')}"`;
-                    });
-                    content += row.join(',') + '\n';
-                });
-                
-                filename += '.csv';
-                mimeType = 'text/csv';
-            } else {
-                content = JSON.stringify(items, null, 2);
-                filename += '.json';
-                mimeType = 'application/json';
-            }
-            
-            const blob = new Blob([content], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // Quick system modal for multiboard ordering
         function openAddSystemModal(category) {
-            alert(`System management for ${category} - Implementation in progress. This will open a modal for creating multiboard systems with multiple PCBAs.`);
+            // Create dynamic modal based on category
+            const modal = document.getElementById('addComponentModal');
+            const modalContent = modal.querySelector('.modal-content');
+            
+            // Clear existing content
+            modalContent.innerHTML = `<span class="close" onclick="closeAddComponentModal()">&times;</span>`;
+            
+            let title = '';
+            let fields = '';
+            
+            switch(category) {
+                case 'systems':
+                    title = '🏗️ Add New System (SKN)';
+                    fields = `
+                        <h3>${title}</h3>
+                        <form id="systemForm">
+                            <div class="form-group">
+                                <label>System Name *</label>
+                                <input type="text" id="systemName" required placeholder="e.g., IoT Sensor Hub v2.1">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Type *</label>
+                                    <select id="systemType" required>
+                                        <option value="">Select type...</option>
+                                        <option value="PROD">Production System</option>
+                                        <option value="PROTO">Prototype System</option>
+                                        <option value="EVAL">Evaluation Board</option>
+                                        <option value="TEST">Test Fixture</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Version *</label>
+                                    <input type="text" id="systemVersion" required placeholder="e.g., v1.0, Rev A">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Number of Assemblies *</label>
+                                    <input type="number" id="systemAssemblies" required min="1" value="1" placeholder="Number of PCBAs/assemblies">
+                                </div>
+                                <div class="form-group">
+                                    <label>Project Owner</label>
+                                    <input type="text" id="systemOwner" placeholder="Engineer name">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Description *</label>
+                                <textarea id="systemDescription" required placeholder="Brief system description and key features"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Design Files (Optional)</label>
+                                <input type="text" id="systemFiles" placeholder="Comma-separated file names (e.g., schematic.pdf, assembly.dwg)">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
+                                <button type="submit" class="btn btn-success">Add System</button>
+                            </div>
+                        </form>
+                    `;
+                    break;
+                    
+                case 'assemblies':
+                    title = '🔧 Add New Assembly (AKN)';
+                    fields = `
+                        <h3>${title}</h3>
+                        <form id="assemblyForm">
+                            <div class="form-group">
+                                <label>Assembly Name *</label>
+                                <input type="text" id="assemblyName" required placeholder="e.g., Main Controller PCBA">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Type *</label>
+                                    <select id="assemblyType" required>
+                                        <option value="">Select type...</option>
+                                        <option value="PCBA">PCB Assembly</option>
+                                        <option value="MECH">Mechanical Assembly</option>
+                                        <option value="OPT">Optical Assembly</option>
+                                        <option value="SENS">Sensor Assembly</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Version *</label>
+                                    <input type="text" id="assemblyVersion" required placeholder="e.g., v1.0, Rev A">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Component Count (Estimated)</label>
+                                <input type="number" id="assemblyComponents" min="0" placeholder="Approximate number of components">
+                            </div>
+                            <div class="form-group">
+                                <label>Description *</label>
+                                <textarea id="assemblyDescription" required placeholder="Assembly description and functionality"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Design Files (Optional)</label>
+                                <input type="text" id="assemblyFiles" placeholder="Comma-separated file names (e.g., pcb.kicad_pcb, bom.csv)">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Add Assembly</button>
+                            </div>
+                        </form>
+                    `;
+                    break;
+                    
+                case '3d-parts':
+                    title = '🖨️ Add New 3D Part (3PN)';
+                    fields = `
+                        <h3>${title}</h3>
+                        <form id="3dPartForm">
+                            <div class="form-group">
+                                <label>Part Name *</label>
+                                <input type="text" id="partName" required placeholder="e.g., Custom Enclosure Bottom">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Type *</label>
+                                    <select id="partType" required>
+                                        <option value="">Select type...</option>
+                                        <option value="ENCL">Enclosure</option>
+                                        <option value="BRKT">Bracket</option>
+                                        <option value="CONN">Connector Housing</option>
+                                        <option value="MISC">Miscellaneous</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Material *</label>
+                                    <select id="partMaterial" required>
+                                        <option value="">Select material...</option>
+                                        <option value="PLA">PLA</option>
+                                        <option value="ABS">ABS</option>
+                                        <option value="PETG">PETG</option>
+                                        <option value="TPU">TPU (Flexible)</option>
+                                        <option value="NYLON">Nylon</option>
+                                        <option value="PC">Polycarbonate</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Version</label>
+                                <input type="text" id="partVersion" placeholder="e.g., v1.0, Rev A">
+                            </div>
+                            <div class="form-group">
+                                <label>Description *</label>
+                                <textarea id="partDescription" required placeholder="Part description and specifications"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Design Files (Optional)</label>
+                                <input type="text" id="partFiles" placeholder="Comma-separated file names (e.g., part.stl, drawing.pdf)">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
+                                <button type="submit" class="btn btn-warning">Add 3D Part</button>
+                            </div>
+                        </form>
+                    `;
+                    break;
+                    
+                case 'cable-assemblies':
+                    title = '🔗 Add New Cable Assembly (CAN)';
+                    fields = `
+                        <h3>${title}</h3>
+                        <form id="cableForm">
+                            <div class="form-group">
+                                <label>Cable Name *</label>
+                                <input type="text" id="cableName" required placeholder="e.g., Power Distribution Harness">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Type *</label>
+                                    <select id="cableType" required>
+                                        <option value="">Select type...</option>
+                                        <option value="PWR">Power Cable</option>
+                                        <option value="DATA">Data Cable</option>
+                                        <option value="CTRL">Control Cable</option>
+                                        <option value="RF">RF Cable</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Length</label>
+                                    <input type="text" id="cableLength" placeholder="e.g., 150mm, 6 inches">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Connectors</label>
+                                <input type="text" id="cableConnectors" placeholder="e.g., JST-PH 4-pin to Molex MicroFit 6-pin">
+                            </div>
+                            <div class="form-group">
+                                <label>Description *</label>
+                                <textarea id="cableDescription" required placeholder="Cable specifications and wiring details"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Design Files (Optional)</label>
+                                <input type="text" id="cableFiles" placeholder="Comma-separated file names (e.g., wiring.pdf, diagram.dwg)">
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Cancel</button>
+                                <button type="submit" class="btn btn-info">Add Cable Assembly</button>
+                            </div>
+                        </form>
+                    `;
+                    break;
+            }
+            
+            modalContent.innerHTML += fields;
+            modal.style.display = 'block';
+            
+            // Add form submission handler
+            const form = modalContent.querySelector('form');
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                addSystemItem(category);
+            });
         }
 
         // Multiboard project wizard
@@ -499,9 +656,111 @@
             alert('Multiboard Project Wizard - This will help you create complete systems with multiple PCBAs, cable assemblies, and 3D printed components.');
         }
 
-        // View system details (placeholder for future expansion)
+        // View system details with hierarchical BOM and management
         function viewSystemDetails(kn) {
-            alert(`System details for ${kn} - This feature will be expanded for hierarchical BOM views and detailed system management.`);
+            const modal = document.getElementById('addComponentModal');
+            const modalContent = modal.querySelector('.modal-content');
+            
+            // Find the item across all categories
+            let item = null;
+            let itemCategory = '';
+            
+            for (const [category, items] of Object.entries(systemData)) {
+                item = items.find(i => 
+                    i.systemKN === kn || i.assemblyKN === kn || i.partKN === kn || i.cableKN === kn
+                );
+                if (item) {
+                    itemCategory = category;
+                    break;
+                }
+            }
+            
+            if (!item) {
+                alert('Item not found');
+                return;
+            }
+            
+            let title = '';
+            let icon = '';
+            let knLabel = '';
+            
+            switch(itemCategory) {
+                case 'systems':
+                    title = 'System Details';
+                    icon = '🏗️';
+                    knLabel = 'System KN';
+                    break;
+                case 'assemblies':
+                    title = 'Assembly Details';
+                    icon = '🔧';
+                    knLabel = 'Assembly KN';
+                    break;
+                case '3d-parts':
+                    title = '3D Part Details';
+                    icon = '🖨️';
+                    knLabel = 'Part KN';
+                    break;
+                case 'cable-assemblies':
+                    title = 'Cable Assembly Details';
+                    icon = '🔗';
+                    knLabel = 'Cable KN';
+                    break;
+            }
+            
+            const files = item.files || [];
+            const fileList = files.length > 0 ? 
+                files.map(f => `<span class="file-badge">${f}</span>`).join(' ') : 
+                '<em>No files attached</em>';
+            
+            modalContent.innerHTML = `
+                <span class="close" onclick="closeAddComponentModal()">&times;</span>
+                <h3>${icon} ${title}</h3>
+                <div class="system-details">
+                    <div class="detail-section">
+                        <h4>Basic Information</h4>
+                        <table class="detail-table">
+                            <tr>
+                                <td><strong>${knLabel}:</strong></td>
+                                <td>${kn}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Name:</strong></td>
+                                <td>${item.name}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status:</strong></td>
+                                <td><span class="status-${item.status.toLowerCase()}">${item.status}</span></td>
+                            </tr>
+                            ${item.version ? `<tr><td><strong>Version:</strong></td><td>${item.version}</td></tr>` : ''}
+                            ${item.type ? `<tr><td><strong>Type:</strong></td><td>${item.type}</td></tr>` : ''}
+                            ${item.material ? `<tr><td><strong>Material:</strong></td><td>${item.material}</td></tr>` : ''}
+                            ${item.length ? `<tr><td><strong>Length:</strong></td><td>${item.length}</td></tr>` : ''}
+                            ${item.connectors ? `<tr><td><strong>Connectors:</strong></td><td>${item.connectors}</td></tr>` : ''}
+                            ${item.assemblies ? `<tr><td><strong>Assemblies:</strong></td><td>${item.assemblies}</td></tr>` : ''}
+                            ${item.components ? `<tr><td><strong>Components:</strong></td><td>${item.components}</td></tr>` : ''}
+                            ${item.owner ? `<tr><td><strong>Owner:</strong></td><td>${item.owner}</td></tr>` : ''}
+                        </table>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>Description</h4>
+                        <p>${item.description}</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>Design Files</h4>
+                        <div class="file-attachments">${fileList}</div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddComponentModal()">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="editSystemItem('${kn}', '${itemCategory}')">Edit</button>
+                        <button type="button" class="btn btn-danger" onclick="deleteSystemItem('${kn}', '${itemCategory}')">Delete</button>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
         }
 
         // Load system data from localStorage
@@ -527,6 +786,294 @@
             });
             
             console.log('System-first management initialized for multiboard ordering');
+        }
+
+        // Add system-level item (called from modal forms)
+        function addSystemItem(category) {
+            let item = {};
+            let isValid = true;
+            
+            switch(category) {
+                case 'systems':
+                    const systemName = document.getElementById('systemName').value.trim();
+                    const systemType = document.getElementById('systemType').value;
+                    const systemVersion = document.getElementById('systemVersion').value.trim();
+                    const systemDescription = document.getElementById('systemDescription').value.trim();
+                    
+                    if (!systemName || !systemType || !systemVersion || !systemDescription) {
+                        alert('Please fill in all required fields');
+                        isValid = false;
+                        break;
+                    }
+                    
+                    item = {
+                        id: Date.now(),
+                        systemKN: generateSystemKN('systems', systemType),
+                        name: systemName,
+                        type: systemType,
+                        version: systemVersion,
+                        status: 'Active',
+                        assemblies: parseInt(document.getElementById('systemAssemblies').value) || 1,
+                        description: systemDescription,
+                        owner: document.getElementById('systemOwner').value.trim(),
+                        files: document.getElementById('systemFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        dateAdded: new Date().toISOString().split('T')[0]
+                    };
+                    break;
+                    
+                case 'assemblies':
+                    const assemblyName = document.getElementById('assemblyName').value.trim();
+                    const assemblyType = document.getElementById('assemblyType').value;
+                    const assemblyVersion = document.getElementById('assemblyVersion').value.trim();
+                    const assemblyDescription = document.getElementById('assemblyDescription').value.trim();
+                    
+                    if (!assemblyName || !assemblyType || !assemblyVersion || !assemblyDescription) {
+                        alert('Please fill in all required fields');
+                        isValid = false;
+                        break;
+                    }
+                    
+                    item = {
+                        id: Date.now(),
+                        assemblyKN: generateSystemKN('assemblies', assemblyType),
+                        name: assemblyName,
+                        type: assemblyType,
+                        version: assemblyVersion,
+                        status: 'Active',
+                        components: parseInt(document.getElementById('assemblyComponents').value) || 0,
+                        description: assemblyDescription,
+                        files: document.getElementById('assemblyFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        dateAdded: new Date().toISOString().split('T')[0]
+                    };
+                    break;
+                    
+                case '3d-parts':
+                    const partName = document.getElementById('partName').value.trim();
+                    const partType = document.getElementById('partType').value;
+                    const partMaterial = document.getElementById('partMaterial').value;
+                    const partDescription = document.getElementById('partDescription').value.trim();
+                    
+                    if (!partName || !partType || !partMaterial || !partDescription) {
+                        alert('Please fill in all required fields');
+                        isValid = false;
+                        break;
+                    }
+                    
+                    item = {
+                        id: Date.now(),
+                        partKN: generateSystemKN('3d-parts', partType),
+                        name: partName,
+                        type: partType,
+                        material: partMaterial,
+                        status: 'Active',
+                        version: document.getElementById('partVersion').value.trim() || 'v1.0',
+                        description: partDescription,
+                        files: document.getElementById('partFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        dateAdded: new Date().toISOString().split('T')[0]
+                    };
+                    break;
+                    
+                case 'cable-assemblies':
+                    const cableName = document.getElementById('cableName').value.trim();
+                    const cableType = document.getElementById('cableType').value;
+                    const cableDescription = document.getElementById('cableDescription').value.trim();
+                    
+                    if (!cableName || !cableType || !cableDescription) {
+                        alert('Please fill in all required fields');
+                        isValid = false;
+                        break;
+                    }
+                    
+                    item = {
+                        id: Date.now(),
+                        cableKN: generateSystemKN('cable-assemblies', cableType),
+                        name: cableName,
+                        type: cableType,
+                        length: document.getElementById('cableLength').value.trim(),
+                        connectors: document.getElementById('cableConnectors').value.trim(),
+                        status: 'Active',
+                        description: cableDescription,
+                        files: document.getElementById('cableFiles').value.trim().split(',').map(f => f.trim()).filter(f => f),
+                        dateAdded: new Date().toISOString().split('T')[0]
+                    };
+                    break;
+            }
+            
+            if (!isValid) return;
+            
+            // Add to system data
+            systemData[category].push(item);
+            
+            // Save to localStorage
+            localStorage.setItem('kinbenSystemData', JSON.stringify(systemData));
+            
+            // Refresh displays
+            updateSystemStats();
+            refreshSystemTable(category);
+            
+            // Close modal
+            closeAddComponentModal();
+            
+            // Show success message
+            const kn = item.systemKN || item.assemblyKN || item.partKN || item.cableKN;
+            alert(`✅ Successfully added ${kn}!`);
+        }
+
+        // Edit system item
+        function editSystemItem(kn, category) {
+            alert(`Edit functionality for ${kn} will be implemented in future updates. Currently viewing details only.`);
+        }
+
+        // Delete system item
+        function deleteSystemItem(kn, category) {
+            if (!confirm(`Are you sure you want to delete ${kn}? This action cannot be undone.`)) {
+                return;
+            }
+            
+            // Find and remove the item
+            const itemIndex = systemData[category].findIndex(item => 
+                item.systemKN === kn || item.assemblyKN === kn || item.partKN === kn || item.cableKN === kn
+            );
+            
+            if (itemIndex !== -1) {
+                systemData[category].splice(itemIndex, 1);
+                localStorage.setItem('kinbenSystemData', JSON.stringify(systemData));
+                
+                // Refresh displays
+                updateSystemStats();
+                refreshSystemTable(category);
+                
+                // Close modal
+                closeAddComponentModal();
+                
+                alert(`✅ Successfully deleted ${kn}!`);
+            } else {
+                alert('Item not found for deletion.');
+            }
+        }
+
+        // Sort system-level tables
+        function sortSystemTable(category, column) {
+            const table = document.querySelector(`#${category === '3d-parts' ? '[id="3d-parts"]' : '#' + category} .component-table`);
+            const headers = table.querySelectorAll('th.sortable-header');
+            const currentHeader = Array.from(headers).find(h => h.onclick && h.onclick.toString().includes(`'${column}'`));
+            
+            if (!currentHeader) return;
+            
+            // Clear all sort indicators
+            headers.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+            
+            // Determine sort direction
+            let ascending = true;
+            if (currentHeader.classList.contains('sort-asc')) {
+                ascending = false;
+                currentHeader.classList.add('sort-desc');
+            } else {
+                currentHeader.classList.add('sort-asc');
+            }
+            
+            // Sort data
+            systemData[category].sort((a, b) => {
+                let valA = a[column] || '';
+                let valB = b[column] || '';
+                
+                // Handle numeric values
+                if (!isNaN(valA) && !isNaN(valB)) {
+                    return ascending ? valA - valB : valB - valA;
+                }
+                
+                // Handle string values
+                valA = valA.toString().toLowerCase();
+                valB = valB.toString().toLowerCase();
+                
+                if (ascending) {
+                    return valA < valB ? -1 : valA > valB ? 1 : 0;
+                } else {
+                    return valA > valB ? -1 : valA < valB ? 1 : 0;
+                }
+            });
+            
+            refreshSystemTable(category);
+        }
+
+        // Export system-level data
+        function exportSystemData(format, category) {
+            const items = systemData[category] || [];
+            if (items.length === 0) {
+                alert(`No ${category.replace('-', ' ')} to export.`);
+                return;
+            }
+            
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            let filename = `${category}_${timestamp}`;
+            let content, mimeType;
+            
+            if (format === 'csv') {
+                // Generate CSV headers based on category
+                let headers = [];
+                switch(category) {
+                    case 'systems':
+                        headers = ['System KN', 'Name', 'Version', 'Type', 'Status', 'Assemblies', 'Description', 'Owner', 'Files', 'Date Added'];
+                        break;
+                    case 'assemblies':
+                        headers = ['Assembly KN', 'Name', 'Type', 'Version', 'Status', 'Components', 'Description', 'Files', 'Date Added'];
+                        break;
+                    case '3d-parts':
+                        headers = ['Part KN', 'Name', 'Type', 'Material', 'Status', 'Version', 'Description', 'Files', 'Date Added'];
+                        break;
+                    case 'cable-assemblies':
+                        headers = ['Cable KN', 'Name', 'Type', 'Length', 'Connectors', 'Status', 'Description', 'Files', 'Date Added'];
+                        break;
+                }
+                
+                content = headers.join(',') + '\n';
+                items.forEach(item => {
+                    const row = headers.map(header => {
+                        let value = '';
+                        switch(header) {
+                            case 'System KN': value = item.systemKN || ''; break;
+                            case 'Assembly KN': value = item.assemblyKN || ''; break;
+                            case 'Part KN': value = item.partKN || ''; break;
+                            case 'Cable KN': value = item.cableKN || ''; break;
+                            case 'Name': value = item.name || ''; break;
+                            case 'Version': value = item.version || ''; break;
+                            case 'Type': value = item.type || ''; break;
+                            case 'Status': value = item.status || ''; break;
+                            case 'Material': value = item.material || ''; break;
+                            case 'Length': value = item.length || ''; break;
+                            case 'Connectors': value = item.connectors || ''; break;
+                            case 'Assemblies': value = item.assemblies || ''; break;
+                            case 'Components': value = item.components || ''; break;
+                            case 'Description': value = item.description || ''; break;
+                            case 'Owner': value = item.owner || ''; break;
+                            case 'Files': value = (item.files || []).join(';'); break;
+                            case 'Date Added': value = item.dateAdded || ''; break;
+                            default: value = '';
+                        }
+                        return `"${value.toString().replace(/"/g, '""')}"`;
+                    });
+                    content += row.join(',') + '\n';
+                });
+                
+                filename += '.csv';
+                mimeType = 'text/csv';
+            } else {
+                content = JSON.stringify(items, null, 2);
+                filename += '.json';
+                mimeType = 'application/json';
+            }
+            
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            alert(`✅ Successfully exported ${items.length} ${category.replace('-', ' ')} to ${filename}!`);
         }
 
         function showSheet(sheetName) {
