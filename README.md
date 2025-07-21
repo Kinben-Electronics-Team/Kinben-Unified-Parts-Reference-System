@@ -2,12 +2,35 @@
 
 Centralized EDA library and parts management system for all Kinben component libraries, KPN (Kinben Part Number) registry, project templates, and design resources.
 
+## 🚀 Interactive KPN Management System
+
+**Access the system**: Open `KPN_System_Workbook.html` in your browser for a full-featured component management interface.
+
+### ✨ Features
+- **📊 Real-time Dashboard** - Live statistics and component overview
+- **➕ Interactive Component Addition** - Easy-to-use forms with auto-KPN generation
+- **🔍 Search & Filter** - Find components across all categories
+- **💾 Export Functionality** - CSV/JSON exports for individual categories or all data
+- **📱 Mobile Responsive** - Works on all devices
+- **🖥️ Excel Compatible** - Open HTML file directly in Excel with preserved formatting
+
+### 🎯 Quick Start
+1. Open `KPN_System_Workbook.html` in your browser
+2. Click "Add Component" to add new parts with auto-generated KPNs
+3. Browse categories to view existing components
+4. Export data as CSV or JSON for external use
+
 ## Repository Structure
 
 ```
 Kinben-Unified-Parts-Reference-System/
-├── KPN Master Reference Sheet/    # Master KPN component database
-│   └── kpn_master.csv            # Approved component registry with supplier info
+├── KPN_System_Workbook.html      # Interactive web-based KPN management system ⭐
+├── KPN Master Reference Sheet/   # Master KPN component database
+│   └── CSV_Files/               # CSV data files organized by category
+│       ├── kpn_master.csv       # Original master registry
+│       ├── CAPACITORS.csv       # Component category files
+│       ├── RESISTORS.csv
+│       └── ... (16 categories)
 ├── Kinben Basic KiCad Library/   # Complete KiCad library files
 │   ├── 3d_models/               # 3D component models (.step, .stp)
 │   ├── lib_fp/                  # PCB footprints (.pretty folders with .kicad_mod)
@@ -28,7 +51,16 @@ The Kinben Part Number (KPN) system ensures standardized component usage across 
 - All approved KPNs have corresponding schematic symbols, footprints, and 3D models in the KiCad library
 
 ### Adding New Components
-1. **Submit PR** with component details in `KPN Master Reference Sheet/kpn_master.csv`
+
+#### Method 1: Interactive Web Interface (Recommended)
+1. **Open KPN_System_Workbook.html** in your browser
+2. **Click "Add Component"** tab or category-specific "Add" buttons
+3. **Fill the form**: Select category/subcategory, KPN auto-generates
+4. **Complete specifications**: Add all component details and supplier info
+5. **Submit**: Component is added with proper formatting and validation
+
+#### Method 2: Direct CSV/PR Method
+1. **Submit PR** with component details in appropriate CSV file in `CSV_Files/`
 2. **Include library files**: Add corresponding schematic symbol, footprint, and 3D model
 3. **Complete documentation**: Provide supplier information, technical specs, and sourcing details
 4. **Engineering approval**: PR requires team review and approval before merge
