@@ -192,7 +192,7 @@ test.describe('KPN System Workbook - File Upload/Download Functionality', () => 
         
         // Check if download was triggered (optional - might not happen without data)
         const download = await downloadPromise;
-        if (download) {
+        if (download !== null) {
           console.log(`Download triggered: ${await download.suggestedFilename()}`);
         } else {
           console.log('Export button clicked - no immediate download (may require data)');
