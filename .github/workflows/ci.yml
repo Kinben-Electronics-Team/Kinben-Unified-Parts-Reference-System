@@ -128,7 +128,7 @@ jobs:
         node -c <(grep -o 'function.*{' KPN_System_Workbook.html | head -1 | sed 's/function/function test/') || echo "JavaScript syntax check passed"
 
   deploy:
-    name: 'Deploy to GitHub Pages'
+    name: 'Deploy to Hosting'
     runs-on: ubuntu-latest
     needs: [test, validate-html]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -137,12 +137,32 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build for Firebase
+      run: npm run build
+      
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./
-        exclude_assets: '.github,node_modules,tests,playwright-report,test-results,*.md,!DEPLOYMENT.md'
+        exclude_assets: '.github,node_modules,tests,playwright-report,test-results,dist,*.md,!DEPLOYMENT.md'
+        
+    - name: Deploy to Firebase
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+        projectId: 'the-clever-studio-f3b16'
+        channelId: live
         
     - name: Create deployment summary
       run: |
@@ -150,4 +170,6 @@ jobs:
         echo "- ✅ Playwright tests passed" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ HTML validation passed" >> $GITHUB_STEP_SUMMARY
         echo "- ✅ Deployed to GitHub Pages" >> $GITHUB_STEP_SUMMARY
-        echo "- 🔗 Live URL: https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Deployed to Firebase" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔗 GitHub Pages: https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔥 Firebase: https://the-clever-studio-f3b16.web.app/KPS/" >> $GITHUB_STEP_SUMMARY

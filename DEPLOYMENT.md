@@ -4,7 +4,13 @@
 
 This system is deployed and accessible at multiple locations:
 
-### GitHub Pages (Primary)
+### Firebase Hosting (Primary Production)
+- **URL**: https://the-clever-studio-f3b16.web.app/KPS/
+- **Status**: ✅ Active (Auto-deployed from GitHub)
+- **Features**: Full application with demo data
+- **Update Method**: Automatic deployment on push to master/main
+
+### GitHub Pages (Secondary)
 - **URL**: https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/
 - **Status**: ✅ Active
 - **Features**: Full application with demo data
@@ -14,9 +20,28 @@ This system is deployed and accessible at multiple locations:
 - No server required - runs entirely client-side
 - All data stored in browser localStorage
 
-## 📦 Deployment Options
+## 📦 Automatic Deployment Options
 
-### 1. GitHub Pages (Recommended)
+### 🔥 Firebase (Recommended for Production)
+**Automatic deployment configured via GitHub Actions**
+
+```bash
+# Setup (one-time only)
+./setup-firebase-deployment.sh
+
+# Deployment happens automatically on push to master/main
+git add .
+git commit -m "Deploy updates"
+git push origin main
+```
+
+**GitHub Actions Workflow:**
+- Validates HTML and JavaScript
+- Builds Firebase-ready distribution
+- Deploys to Firebase hosting automatically
+- Updates both GitHub Pages and Firebase simultaneously
+
+### 1. GitHub Pages (Fallback)
 ```bash
 # Already configured - just push to main branch
 git add .
