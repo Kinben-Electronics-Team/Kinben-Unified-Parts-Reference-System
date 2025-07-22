@@ -148,7 +148,7 @@ test.describe('KPN System Workbook - UI Components and Navigation', () => {
         await closeButton.first().click();
         
       } catch (e) {
-        console.log('Modal accessibility test skipped - could not open modal');
+        test.skip('Modal accessibility test skipped - could not open modal');
       }
     });
 
