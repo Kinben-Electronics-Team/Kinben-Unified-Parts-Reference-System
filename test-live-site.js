@@ -7,7 +7,7 @@
 const https = require('https');
 const fs = require('fs');
 
-const baseUrl = 'https://the-clever-studio-f3b16.web.app';
+const baseUrl = process.env.BASE_URL || 'https://the-clever-studio-f3b16.web.app';
 
 console.log('🧪 LIVE SITE COMPREHENSIVE TEST');
 console.log('================================\n');
