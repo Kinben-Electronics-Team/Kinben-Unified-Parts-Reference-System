@@ -136,7 +136,7 @@ cat >> "$REPORT_FILE" << EOF
 - **Total Tests Run:** $TOTAL_TESTS
 - **Tests Passed:** $PASSED_TESTS ✅
 - **Tests Failed:** $FAILED_TESTS ❌
-- **Success Rate:** $(( (PASSED_TESTS * 100) / TOTAL_TESTS ))%
+- **Success Rate:** $([ "$TOTAL_TESTS" -gt 0 ] && echo "$(( (PASSED_TESTS * 100) / TOTAL_TESTS ))%" || echo "N/A (No tests run)")
 
 ## Recommendations
 
