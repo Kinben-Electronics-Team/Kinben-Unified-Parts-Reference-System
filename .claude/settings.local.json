@@ -22,7 +22,12 @@
       "Bash(git push:*)",
       "Bash(gh issue view:*)",
       "Bash(gh issue edit:*)",
-      "Bash(gh api:*)"
+      "Bash(gh api:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh pr list:*)",
+      "Bash(gh pr view:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:the-clever-studio-f3b16.web.app)"
     ],
     "deny": []
   }

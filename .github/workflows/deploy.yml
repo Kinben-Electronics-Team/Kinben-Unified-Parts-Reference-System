@@ -63,6 +63,14 @@ jobs:
         projectId: 'the-clever-studio-f3b16'
         channelId: live
         
+    - name: Deploy to Firebase
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+        projectId: 'the-clever-studio-f3b16'
+        
     - name: Create deployment summary
       run: |
         echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
