@@ -6,7 +6,7 @@ export class KPNWorkbookPage {
 
   // Navigation methods
   async goto() {
-    await this.page.goto('/KPN_System_Workbook');
+    await this.page.goto('/KPN_System_Workbook.html');
   }
 
   async clickTab(tabName: string) {

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('KPN System Workbook - Smoke Tests', () => {
   test('should load the application successfully', async ({ page }) => {
-    await page.goto('https://the-clever-studio-f3b16.web.app/KPS/KPN_System_Workbook');
+    await page.goto(process.env.CI ? '/KPN_System_Workbook' : '/KPN_System_Workbook.html');
     
     // Basic checks that the application loads
     await expect(page).toHaveTitle(/Kinben/);
@@ -21,7 +21,7 @@ test.describe('KPN System Workbook - Smoke Tests', () => {
   });
 
   test('should be able to click at least one tab', async ({ page }) => {
-    await page.goto('https://the-clever-studio-f3b16.web.app/KPS/KPN_System_Workbook');
+    await page.goto(process.env.CI ? '/KPN_System_Workbook' : '/KPN_System_Workbook.html');
     
     // Find and click any visible tab
     const tabs = page.locator('.tab');
@@ -36,7 +36,7 @@ test.describe('KPN System Workbook - Smoke Tests', () => {
   });
 
   test('should have main sections accessible', async ({ page }) => {
-    await page.goto('https://the-clever-studio-f3b16.web.app/KPS/KPN_System_Workbook');
+    await page.goto(process.env.CI ? '/KPN_System_Workbook' : '/KPN_System_Workbook.html');
     
     // Look for key UI elements
     const keyElements = [
