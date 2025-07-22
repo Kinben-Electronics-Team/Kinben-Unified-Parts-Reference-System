@@ -61,7 +61,8 @@ if command -v npx >/dev/null 2>&1; then
         run_test "Smoke Tests (Critical UI Elements)" "npx playwright test tests/smoke.spec.ts --project=chromium || echo 'Smoke tests completed with issues'"
         
         # If smoke tests worked, try integration tests
-        if [ $? -eq 0 ]; then
+        SMOKE_TEST_EXIT_CODE=$?
+        if [ $SMOKE_TEST_EXIT_CODE -eq 0 ]; then
             run_test "Basic Integration Tests" "npx playwright test tests/integration.spec.ts --project=chromium --grep='should load all required assets' || echo 'Integration tests completed with issues'"
         fi
     else
