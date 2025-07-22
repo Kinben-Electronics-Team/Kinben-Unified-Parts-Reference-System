@@ -18,7 +18,11 @@
       "Bash(unset CLAUDE_CODE_ENABLE_TELEMETRY)",
       "Bash(setx:*)",
       "Bash(find:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(git push:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue edit:*)",
+      "Bash(gh api:*)"
     ],
     "deny": []
   }
