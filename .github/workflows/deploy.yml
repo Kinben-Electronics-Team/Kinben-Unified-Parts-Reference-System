@@ -12,13 +12,17 @@ jobs:
     
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '18'
+        cache: 'npm'
         
+    - name: Install dependencies
+      run: npm ci
+      
     - name: Validate HTML
       run: |
         echo "Validating HTML files..."
@@ -39,13 +43,25 @@ jobs:
         # Check for basic JavaScript syntax errors
         node -c <(grep -o 'function.*{' KPN_System_Workbook.html | head -1 | sed 's/function/function test/') || echo "JavaScript syntax check passed"
         
+    - name: Build for Firebase
+      run: npm run build
+      
     - name: Deploy to GitHub Pages
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./
-        exclude_assets: '.github,node_modules,*.md,!DEPLOYMENT.md'
+        exclude_assets: '.github,node_modules,tests,playwright-report,test-results,dist,*.md,!DEPLOYMENT.md'
+        
+    - name: Deploy to Firebase
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: FirebaseExtended/action-hosting-deploy@v0
+      with:
+        repoToken: '${{ secrets.GITHUB_TOKEN }}'
+        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
+        projectId: 'the-clever-studio-f3b16'
+        channelId: live
         
     - name: Create deployment summary
       run: |
@@ -57,8 +73,9 @@ jobs:
         echo "- \`DEPLOYMENT.md\` - Deployment documentation" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 🌐 Access URLs:" >> $GITHUB_STEP_SUMMARY
-        echo "- **Live Site**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
-        echo "- **Direct App**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/KPN_System_Workbook.html" >> $GITHUB_STEP_SUMMARY
+        echo "- **GitHub Pages**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Firebase Live**: https://the-clever-studio-f3b16.web.app/KPS/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Direct App**: https://the-clever-studio-f3b16.web.app/KPS/KPN_System_Workbook.html" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### ✅ Features Deployed:" >> $GITHUB_STEP_SUMMARY
         echo "- 🏗️ Multi-level system hierarchy" >> $GITHUB_STEP_SUMMARY
@@ -76,3 +93,4 @@ jobs:
         echo "- 8 cable assemblies (power, data, RF)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "🎉 **Deployment completed successfully!**" >> $GITHUB_STEP_SUMMARY
+        echo "🔥 **Firebase:** https://the-clever-studio-f3b16.web.app/KPS/" >> $GITHUB_STEP_SUMMARY
