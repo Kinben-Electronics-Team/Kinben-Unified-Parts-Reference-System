@@ -51,6 +51,11 @@ if (fs.existsSync(indexPath)) {
         console.log('  ✅ Launch button link is correct');
     } else {
         console.log('  ❌ Launch button link is incorrect or missing');
+        // Show what href we found instead
+        const hrefMatch = indexContent.match(/href="([^"]*)".*🚀 Launch Application/);
+        if (hrefMatch) {
+            console.log(`     Found: href="${hrefMatch[1]}"`);
+        }
         allFilesPresent = false;
     }
     
@@ -59,6 +64,22 @@ if (fs.existsSync(indexPath)) {
     } else {
         console.log('  ❌ Launch button text is missing');
         allFilesPresent = false;
+    }
+    
+    // Check for build timestamp
+    const timestampMatch = indexContent.match(/Build: ([^\s]+)/);
+    if (timestampMatch) {
+        console.log(`  ✅ Build timestamp: ${timestampMatch[1]}`);
+    } else {
+        console.log('  ⚠️ No build timestamp found');
+    }
+    
+    // Check version
+    const versionMatch = indexContent.match(/v(\d+\.\d+\.?\d*)/);
+    if (versionMatch) {
+        console.log(`  ✅ Version: v${versionMatch[1]}`);
+    } else {
+        console.log('  ⚠️ No version found');
     }
 }
 
