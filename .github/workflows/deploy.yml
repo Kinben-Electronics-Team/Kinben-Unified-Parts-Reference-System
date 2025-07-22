@@ -53,14 +53,17 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./dist
         
-    - name: Deploy to Firebase
+    - name: Check Firebase Service Account Secret
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-      uses: FirebaseExtended/action-hosting-deploy@v0
-      with:
-        repoToken: '${{ secrets.GITHUB_TOKEN }}'
-        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-        projectId: 'the-clever-studio-f3b16'
-        channelId: live
+      run: |
+        if [ -z "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
+          echo "❌ ERROR: FIREBASE_SERVICE_ACCOUNT secret is not set!"
+          echo "📋 Please follow the setup instructions in FIREBASE_SERVICE_ACCOUNT_SETUP.md"
+          echo "🔗 Setup guide: https://github.com/${{ github.repository }}/blob/main/FIREBASE_SERVICE_ACCOUNT_SETUP.md"
+          exit 1
+        else
+          echo "✅ Firebase service account secret is configured"
+        fi
         
     - name: Deploy to Firebase
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
@@ -69,6 +72,7 @@ jobs:
         repoToken: '${{ secrets.GITHUB_TOKEN }}'
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
         projectId: 'the-clever-studio-f3b16'
+        channelId: live
         
     - name: Create deployment summary
       run: |
