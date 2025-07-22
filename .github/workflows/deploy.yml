@@ -46,13 +46,6 @@ jobs:
     - name: Build for Firebase
       run: npm run build
       
-    - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
-        
     - name: Check Firebase Service Account Secret
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       run: |
@@ -73,7 +66,6 @@ jobs:
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
         projectId: 'the-clever-studio-f3b16'
         channelId: live
-        
     - name: Create deployment summary
       run: |
         echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
@@ -84,9 +76,8 @@ jobs:
         echo "- \`DEPLOYMENT.md\` - Deployment documentation" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 🌐 Access URLs:" >> $GITHUB_STEP_SUMMARY
-        echo "- **GitHub Pages**: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/" >> $GITHUB_STEP_SUMMARY
-        echo "- **Firebase Live**: https://the-clever-studio-f3b16.web.app/KPS/" >> $GITHUB_STEP_SUMMARY
-        echo "- **Direct App**: https://the-clever-studio-f3b16.web.app/KPS/KPN_System_Workbook.html" >> $GITHUB_STEP_SUMMARY
+        echo "- **Firebase Live**: https://the-clever-studio-f3b16.web.app/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Direct App**: https://the-clever-studio-f3b16.web.app/KPN_System_Workbook.html" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### ✅ Features Deployed:" >> $GITHUB_STEP_SUMMARY
         echo "- 🏗️ Multi-level system hierarchy" >> $GITHUB_STEP_SUMMARY
@@ -104,4 +95,4 @@ jobs:
         echo "- 8 cable assemblies (power, data, RF)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "🎉 **Deployment completed successfully!**" >> $GITHUB_STEP_SUMMARY
-        echo "🔥 **Firebase:** https://the-clever-studio-f3b16.web.app/KPS/" >> $GITHUB_STEP_SUMMARY
+        echo "🔥 **Firebase:** https://the-clever-studio-f3b16.web.app/" >> $GITHUB_STEP_SUMMARY
