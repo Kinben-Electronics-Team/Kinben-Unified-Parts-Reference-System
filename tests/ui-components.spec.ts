@@ -86,7 +86,7 @@ test.describe('KPN System Workbook - UI Components and Navigation', () => {
           await expect(dashboardTab).not.toHaveClass(/active/);
         }
       } catch (e) {
-        console.log('Systems tab navigation test skipped - tab may not exist');
+        test.skip('Systems tab navigation test skipped - tab may not exist');
       }
     });
   });
