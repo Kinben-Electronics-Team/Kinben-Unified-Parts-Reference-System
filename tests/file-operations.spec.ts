@@ -22,7 +22,7 @@ test.describe('KPN System Workbook - File Upload/Download Functionality', () => 
         const elements = kpnPage.page.locator(selector);
         const count = await elements.count();
         if (count > 0) {
-          console.log(`Found ${count} upload elements with selector: ${selector}`);
+          // Debugging statement removed to keep test output clean.
           uploadElementFound = true;
         }
       }
