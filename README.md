@@ -1,16 +1,21 @@
 # 🔧 Kinben Unified Parts Reference System
 
 [![Deploy Status](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/workflows/Deploy%20KPN%20System%20Workbook/badge.svg)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/actions)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://the-clever-studio-f3b16.web.app/KPS)
 [![Version](https://img.shields.io/badge/Version-2.1-blue)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/releases)
 
-## 🚀 [**LAUNCH APPLICATION**](https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/KPN_System_Workbook.html)
+## 🚀 [**LAUNCH APPLICATION**](https://the-clever-studio-f3b16.web.app/KPS)
 
-A comprehensive electronic design automation (EDA) library and centralized KPN (Kinben Part Number) management system for standardized component management across all Kinben projects.
+**🎯 SINGLE SOURCE OF TRUTH**: GitHub Repository → Automatic Firebase Deployment → Live Site
 
-## 🌟 Live Demo
+## 🌟 Live Production System
 
-**Try the system now**: [https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/](https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/)
+**Production URL**: [https://the-clever-studio-f3b16.web.app/KPS](https://the-clever-studio-f3b16.web.app/KPS)
+
+**Deployment Flow**: 
+- ✅ **Source**: This GitHub repository
+- ✅ **Auto-Deploy**: Every push to `master` → Firebase
+- ✅ **Live Site**: https://the-clever-studio-f3b16.web.app/KPS
 
 The live demo includes:
 - 🏗️ **3 Complete Systems** with full hierarchical breakdowns

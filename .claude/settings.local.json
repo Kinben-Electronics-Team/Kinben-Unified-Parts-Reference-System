@@ -12,7 +12,8 @@
       "Bash(node:*)",
       "Bash(npx firebase:*)",
       "Bash(setx:*)",
-      "Bash(gh issue create:*)"
+      "Bash(gh issue create:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }
