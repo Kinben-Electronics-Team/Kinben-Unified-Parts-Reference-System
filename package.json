@@ -7,9 +7,13 @@
     "start": "python3 serve.py",
     "serve": "python3 serve.py",
     "dev": "python3 serve.py",
-    "build": "echo 'No build step required - static HTML application'",
+    "build": "node build-for-firebase.js",
     "test": "echo 'Testing HTML syntax...' && node -e 'console.log(\"✅ Basic validation passed\")'",
-    "deploy": "echo 'Deployment handled by GitHub Actions'",
+    "deploy": "deploy-to-firebase.bat",
+    "deploy-firebase": "deploy-to-firebase.bat",
+    "deploy-rpi": "deploy-to-rpi.bat",
+    "watch": "python watch-and-sync.py",
+    "auto-sync": "python watch-and-sync.py",
     "validate": "echo 'Validating application files...' && test -f index.html && test -f KPN_System_Workbook.html && echo '✅ All files present'"
   },
   "repository": {
@@ -44,8 +48,9 @@
     "not dead",
     "not ie <= 11"
   ],
-  "devDependencies": {},
-  "dependencies": {},
+  "devDependencies": {
+    "firebase-tools": "^14.11.0"
+  },
   "files": [
     "index.html",
     "KPN_System_Workbook.html",

@@ -5,7 +5,9 @@
       "Bash(wc:*)",
       "Bash(git pull:*)",
       "Bash(git add:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(git commit:*)",
+      "Bash(winget install:*)"
     ],
     "deny": []
   }
