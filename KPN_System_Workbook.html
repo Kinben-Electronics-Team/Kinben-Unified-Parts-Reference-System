@@ -3116,6 +3116,9 @@ Navigate to the Systems tab to view and manage your new multiboard system!`);
             }
             componentData[category].push(component);
             
+            // Save component data to localStorage
+            saveComponentData();
+            
             // Close modal and refresh
             closeAddComponentModal();
             form.reset();
@@ -3944,6 +3947,37 @@ Navigate to the Systems tab to view and manage your new multiboard system!`);
             }
         }
         
+        // Save component data to localStorage
+        function saveComponentData() {
+            try {
+                localStorage.setItem('kinbenComponentData', JSON.stringify(componentData));
+                console.log('Component data saved to localStorage');
+            } catch (e) {
+                console.error('Failed to save component data:', e);
+            }
+        }
+        
+        // Load component data from localStorage
+        function loadComponentData() {
+            try {
+                const saved = localStorage.getItem('kinbenComponentData');
+                if (saved) {
+                    componentData = JSON.parse(saved);
+                    console.log('Component data loaded from localStorage');
+                }
+            } catch (e) {
+                console.warn('Failed to load component data from localStorage:', e);
+            }
+        }
+        
+        // Refresh all component category tables
+        function refreshAllTables() {
+            // Refresh all component category tables
+            Object.keys(componentData).forEach(category => {
+                refreshComponentTable(category);
+            });
+        }
+        
         function startImport() {
             const validComponents = parsedComponents.filter(comp => !comp.error);
             if (validComponents.length === 0) {
@@ -4155,17 +4189,23 @@ Navigate to the Systems tab to view and manage your new multiboard system!`);
             csvData = null;
             parsedComponents = [];
             
-            // Reset upload area
-            const uploadArea = document.getElementById('uploadArea');
-            uploadArea.innerHTML = `
-                <div class="upload-icon">📁</div>
-                <div class="upload-text">Drag and drop your CSV file here</div>
-                <div class="upload-subtext">or click to browse files</div>
-                <input type="file" id="csvFileInput" accept=".csv" onchange="handleFileSelect(event)">
-                <button type="button" class="btn btn-primary" onclick="document.getElementById('csvFileInput').click()">📁 Choose File</button>
-            `;
+            // Clear the file input value to reset the file selection
+            const fileInput = document.getElementById('csvFileInput');
+            if (fileInput) {
+                fileInput.value = '';
+            }
             
-            // Reset UI
+            // Reset upload area visual state without recreating the file input
+            const uploadArea = document.getElementById('uploadArea');
+            const uploadIcon = uploadArea.querySelector('.upload-icon');
+            const uploadText = uploadArea.querySelector('.upload-text');
+            const uploadSubtext = uploadArea.querySelector('.upload-subtext');
+            
+            if (uploadIcon) uploadIcon.textContent = '📁';
+            if (uploadText) uploadText.textContent = 'Drag and drop your CSV file here';
+            if (uploadSubtext) uploadSubtext.textContent = 'or click to browse files';
+            
+            // Reset UI elements
             document.getElementById('importProgress').style.display = 'none';
             document.getElementById('importResults').style.display = 'none';
             document.getElementById('startImportBtn').disabled = true;
@@ -5166,6 +5206,7 @@ Navigate to the Systems tab to view and manage your new multiboard system!`);
             
             // Load existing data from localStorage
             loadSystemData();
+            loadComponentData();
             
             // Initialize system management
             initializeSystemManagement();
