@@ -291,7 +291,7 @@ test.describe('KPN System Workbook - UI Components and Navigation', () => {
         if (count > 0) {
           await expect(elements.first()).toBeVisible();
           searchFound = true;
-          console.log(`Found search element: ${selector}`);
+          // Found a search element
           break;
         }
       }
