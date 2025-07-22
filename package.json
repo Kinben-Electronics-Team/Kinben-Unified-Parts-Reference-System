@@ -13,7 +13,6 @@
     "test": "npx playwright test || npm run test:fallback",
     "test:fallback": "./test-fallback.sh",
     "test:comprehensive": "./test-comprehensive.sh",
-    "test:report": "./generate-test-report.sh",
     "test:safe": "./test-fallback.sh && echo 'Safe tests passed. Trying full tests...' && (npm test || echo 'Full tests failed but safe tests passed')",
     "test:report": "playwright show-report",
     "test:ui": "playwright test --ui",
