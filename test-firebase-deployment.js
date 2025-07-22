@@ -29,10 +29,11 @@ requiredFiles.forEach(file => {
         
         // Check if it has the expected content
         const content = fs.readFileSync(filePath, 'utf8');
-        if (content.includes('Build:') && content.includes('Root-level deployment')) {
+        const buildPattern = /Build:\s*\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.*Root-level deployment/;
+        if (buildPattern.test(content)) {
             console.log(`   📅 Contains build timestamp`);
         } else {
-            console.log(`   ⚠️  Missing build timestamp - may be old version`);
+            console.log(`   ⚠️  Missing or malformed build timestamp - may be old version`);
         }
     } else {
         console.log(`❌ ${file} missing`);
