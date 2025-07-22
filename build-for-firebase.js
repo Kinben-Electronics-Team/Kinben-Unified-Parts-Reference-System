@@ -30,6 +30,10 @@ const filesToCopy = [
     'KPN_System_Workbook_backup.html'
 ];
 
+// Get build timestamp for version tracking
+const buildTimestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+console.log(`🕒 Build timestamp: ${buildTimestamp}`);
+
 // Copy main files
 filesToCopy.forEach(file => {
     const srcPath = path.join(__dirname, file);
@@ -43,8 +47,16 @@ filesToCopy.forEach(file => {
         content = content.replace(/src="\//g, 'src="/KPS/');
         content = content.replace(/url\(\//g, 'url(/KPS/');
         
+        // Add build timestamp as HTML comment for debugging
+        content = content.replace(
+            '<head>',
+            `<head>
+    <!-- Build: ${buildTimestamp} -->
+    <!-- Launch Button Fix: v2.1.1 -->`
+        );
+        
         fs.writeFileSync(destPath, content);
-        console.log(`✅ Processed ${file}`);
+        console.log(`✅ Processed ${file} (timestamp: ${buildTimestamp})`);
     }
 });
 
