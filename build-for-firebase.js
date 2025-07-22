@@ -36,9 +36,11 @@ filesToCopy.forEach(file => {
         let content = fs.readFileSync(srcPath, 'utf8');
         
         // Remove KPS/ prefixes from paths since we're now at root level
-        content = content.replace(/href="KPS\//g, 'href="');
-        content = content.replace(/src="KPS\//g, 'src="');
-        content = content.replace(/url\(KPS\//g, 'url(');
+        if (content.includes('KPS/')) {
+            content = content.replace(/href="KPS\//g, 'href="');
+            content = content.replace(/src="KPS\//g, 'src="');
+            content = content.replace(/url\(KPS\//g, 'url(');
+        }
         
         // Add build timestamp as HTML comment for debugging
         content = content.replace(
