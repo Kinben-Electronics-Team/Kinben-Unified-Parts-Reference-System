@@ -43,9 +43,16 @@ filesToCopy.forEach(file => {
         let content = fs.readFileSync(srcPath, 'utf8');
         
         // Update paths for subdirectory deployment
-        content = content.replace(/href="\//g, 'href="/KPS/');
-        content = content.replace(/src="\//g, 'src="/KPS/');
-        content = content.replace(/url\(\//g, 'url(/KPS/');
+        if (file === 'index.html') {
+            // Root index.html - keep KPS/ paths
+            content = content.replace(/href="KPS\//g, 'href="');
+            content = content.replace(/src="KPS\//g, 'src="');
+        } else {
+            // Files going into KPS folder - remove KPS/ prefix from relative links
+            content = content.replace(/href="KPS\//g, 'href="');
+            content = content.replace(/src="KPS\//g, 'src="');
+            content = content.replace(/url\(KPS\//g, 'url(');
+        }
         
         // Add build timestamp as HTML comment for debugging
         content = content.replace(
