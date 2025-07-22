@@ -29,13 +29,25 @@ jobs:
         chmod +x install-browsers.sh
         ./install-browsers.sh
       
-    - name: Run Playwright tests
+    - name: Run comprehensive tests
       run: |
-        echo "Starting Playwright tests..."
+        echo "🧪 Starting comprehensive test suite..."
+        chmod +x test-fallback.sh test-comprehensive.sh generate-test-report.sh
+        
+        # Generate test report first
+        if ./generate-test-report.sh; then
+          echo "✅ All infrastructure tests passed"
+        else
+          echo "❌ Infrastructure tests failed"
+          exit 1
+        fi
+        
+        # Try Playwright tests with fallback
+        echo "🎭 Attempting Playwright tests..."
         if npm test; then
           echo "✅ All Playwright tests passed"
         else
-          echo "❌ Playwright tests failed - running fallback tests"
+          echo "⚠️ Playwright tests failed - checking fallback tests"
           if ./test-fallback.sh; then
             echo "✅ Fallback tests passed - basic functionality verified"
             echo "⚠️ Note: Full browser tests failed but core functionality is working"
