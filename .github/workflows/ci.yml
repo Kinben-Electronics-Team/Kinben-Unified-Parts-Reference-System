@@ -157,7 +157,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./
-        exclude_assets: '.github,node_modules,tests,playwright-report,test-results,dist,*.md,!DEPLOYMENT.md'
+        exclude_assets: '.github,node_modules,tests,playwright-report,test-results,*.md,!DEPLOYMENT.md'
         
     - name: Deploy to Firebase
       uses: FirebaseExtended/action-hosting-deploy@v0
