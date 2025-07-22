@@ -8,7 +8,12 @@
     "serve": "python3 serve.py",
     "dev": "python3 serve.py",
     "build": "node build-for-firebase.js",
-    "test": "echo 'Testing HTML syntax...' && node -e 'console.log(\"✅ Basic validation passed\")'",
+    "test": "playwright test",
+    "test:report": "playwright show-report",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:html": "echo 'Testing HTML syntax...' && node -e 'console.log(\"✅ Basic validation passed\")'",
     "deploy": "deploy-to-firebase.bat",
     "deploy-firebase": "deploy-to-firebase.bat",
     "deploy-rpi": "deploy-to-rpi.bat",
@@ -49,6 +54,8 @@
     "not ie <= 11"
   ],
   "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.0.0",
     "firebase-tools": "^14.11.0"
   },
   "files": [
