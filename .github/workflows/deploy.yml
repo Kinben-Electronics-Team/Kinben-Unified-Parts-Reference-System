@@ -17,7 +17,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         
     - name: Install dependencies
@@ -46,6 +46,18 @@ jobs:
     - name: Build for Firebase
       run: npm run build
       
+    - name: Check Firebase Service Account Secret
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      run: |
+        if [ -z "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" ]; then
+          echo "❌ ERROR: FIREBASE_SERVICE_ACCOUNT secret is not set!"
+          echo "📋 Please follow the setup instructions in FIREBASE_SERVICE_ACCOUNT_SETUP.md"
+          echo "🔗 Setup guide: https://github.com/${{ github.repository }}/blob/main/FIREBASE_SERVICE_ACCOUNT_SETUP.md"
+          exit 1
+        else
+          echo "✅ Firebase service account secret is configured"
+        fi
+        
     - name: Deploy to Firebase
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
       uses: FirebaseExtended/action-hosting-deploy@v0
@@ -54,7 +66,6 @@ jobs:
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
         projectId: 'the-clever-studio-f3b16'
         channelId: live
-        
     - name: Create deployment summary
       run: |
         echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
