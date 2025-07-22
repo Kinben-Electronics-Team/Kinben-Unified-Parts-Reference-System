@@ -13,7 +13,12 @@
       "Bash(npx firebase:*)",
       "Bash(setx:*)",
       "Bash(gh issue create:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(echo $CLAUDE_CODE_ENABLE_TELEMETRY)",
+      "Bash(unset CLAUDE_CODE_ENABLE_TELEMETRY)",
+      "Bash(setx:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ],
     "deny": []
   }
