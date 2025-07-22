@@ -105,6 +105,7 @@ Kinben-Unified-Parts-Reference-System/
 **Date**: 2025-07-22  
 **Status**: ✅ **FULLY OPERATIONAL & CLEAN**  
 **Current Task**: Issue #20 (Test improvements) - Assigned to Copilot  
+**Focus**: Basic functionality over enhancements  
 **Repository**: Production-ready with clean structure  
 
 ---
@@ -122,3 +123,6 @@ Kinben-Unified-Parts-Reference-System/
 
 *Last Updated: July 22, 2025*  
 *System Status: Production Ready, Issue #20 In Progress, Clean Repository*
+
+## claude.md# Guideline Memories
+- Always start with `claude.md#` when adding new memories or guidelines to this file
