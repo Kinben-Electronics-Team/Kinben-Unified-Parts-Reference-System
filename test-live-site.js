@@ -77,7 +77,7 @@ function testUrl(url, description) {
             resolve({ status: 0, success: false, error: err.message });
         });
         
-        req.setTimeout(10000, () => {
+        req.setTimeout(REQUEST_TIMEOUT_MS, () => {
             console.log(`   ❌ FAIL: Request timeout`);
             req.destroy();
             resolve({ status: 0, success: false, error: 'Timeout' });
