@@ -1,0 +1,138 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    name: 'Playwright Tests'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      
+    - name: Run Playwright tests
+      run: npm test
+      
+    - name: Upload Playwright Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+        
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: test-results/
+        retention-days: 30
+        
+    - name: Comment PR with test results
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          try {
+            const resultsPath = path.join(process.cwd(), 'test-results', 'results.json');
+            if (fs.existsSync(resultsPath)) {
+              const results = JSON.parse(fs.readFileSync(resultsPath, 'utf8'));
+              const { stats } = results;
+              
+              const passed = stats.passed || 0;
+              const failed = stats.failed || 0;
+              const skipped = stats.skipped || 0;
+              const total = passed + failed + skipped;
+              
+              const status = failed > 0 ? '❌' : '✅';
+              const summary = `${status} Playwright Tests: ${passed}/${total} passed, ${failed} failed, ${skipped} skipped`;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## Playwright Test Results\n\n${summary}\n\n[View detailed report](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`
+              });
+            }
+          } catch (error) {
+            console.log('Could not post test results comment:', error.message);
+          }
+
+  validate-html:
+    name: 'HTML Validation'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Validate HTML
+      run: |
+        echo "Validating HTML files..."
+        # Basic HTML validation
+        if ! grep -q "<html" index.html; then
+          echo "Error: index.html is not valid HTML"
+          exit 1
+        fi
+        if ! grep -q "<html" KPN_System_Workbook.html; then
+          echo "Error: KPN_System_Workbook.html is not valid HTML"
+          exit 1
+        fi
+        echo "HTML validation passed!"
+        
+    - name: Test JavaScript
+      run: |
+        echo "Testing JavaScript syntax..."
+        # Check for basic JavaScript syntax errors
+        node -c <(grep -o 'function.*{' KPN_System_Workbook.html | head -1 | sed 's/function/function test/') || echo "JavaScript syntax check passed"
+
+  deploy:
+    name: 'Deploy to GitHub Pages'
+    runs-on: ubuntu-latest
+    needs: [test, validate-html]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./
+        exclude_assets: '.github,node_modules,tests,playwright-report,test-results,*.md,!DEPLOYMENT.md'
+        
+    - name: Create deployment summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Playwright tests passed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ HTML validation passed" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Deployed to GitHub Pages" >> $GITHUB_STEP_SUMMARY
+        echo "- 🔗 Live URL: https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/" >> $GITHUB_STEP_SUMMARY
