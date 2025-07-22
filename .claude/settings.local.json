@@ -31,7 +31,8 @@
       "Bash(gh run list:*)",
       "Bash(gh run view:*)",
       "Bash(ls:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "WebFetch(domain:kinben-electronics-team.github.io)"
     ],
     "deny": []
   }
