@@ -7,7 +7,12 @@
       "Bash(git add:*)",
       "Bash(python:*)",
       "Bash(git commit:*)",
-      "Bash(winget install:*)"
+      "Bash(winget install:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(node:*)",
+      "Bash(npx firebase:*)",
+      "Bash(setx:*)",
+      "Bash(gh issue create:*)"
     ],
     "deny": []
   }
