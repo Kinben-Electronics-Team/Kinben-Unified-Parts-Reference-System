@@ -41,7 +41,7 @@ install_browser() {
 }
 
 # Check if we have network connectivity
-if ! ping -c 1 8.8.8.8 >/dev/null 2>&1; then
+if ! ping -c 1 example.com >/dev/null 2>&1; then
     echo "⚠️ No network connectivity - skipping browser installation"
     echo "ℹ️ Tests will fall back to validation scripts"
     exit 0
