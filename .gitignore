@@ -26,5 +26,11 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# Test results and reports
+test-results/
+playwright-report/
+coverage/
+.nyc_output/
+
 # Claude files (optional - keep if you want to track)
 # .claude/
