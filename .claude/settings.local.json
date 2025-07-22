@@ -29,7 +29,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:the-clever-studio-f3b16.web.app)",
       "Bash(gh run list:*)",
-      "Bash(gh run view:*)"
+      "Bash(gh run view:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

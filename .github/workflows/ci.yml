@@ -156,8 +156,7 @@ jobs:
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./
-        exclude_assets: '.github,node_modules,tests,playwright-report,test-results,*.md,!DEPLOYMENT.md'
+        publish_dir: ./dist
         
     - name: Deploy to Firebase
       uses: FirebaseExtended/action-hosting-deploy@v0
