@@ -14,13 +14,6 @@
       ".git/**",
       "tools/**"
     ],
-    "redirects": [
-      {
-        "source": "/",
-        "destination": "/KPS/",
-        "type": 302
-      }
-    ],
     "headers": [
       {
         "source": "**/*.html",

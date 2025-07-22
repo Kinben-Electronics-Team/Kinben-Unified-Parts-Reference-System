@@ -33,4 +33,4 @@ coverage/
 .nyc_output/
 
 # Claude files (optional - keep if you want to track)
-# .claude/
+# .claude/test-navigation.js
