@@ -392,6 +392,136 @@
         .delete-btn:hover {
             background: #c82333;
         }
+
+        /* Duplicate Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #e9ecef;
+            background: #f8f9fa;
+        }
+
+        .modal-header h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .modal-header p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .modal-body {
+            padding: 20px 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #e9ecef;
+            background: #f8f9fa;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .duplicate-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .duplicate-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+
+        .duplicate-item-header {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .duplicate-item-details {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .duplicate-item-existing {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .duplicate-item-existing strong {
+            color: #0078d4;
+        }
+
+        .duplicate-choices {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .duplicate-choices input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .duplicate-choices label {
+            cursor: pointer;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .duplicate-choices label:hover {
+            background: #e9ecef;
+        }
+
+        .duplicate-choices input[type="radio"]:checked + label {
+            background: #0078d4;
+            color: white;
+            border-color: #0078d4;
+        }
     </style>
 </head>
 <body>
@@ -726,6 +856,25 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Duplicate Confirmation Modal -->
+    <div id="duplicate-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔍 Duplicate Components Found</h3>
+                <p>The following components already exist in your database. Choose your action for each:</p>
+            </div>
+            <div class="modal-body">
+                <div id="duplicate-list" class="duplicate-list">
+                    <!-- Duplicate items will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" onclick="processDuplicateChoices()">Apply Choices</button>
+                <button class="btn" onclick="cancelDuplicateImport()" style="background: #6c757d; color: white;">Cancel Import</button>
             </div>
         </div>
     </div>
@@ -1254,7 +1403,11 @@
             alert('Component added successfully!');
         }
 
-        // Import components from CSV
+        // Global variables for import process
+        let pendingImportData = null;
+        let duplicateResults = [];
+
+        // Import components from CSV with duplicate detection
         function importCSV() {
             const fileInput = document.getElementById('csv-import-input');
             const file = fileInput.files[0];
@@ -1273,8 +1426,9 @@
                     }
                     
                     const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-                    let importedCount = 0;
                     let errors = [];
+                    let validComponents = [];
+                    let duplicates = [];
                     
                     // Check for required headers
                     const requiredHeaders = ['category', 'subcategory'];
@@ -1284,7 +1438,7 @@
                         return;
                     }
                     
-                    // Process each data row
+                    // Phase 1: Parse and validate all rows, detect duplicates
                     for (let i = 1; i < lines.length; i++) {
                         const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
                         if (values.length !== headers.length) continue;
@@ -1308,25 +1462,17 @@
                             continue;
                         }
                         
-                        // Generate KPN
-                        const config = categoryConfigs[category];
-                        const existingKPNs = data.components
-                            .filter(c => c.kpn.startsWith(`${config.code}-${subcategory}`))
-                            .map(c => parseInt(c.kpn.split('-')[2]))
-                            .filter(n => !isNaN(n));
-                        
-                        const nextNumber = existingKPNs.length > 0 ? Math.max(...existingKPNs) + 1 + importedCount : 1 + importedCount;
-                        const kpn = `${config.code}-${subcategory}-${nextNumber.toString().padStart(3, '0')}`;
-                        
-                        // Create component object
+                        // Create component object (without KPN for now)
                         const component = {
-                            kpn,
                             category,
                             subcategory,
-                            dateAdded: new Date().toISOString().split('T')[0]
+                            dateAdded: new Date().toISOString().split('T')[0],
+                            status: 'Active',
+                            rowNumber: i + 1
                         };
                         
                         // Map CSV fields to component fields
+                        const config = categoryConfigs[category];
                         config.fields.forEach(field => {
                             const csvKey = field.label.toLowerCase().replace(/\s+/g, '-');
                             const altKey = field.id.replace('_', '-');
@@ -1337,24 +1483,35 @@
                         // Check for duplicate components
                         const duplicateComponent = findDuplicateComponent(component);
                         if (duplicateComponent) {
-                            errors.push(`Row ${i + 1}: Component already exists with KPN ${duplicateComponent.kpn} - skipping duplicate`);
-                            continue;
+                            duplicates.push({
+                                component,
+                                existingComponent: duplicateComponent,
+                                choice: 'keep' // default choice
+                            });
+                        } else {
+                            validComponents.push(component);
                         }
-                        
-                        data.components.push(component);
-                        importedCount++;
                     }
                     
-                    if (importedCount > 0) {
-                        saveData();
-                        renderComponents();
-                        alert(`Successfully imported ${importedCount} components${errors.length > 0 ? ` with ${errors.length} errors` : ''}`);
-                        
-                        if (errors.length > 0) {
-                            console.log('Import errors:', errors);
-                        }
+                    // Show errors if any
+                    if (errors.length > 0) {
+                        console.log('Import validation errors:', errors);
+                        alert(`Found ${errors.length} validation errors. Check console for details.`);
+                    }
+                    
+                    // Store data for processing after user choices
+                    pendingImportData = {
+                        validComponents,
+                        duplicates,
+                        errors
+                    };
+                    
+                    // Phase 2: If duplicates found, show modal for user choice
+                    if (duplicates.length > 0) {
+                        showDuplicateModal(duplicates);
                     } else {
-                        alert('No components were imported. Please check your CSV format.');
+                        // No duplicates, proceed with direct import
+                        processFinalImport();
                     }
                     
                 } catch (error) {
@@ -1366,6 +1523,185 @@
             };
             
             reader.readAsText(file);
+        }
+
+        // Show duplicate confirmation modal
+        function showDuplicateModal(duplicates) {
+            const modal = document.getElementById('duplicate-modal');
+            const duplicateList = document.getElementById('duplicate-list');
+            
+            // Clear previous content
+            duplicateList.innerHTML = '';
+            
+            // Populate duplicate items
+            duplicates.forEach((duplicate, index) => {
+                const component = duplicate.component;
+                const existing = duplicate.existingComponent;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'duplicate-item';
+                
+                // Create a user-friendly component description
+                const componentDesc = createComponentDescription(component);
+                const existingDesc = createComponentDescription(existing);
+                
+                itemDiv.innerHTML = `
+                    <div class="duplicate-item-header">
+                        <span>⚠️ Row ${component.rowNumber}: ${componentDesc}</span>
+                    </div>
+                    <div class="duplicate-item-existing">
+                        <strong>Existing KPN:</strong> ${existing.kpn}<br>
+                        <strong>Details:</strong> ${existingDesc}
+                    </div>
+                    <div class="duplicate-choices">
+                        <input type="radio" id="keep-${index}" name="choice-${index}" value="keep" checked>
+                        <label for="keep-${index}">✅ Keep Existing KPN (${existing.kpn})</label>
+                        
+                        <input type="radio" id="new-${index}" name="choice-${index}" value="new">
+                        <label for="new-${index}">➕ Assign New KPN</label>
+                    </div>
+                `;
+                
+                duplicateList.appendChild(itemDiv);
+            });
+            
+            // Show modal
+            modal.style.display = 'flex';
+        }
+
+        // Create user-friendly component description
+        function createComponentDescription(component) {
+            const category = component.category?.charAt(0).toUpperCase() + component.category?.slice(1);
+            const subcategory = component.subcategory;
+            
+            // Create description based on component type
+            switch(component.category) {
+                case 'resistors':
+                case 'inductors':
+                    return `${category} ${component.value || 'N/A'} ${component.package || 'N/A'} ${component.tolerance || ''}`.trim();
+                case 'capacitors':
+                    return `${category} ${component.value || 'N/A'} ${component.package || 'N/A'} ${component.voltage_rating || ''}`.trim();
+                case 'ics':
+                case 'diodes':
+                case 'transistors':
+                case 'connectors':
+                case 'switches':
+                    return `${category} ${component.manufacturer_pn || component.description || 'N/A'}`.trim();
+                default:
+                    return `${category} ${subcategory}`;
+            }
+        }
+
+        // Process user choices and handle final import
+        function processDuplicateChoices() {
+            const duplicates = pendingImportData.duplicates;
+            
+            // Collect user choices
+            duplicates.forEach((duplicate, index) => {
+                const keepRadio = document.getElementById(`keep-${index}`);
+                const newRadio = document.getElementById(`new-${index}`);
+                
+                if (keepRadio.checked) {
+                    duplicate.choice = 'keep';
+                } else if (newRadio.checked) {
+                    duplicate.choice = 'new';
+                }
+            });
+            
+            // Hide modal and process import
+            document.getElementById('duplicate-modal').style.display = 'none';
+            processFinalImport();
+        }
+
+        // Cancel import process
+        function cancelDuplicateImport() {
+            document.getElementById('duplicate-modal').style.display = 'none';
+            pendingImportData = null;
+            duplicateResults = [];
+            alert('Import cancelled.');
+        }
+
+        // Process final import with user choices
+        function processFinalImport() {
+            if (!pendingImportData) return;
+            
+            const { validComponents, duplicates, errors } = pendingImportData;
+            let importedCount = 0;
+            let reusedCount = 0;
+            let reassignedCount = 0;
+            let componentsToAdd = [];
+            
+            // Add all non-duplicate components
+            validComponents.forEach(component => {
+                // Generate KPN for new component
+                const kpn = generateKPNForComponent(component, importedCount + reassignedCount);
+                component.kpn = kpn;
+                componentsToAdd.push(component);
+                importedCount++;
+            });
+            
+            // Process duplicate choices
+            duplicates.forEach(duplicate => {
+                if (duplicate.choice === 'new') {
+                    // User chose to assign new KPN
+                    const kpn = generateKPNForComponent(duplicate.component, importedCount + reassignedCount);
+                    duplicate.component.kpn = kpn;
+                    componentsToAdd.push(duplicate.component);
+                    reassignedCount++;
+                } else {
+                    // User chose to keep existing - do nothing (reuse existing)
+                    reusedCount++;
+                }
+            });
+            
+            // Add components to data
+            data.components.push(...componentsToAdd);
+            
+            // Save and refresh UI
+            if (componentsToAdd.length > 0) {
+                saveData();
+                renderComponents();
+            }
+            
+            // Show comprehensive import summary
+            showImportSummary(importedCount, reusedCount, reassignedCount, errors.length);
+            
+            // Reset pending data
+            pendingImportData = null;
+            duplicateResults = [];
+        }
+
+        // Generate KPN for a component during import
+        function generateKPNForComponent(component, offset = 0) {
+            const { category, subcategory } = component;
+            const config = categoryConfigs[category];
+            
+            const existingKPNs = data.components
+                .filter(c => c.kpn.startsWith(`${config.code}-${subcategory}`))
+                .map(c => parseInt(c.kpn.split('-')[2]))
+                .filter(n => !isNaN(n));
+            
+            const nextNumber = existingKPNs.length > 0 ? Math.max(...existingKPNs) + 1 + offset : 1 + offset;
+            return `${config.code}-${subcategory}-${nextNumber.toString().padStart(3, '0')}`;
+        }
+
+        // Show detailed import summary
+        function showImportSummary(newCount, reusedCount, reassignedCount, errorCount) {
+            const totalProcessed = newCount + reusedCount + reassignedCount;
+            
+            let message = '📊 Import Summary:\n\n';
+            message += `✅ New components created: ${newCount}\n`;
+            message += `🔄 Existing components reused: ${reusedCount}\n`;
+            message += `➕ Components force-assigned new KPN: ${reassignedCount}\n`;
+            message += `📋 Total components processed: ${totalProcessed}\n`;
+            
+            if (errorCount > 0) {
+                message += `❌ Validation errors: ${errorCount} (check console)\n`;
+            }
+            
+            message += '\n🎉 Import completed successfully!';
+            
+            alert(message);
         }
 
         // Export CSV template for component import
