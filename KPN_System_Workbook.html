@@ -1474,41 +1474,41 @@
                         // Map CSV fields to component fields - improved mapping logic
                         const config = categoryConfigs[category];
                         config.fields.forEach(field => {
-                            // Get the field label and create variations to search for
+                            // Get the field label and find the matching CSV field
                             const fieldLabel = field.label.toLowerCase();
-                            
-                            // Find matching CSV column by checking all possible variations
-                            let value = '';
-                            
-                            // First, try exact match with the field label
-                            for (const [csvKey, csvValue] of Object.entries(rowData)) {
-                                if (csvKey.toLowerCase() === fieldLabel) {
-                                    value = csvValue;
-                                    break;
-                                }
-                            }
-                            
-                            // If not found, try common variations
-                            if (!value) {
-                                const variations = [
-                                    fieldLabel.replace(/\s+/g, '-'),   // "manufacturer pn" -> "manufacturer-pn"
-                                    fieldLabel.replace(/\s+/g, '_'),   // "manufacturer pn" -> "manufacturer_pn" 
-                                    fieldLabel.replace(/\s+/g, ''),    // "manufacturer pn" -> "manufacturerpn"
-                                    field.id.replace(/-/g, '_'),       // "manufacturer-pn" -> "manufacturer_pn"
-                                    field.id                            // "manufacturer-pn"
-                                ];
-                                
-                                for (const variation of variations) {
-                                    if (rowData[variation] !== undefined) {
-                                        value = rowData[variation];
-                                        break;
-                                    }
-                                }
-                            }
+                            const value = findMatchingCSVField(fieldLabel, field, rowData);
                             
                             // Store with underscored field name
                             component[field.id.replace(/-/g, '_')] = value || '';
                         });
+                        
+                        // Function to find matching CSV field
+                        function findMatchingCSVField(fieldLabel, field, rowData) {
+                            // Try exact match with the field label
+                            for (const [csvKey, csvValue] of Object.entries(rowData)) {
+                                if (csvKey.toLowerCase() === fieldLabel) {
+                                    return csvValue;
+                                }
+                            }
+                            
+                            // Try common variations
+                            const variations = [
+                                fieldLabel.replace(/\s+/g, '-'),   // "manufacturer pn" -> "manufacturer-pn"
+                                fieldLabel.replace(/\s+/g, '_'),   // "manufacturer pn" -> "manufacturer_pn" 
+                                fieldLabel.replace(/\s+/g, ''),    // "manufacturer pn" -> "manufacturerpn"
+                                field.id.replace(/-/g, '_'),       // "manufacturer-pn" -> "manufacturer_pn"
+                                field.id                            // "manufacturer-pn"
+                            ];
+                            
+                            for (const variation of variations) {
+                                if (rowData[variation] !== undefined) {
+                                    return rowData[variation];
+                                }
+                            }
+                            
+                            // Return empty string if no match is found
+                            return '';
+                        }
                         
                         // Check for duplicate components
                         const duplicateComponent = findDuplicateComponent(component);
