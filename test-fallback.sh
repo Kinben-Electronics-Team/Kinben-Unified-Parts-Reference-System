@@ -43,7 +43,7 @@ fi
 
 # Test 5: Check for essential simplified elements (no modals in simplified version)
 if ! grep -q "tab-panel" KPN_System_Workbook.html; then
-    echo "❌ Error: No tab panels found in simplified structure"
+    echo "❌ Error: No 'tab-panel' elements found in simplified structure"
     exit 1
 fi
 
