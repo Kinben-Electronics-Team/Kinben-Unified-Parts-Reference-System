@@ -19,8 +19,7 @@ if (!fs.existsSync(distDir)) {
 // Files to copy
 const filesToCopy = [
     'index.html',
-    'KPN_System_Workbook.html',
-    'KPN_System_Workbook_backup.html'
+    'KPN_System_Workbook.html'
 ];
 
 // Get build timestamp for version tracking
