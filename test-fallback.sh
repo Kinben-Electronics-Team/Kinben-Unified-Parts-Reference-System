@@ -48,7 +48,7 @@ if ! grep -q "tab-panel" KPN_System_Workbook.html; then
 fi
 
 # Test 6: Check for simplified system structure
-if ! grep -q "Three Core Data Types Only" KPN_System_Workbook.html; then
+if ! grep -q "id=\"simplified-structure\"" KPN_System_Workbook.html; then
     echo "❌ Error: Simplified system structure not found"
     exit 1
 fi
