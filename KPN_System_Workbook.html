@@ -495,6 +495,17 @@
                     <input type="file" id="csv-import-input" accept=".csv" style="display: none;" onchange="importCSV()">
                     <button class="btn btn-info" onclick="document.getElementById('csv-import-input').click()">Import CSV</button>
                     <button class="btn" onclick="exportTemplate()" style="background: #6c757d; color: white;">Download Template</button>
+                    
+                    <!-- Bulk Actions -->
+                    <div style="margin-top: 10px;">
+                        <button class="btn" onclick="toggleBulkSelection()" style="background: #6c757d; color: white;" id="bulk-select-btn">Enable Bulk Select</button>
+                        <div id="bulk-actions" style="display: none; margin-top: 10px;">
+                            <button class="btn" onclick="selectAllComponents()" style="background: #17a2b8; color: white;">Select All</button>
+                            <button class="btn" onclick="deselectAllComponents()" style="background: #6c757d; color: white;">Deselect All</button>
+                            <button class="btn archive-btn" onclick="bulkArchiveComponents()">Archive Selected</button>
+                            <button class="btn delete-btn" onclick="bulkDeleteComponents()" id="bulk-delete-btn" style="display: none;">Delete Selected</button>
+                        </div>
+                    </div>
                 </div>
                 
                 <input type="text" class="search-box" id="comp-search" placeholder="Search components..." onkeyup="filterComponents()">
@@ -502,6 +513,9 @@
                 <table class="table" id="components-table">
                     <thead>
                         <tr>
+                            <th id="bulk-select-header" style="display: none;">
+                                <input type="checkbox" id="select-all-checkbox" onchange="toggleAllCheckboxes(this)">
+                            </th>
                             <th>KPN</th>
                             <th>Category</th>
                             <th>Subcategory</th>
@@ -846,6 +860,8 @@
                 code: 'RES', 
                 subcategories: ['STD', 'PRE', 'VAR', 'NET'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Yageo, Vishay' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., RC0805FR-0710KL' },
                     { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10k, 4.7k' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: true, placeholder: 'e.g., 1%, 5%' },
@@ -857,6 +873,8 @@
                 code: 'CAP', 
                 subcategories: ['CER', 'ELE', 'TAN', 'FIL'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, TDK' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., GRM21BR71H104KA01L' },
                     { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10uF, 100nF' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
@@ -869,6 +887,7 @@
                 code: 'IC', 
                 subcategories: ['MCU', 'ANA', 'DIG', 'PWR'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., STMicroelectronics, TI' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., STM32F103C8T6' },
                     { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 32-bit ARM Cortex-M3 MCU' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., LQFP-48, QFN-32' },
@@ -881,6 +900,8 @@
                 code: 'IND', 
                 subcategories: ['PWR', 'CHK', 'FER'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, Coilcraft' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., LQM18FN1R0M00D' },
                     { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10uH, 220nH' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1210' },
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
@@ -892,6 +913,7 @@
                 code: 'DIO', 
                 subcategories: ['STD', 'LED', 'ZEN', 'SCH'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Vishay, Diodes Inc' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 1N4148WS' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOD-323, SOT-23' },
                     { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 75V, 100V' },
@@ -903,6 +925,7 @@
                 code: 'TRA', 
                 subcategories: ['BJT', 'FET', 'MOS'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Infineon, ON Semi' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 2N7002K' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOT-23, TO-220' },
                     { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 60V, 100V' },
@@ -914,6 +937,7 @@
                 code: 'CON', 
                 subcategories: ['HDR', 'JST', 'USB', 'RJ45'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., JST, Molex' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., B2B-XH-A(LF)(SN)' },
                     { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 2-pin JST XH connector' },
                     { id: 'pitch', label: 'Pitch', type: 'text', required: false, placeholder: 'e.g., 2.54mm, 1.25mm' },
@@ -925,6 +949,7 @@
                 code: 'SWI', 
                 subcategories: ['TAC', 'DIP', 'ROT', 'SLI'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., ALPS, Omron' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., SKHHPNA010' },
                     { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Tactile switch 4.3x4.3mm' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 4.3x4.3mm, SMD' },
@@ -1058,6 +1083,53 @@
         }
 
         // Generate KPN for component
+        // Check if a component with the same key fields already exists
+        function findDuplicateComponent(componentData) {
+            const { category, subcategory } = componentData;
+            
+            // Define key fields that identify a unique component for each category
+            const keyFields = {
+                resistors: ['value', 'package', 'tolerance'],
+                capacitors: ['value', 'package', 'voltage_rating'],
+                inductors: ['value', 'package', 'tolerance'],
+                ics: ['manufacturer_pn'],
+                diodes: ['manufacturer_pn'],
+                transistors: ['manufacturer_pn'],
+                connectors: ['manufacturer_pn'],
+                switches: ['manufacturer_pn']
+            };
+            
+            const fieldsToCheck = keyFields[category] || [];
+            
+            // Find existing components with same category and subcategory
+            const similarComponents = data.components.filter(comp => 
+                comp.category === category && 
+                comp.subcategory === subcategory &&
+                comp.status === 'Active' // Only check active components
+            );
+            
+            // Check if any existing component has matching key fields
+            for (const existingComp of similarComponents) {
+                let isMatch = true;
+                
+                for (const field of fieldsToCheck) {
+                    const newValue = (componentData[field] || '').toString().toLowerCase().trim();
+                    const existingValue = (existingComp[field] || '').toString().toLowerCase().trim();
+                    
+                    if (newValue !== existingValue) {
+                        isMatch = false;
+                        break;
+                    }
+                }
+                
+                if (isMatch) {
+                    return existingComp;
+                }
+            }
+            
+            return null;
+        }
+
         function generateComponentKPN() {
             const category = document.getElementById('comp-category').value;
             const subcategory = document.getElementById('comp-subcategory').value;
@@ -1151,6 +1223,13 @@
             
             if (missingRequired.length > 0) {
                 alert(`Please fill in all required fields: ${missingRequired.join(', ')}`);
+                return;
+            }
+            
+            // Check for duplicate components
+            const duplicateComponent = findDuplicateComponent(component);
+            if (duplicateComponent) {
+                alert(`A component with matching specifications already exists with KPN: ${duplicateComponent.kpn}. Cannot create duplicate.`);
                 return;
             }
             
@@ -1252,8 +1331,15 @@
                             const csvKey = field.label.toLowerCase().replace(/\s+/g, '-');
                             const altKey = field.id.replace('_', '-');
                             const value = rowData[csvKey] || rowData[altKey] || '';
-                            component[field.id.replace('-', '_')] = value;
+                            component[field.id.replace(/-/g, '_')] = value;
                         });
+                        
+                        // Check for duplicate components
+                        const duplicateComponent = findDuplicateComponent(component);
+                        if (duplicateComponent) {
+                            errors.push(`Row ${i + 1}: Component already exists with KPN ${duplicateComponent.kpn} - skipping duplicate`);
+                            continue;
+                        }
                         
                         data.components.push(component);
                         importedCount++;
@@ -1919,7 +2005,14 @@
                     }
                 }
                 
+                // Build checkbox column if in bulk selection mode
+                let checkboxColumn = '';
+                if (bulkSelectionMode) {
+                    checkboxColumn = `<td><input type="checkbox" class="component-checkbox" value="${comp.kpn}"></td>`;
+                }
+                
                 row.innerHTML = `
+                    ${checkboxColumn}
                     <td><strong>${comp.kpn}</strong></td>
                     <td>${comp.category.charAt(0).toUpperCase() + comp.category.slice(1)}</td>
                     <td>${comp.subcategory}</td>
@@ -2280,6 +2373,149 @@
         }
 
         // Archive component (Team and Admin can do this)
+        // Global variable to track bulk selection mode
+        let bulkSelectionMode = false;
+
+        // Toggle bulk selection mode
+        function toggleBulkSelection() {
+            bulkSelectionMode = !bulkSelectionMode;
+            const bulkBtn = document.getElementById('bulk-select-btn');
+            const bulkActions = document.getElementById('bulk-actions');
+            const bulkHeader = document.getElementById('bulk-select-header');
+            const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+            
+            if (bulkSelectionMode) {
+                bulkBtn.textContent = 'Exit Bulk Select';
+                bulkBtn.style.background = '#dc3545';
+                bulkActions.style.display = 'block';
+                bulkHeader.style.display = '';
+                
+                // Show delete button only for admin users
+                if (currentUser.role === 'admin') {
+                    bulkDeleteBtn.style.display = '';
+                }
+                
+                renderComponents(); // Re-render to show checkboxes
+            } else {
+                bulkBtn.textContent = 'Enable Bulk Select';
+                bulkBtn.style.background = '#6c757d';
+                bulkActions.style.display = 'none';
+                bulkHeader.style.display = 'none';
+                bulkDeleteBtn.style.display = 'none';
+                
+                // Clear all selections
+                document.getElementById('select-all-checkbox').checked = false;
+                renderComponents(); // Re-render to hide checkboxes
+            }
+        }
+
+        // Toggle all checkboxes
+        function toggleAllCheckboxes(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('.component-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = masterCheckbox.checked;
+            });
+        }
+
+        // Select all components
+        function selectAllComponents() {
+            const masterCheckbox = document.getElementById('select-all-checkbox');
+            masterCheckbox.checked = true;
+            toggleAllCheckboxes(masterCheckbox);
+        }
+
+        // Deselect all components
+        function deselectAllComponents() {
+            const masterCheckbox = document.getElementById('select-all-checkbox');
+            masterCheckbox.checked = false;
+            toggleAllCheckboxes(masterCheckbox);
+        }
+
+        // Get selected component KPNs
+        function getSelectedComponentKPNs() {
+            const selectedKPNs = [];
+            const checkboxes = document.querySelectorAll('.component-checkbox:checked');
+            checkboxes.forEach(checkbox => {
+                selectedKPNs.push(checkbox.value);
+            });
+            return selectedKPNs;
+        }
+
+        // Bulk archive components
+        function bulkArchiveComponents() {
+            const selectedKPNs = getSelectedComponentKPNs();
+            
+            if (selectedKPNs.length === 0) {
+                alert('Please select components to archive.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to archive ${selectedKPNs.length} selected components? Archived components cannot be used in new BOMs.`)) {
+                let archivedCount = 0;
+                
+                selectedKPNs.forEach(kpn => {
+                    const componentIndex = data.components.findIndex(c => c.kpn === kpn);
+                    if (componentIndex !== -1 && data.components[componentIndex].status !== 'Archived') {
+                        data.components[componentIndex].status = 'Archived';
+                        data.components[componentIndex].archivedDate = new Date().toISOString().split('T')[0];
+                        data.components[componentIndex].archivedBy = currentUser.username;
+                        archivedCount++;
+                    }
+                });
+                
+                if (archivedCount > 0) {
+                    saveData();
+                    renderComponents();
+                    updateDropdowns();
+                    alert(`Successfully archived ${archivedCount} components.`);
+                    
+                    // Clear selections
+                    deselectAllComponents();
+                } else {
+                    alert('No components were archived (they may already be archived).');
+                }
+            }
+        }
+
+        // Bulk delete components (Admin only)
+        function bulkDeleteComponents() {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin users can delete components.');
+                return;
+            }
+            
+            const selectedKPNs = getSelectedComponentKPNs();
+            
+            if (selectedKPNs.length === 0) {
+                alert('Please select components to delete.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to PERMANENTLY DELETE ${selectedKPNs.length} selected components? This will allow their KPNs to be reused for new components.`)) {
+                let deletedCount = 0;
+                
+                // Delete in reverse order to avoid index issues
+                for (let i = data.components.length - 1; i >= 0; i--) {
+                    if (selectedKPNs.includes(data.components[i].kpn)) {
+                        data.components.splice(i, 1);
+                        deletedCount++;
+                    }
+                }
+                
+                if (deletedCount > 0) {
+                    saveData();
+                    renderComponents();
+                    updateDropdowns();
+                    alert(`Successfully deleted ${deletedCount} components. Their KPNs can now be reused.`);
+                    
+                    // Clear selections
+                    deselectAllComponents();
+                } else {
+                    alert('No components were deleted.');
+                }
+            }
+        }
+
         function archiveComponent(kpn) {
             if (confirm(`Are you sure you want to archive component ${kpn}? Archived components cannot be used in new BOMs.`)) {
                 const componentIndex = data.components.findIndex(c => c.kpn === kpn);
