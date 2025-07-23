@@ -1331,7 +1331,7 @@
                             const csvKey = field.label.toLowerCase().replace(/\s+/g, '-');
                             const altKey = field.id.replace('_', '-');
                             const value = rowData[csvKey] || rowData[altKey] || '';
-                            component[field.id.replace('-', '_')] = value;
+                            component[field.id.replace(/-/g, '_')] = value;
                         });
                         
                         // Check for duplicate components
