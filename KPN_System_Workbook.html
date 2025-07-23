@@ -250,9 +250,175 @@
         .remove-btn:hover {
             background: #c82333;
         }
+        
+        /* Login Modal Styles */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .login-container h2 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 24px;
+        }
+        
+        .login-container p {
+            margin: 0 0 30px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .login-form input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .login-form input:focus {
+            outline: none;
+            border-color: #0078d4;
+        }
+        
+        .login-form button {
+            padding: 12px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .login-form button:hover {
+            background: #106ebe;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 12px;
+        }
+        
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        
+        /* Archived component styles */
+        .status-archived {
+            color: #6c757d;
+            font-weight: bold;
+        }
+        
+        .archived-row {
+            opacity: 0.5;
+            background-color: #f8f9fa !important;
+        }
+        
+        .archived-row td {
+            color: #6c757d !important;
+        }
+        
+        /* Role-based action buttons */
+        .archive-btn {
+            background: #ffc107;
+            color: #212529;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        .archive-btn:hover {
+            background: #e0a800;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
     </style>
 </head>
 <body>
+    <!-- Login Modal -->
+    <div id="login-modal" class="login-modal">
+        <div class="login-container">
+            <h2>🔐 Login to KPN System</h2>
+            <p>Choose your user role to access the system</p>
+            <div class="login-form">
+                <input type="text" id="username" placeholder="Username" />
+                <input type="password" id="password" placeholder="Password" />
+                <button onclick="attemptLogin()">Login</button>
+            </div>
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
+                <strong>Demo Credentials:</strong><br>
+                Team User: team / team<br>
+                Admin User: admin / admin
+            </div>
+        </div>
+    </div>
+    
+    <!-- User Info Display -->
+    <div id="user-info" class="user-info" style="display: none;">
+        <span id="current-user"></span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
     <div class="container">
         <div class="header">
             <h1>🔧 Kinben Parts Reference System</h1>
@@ -559,6 +725,100 @@
             vendors: ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics']
         };
 
+        // Authentication state
+        let currentUser = {
+            username: null,
+            role: null // 'team' or 'admin'
+        };
+
+        // Check authentication status
+        function checkAuth() {
+            const savedAuth = localStorage.getItem('kinben-auth');
+            if (savedAuth) {
+                currentUser = JSON.parse(savedAuth);
+                showUserInfo();
+                hideLogin();
+                return true;
+            }
+            showLogin();
+            return false;
+        }
+
+        // Login function
+        function attemptLogin() {
+            const username = document.getElementById('username').value.toLowerCase().trim();
+            const password = document.getElementById('password').value;
+            
+            // Simple authentication - in production, this would be secured
+            if ((username === 'team' && password === 'team') || 
+                (username === 'admin' && password === 'admin')) {
+                
+                currentUser = {
+                    username: username,
+                    role: username // team or admin
+                };
+                
+                localStorage.setItem('kinben-auth', JSON.stringify(currentUser));
+                showUserInfo();
+                hideLogin();
+                
+                // Initialize the application
+                loadData();
+            } else {
+                alert('Invalid credentials. Use team/team or admin/admin');
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem('kinben-auth');
+            currentUser = { username: null, role: null };
+            showLogin();
+            hideUserInfo();
+        }
+
+        // Show/hide login modal
+        function showLogin() {
+            document.getElementById('login-modal').style.display = 'flex';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function hideLogin() {
+            document.getElementById('login-modal').style.display = 'none';
+        }
+
+        // Show/hide user info
+        function showUserInfo() {
+            const userInfo = document.getElementById('user-info');
+            const currentUserSpan = document.getElementById('current-user');
+            currentUserSpan.textContent = `${currentUser.username.charAt(0).toUpperCase() + currentUser.username.slice(1)} User (${currentUser.role === 'admin' ? 'Admin' : 'Team'})`;
+            userInfo.style.display = 'block';
+        }
+
+        function hideUserInfo() {
+            document.getElementById('user-info').style.display = 'none';
+        }
+
+        // Initialize authentication on page load
+        window.addEventListener('load', function() {
+            if (!checkAuth()) {
+                // Don't load data if not authenticated
+                return;
+            }
+        });
+
+        // Add keyboard support for login modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.getElementById('login-modal').style.display !== 'none') {
+                const username = document.getElementById('username');
+                const password = document.getElementById('password');
+                if (username.value || password.value) {
+                    attemptLogin();
+                }
+            }
+        });
+
         // Load data from localStorage
         function loadData() {
             const saved = localStorage.getItem('kinben-simple-data');
@@ -808,9 +1068,21 @@
                 const existingKPNs = data.components
                     .filter(c => c.kpn.startsWith(`${config.code}-${subcategory}`))
                     .map(c => parseInt(c.kpn.split('-')[2]))
-                    .filter(n => !isNaN(n));
+                    .filter(n => !isNaN(n))
+                    .sort((a, b) => a - b); // Sort to find gaps
                 
-                const nextNumber = existingKPNs.length > 0 ? Math.max(...existingKPNs) + 1 : 1;
+                let nextNumber = 1;
+                
+                // Find the first available number (allows reuse of deleted KPNs)
+                for (let i = 0; i < existingKPNs.length; i++) {
+                    if (existingKPNs[i] === nextNumber) {
+                        nextNumber++;
+                    } else {
+                        // Found a gap, use this number
+                        break;
+                    }
+                }
+                
                 const kpn = `${config.code}-${subcategory}-${nextNumber.toString().padStart(3, '0')}`;
                 
                 preview.textContent = kpn;
@@ -858,6 +1130,7 @@
                 kpn,
                 category,
                 subcategory,
+                status: 'Active', // Default status for new components
                 dateAdded: new Date().toISOString().split('T')[0]
             };
             
@@ -1565,14 +1838,14 @@
 
         // Update dropdowns
         function updateDropdowns() {
-            // Update BOM KPN dropdown
+            // Update BOM KPN dropdown - exclude archived components
             const bomSelect = document.getElementById('bom-kpn');
             bomSelect.innerHTML = '<option value="">Select Component</option>';
             data.components.forEach(comp => {
-                if (comp.status === 'Active') {
+                if (comp.status === 'Active') {  // Only show active components, not archived
                     const option = document.createElement('option');
                     option.value = comp.kpn;
-                    option.textContent = `${comp.kpn} - ${comp.manufacturer} ${comp.partNumber}`;
+                    option.textContent = `${comp.kpn} - ${comp.manufacturer || comp.manufacturer_pn || 'Unknown'} ${comp.partNumber || comp.value || ''}`;
                     bomSelect.appendChild(option);
                 }
             });
@@ -1598,6 +1871,11 @@
             data.components.forEach(comp => {
                 const row = document.createElement('tr');
                 
+                // Add archived styling if component is archived
+                if (comp.status === 'Archived') {
+                    row.className = 'archived-row';
+                }
+                
                 // Get category config for this component
                 const config = categoryConfigs[comp.category];
                 
@@ -1622,6 +1900,25 @@
                 // Get vendor
                 let vendor = comp.preferred_vendor || '';
                 
+                // Build action buttons based on user role and component status
+                let actionButtons = '';
+                if (comp.status !== 'Archived') {
+                    actionButtons += `<button class="btn" onclick="editComponent('${comp.kpn}')" style="background: #ff9800; color: white; padding: 4px 8px; font-size: 12px; margin-right: 5px;">Edit</button>`;
+                    
+                    if (currentUser.role === 'team') {
+                        actionButtons += `<button class="archive-btn" onclick="archiveComponent('${comp.kpn}')">Archive</button>`;
+                    } else if (currentUser.role === 'admin') {
+                        actionButtons += `<button class="archive-btn" onclick="archiveComponent('${comp.kpn}')">Archive</button>`;
+                        actionButtons += `<button class="delete-btn" onclick="deleteComponent('${comp.kpn}')">Delete</button>`;
+                    }
+                } else {
+                    // Show status for archived components
+                    actionButtons = '<span class="status-archived">Archived</span>';
+                    if (currentUser.role === 'admin') {
+                        actionButtons += ` <button class="delete-btn" onclick="deleteComponent('${comp.kpn}')">Delete</button>`;
+                    }
+                }
+                
                 row.innerHTML = `
                     <td><strong>${comp.kpn}</strong></td>
                     <td>${comp.category.charAt(0).toUpperCase() + comp.category.slice(1)}</td>
@@ -1631,7 +1928,7 @@
                     <td>${specs.join(', ')}</td>
                     <td>${vendor}</td>
                     <td>
-                        <button class="btn" onclick="editComponent('${comp.kpn}')" style="background: #ff9800; color: white; padding: 4px 8px; font-size: 12px;">Edit</button>
+                        ${actionButtons}
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -1923,7 +2220,10 @@
                 kpn,
                 category,
                 subcategory,
-                dateAdded: data.components[componentIndex].dateAdded // Keep original date
+                status: data.components[componentIndex].status || 'Active', // Keep original status
+                dateAdded: data.components[componentIndex].dateAdded, // Keep original date
+                archivedDate: data.components[componentIndex].archivedDate, // Keep archived date if exists
+                archivedBy: data.components[componentIndex].archivedBy // Keep archived by if exists
             };
             
             // Validate required fields and collect data
@@ -1977,6 +2277,42 @@
             
             // Hide cancel edit button
             document.getElementById('cancel-edit-btn').style.display = 'none';
+        }
+
+        // Archive component (Team and Admin can do this)
+        function archiveComponent(kpn) {
+            if (confirm(`Are you sure you want to archive component ${kpn}? Archived components cannot be used in new BOMs.`)) {
+                const componentIndex = data.components.findIndex(c => c.kpn === kpn);
+                if (componentIndex !== -1) {
+                    data.components[componentIndex].status = 'Archived';
+                    data.components[componentIndex].archivedDate = new Date().toISOString().split('T')[0];
+                    data.components[componentIndex].archivedBy = currentUser.username;
+                    saveData();
+                    renderComponents();
+                    updateDropdowns(); // Refresh dropdowns to exclude archived components
+                    alert(`Component ${kpn} has been archived.`);
+                }
+            }
+        }
+
+        // Delete component (Admin only - allows KPN reuse)
+        function deleteComponent(kpn) {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin users can delete components.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to PERMANENTLY DELETE component ${kpn}? This will allow the KPN to be reused for new components.`)) {
+                const componentIndex = data.components.findIndex(c => c.kpn === kpn);
+                if (componentIndex !== -1) {
+                    // Remove from components array completely
+                    data.components.splice(componentIndex, 1);
+                    saveData();
+                    renderComponents();
+                    updateDropdowns();
+                    alert(`Component ${kpn} has been permanently deleted. The KPN can now be reused.`);
+                }
+            }
         }
 
         function downloadCSV(csv, filename) {
