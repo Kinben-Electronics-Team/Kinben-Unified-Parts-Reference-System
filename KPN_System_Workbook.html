@@ -1022,7 +1022,11 @@
                     }
                 }
             } catch (error) {
-                console.error('Error handling user sign in:', error);
+                console.error('Error handling user sign in:', error.message); // Log only the error message
+                
+                // Optionally, send full error details to a secure logging service
+                // logErrorToService(error); // Uncomment and implement this function if needed
+                
                 showLoginError('Failed to load user data. Please try again.');
             }
         }
