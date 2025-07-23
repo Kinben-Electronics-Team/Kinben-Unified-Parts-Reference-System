@@ -967,8 +967,9 @@
             const headers = Array.from(allFields);
             let csv = headers.join(',') + '\n';
             
-            // Add example rows for each component category
+            // Add comprehensive example rows for ALL component categories
             const examples = [
+                // RESISTORS - Standard, Precision, Variable, Networks
                 {
                     category: 'resistors',
                     subcategory: 'STD',
@@ -980,6 +981,30 @@
                         'Preferred Vendor': 'Mouser'
                     }
                 },
+                {
+                    category: 'resistors',
+                    subcategory: 'PRE',
+                    data: {
+                        'Value': '4.7k',
+                        'Package': '0603', 
+                        'Tolerance': '0.1%',
+                        'Temp Rating': '-55°C to +155°C',
+                        'Preferred Vendor': 'Digi-Key'
+                    }
+                },
+                {
+                    category: 'resistors',
+                    subcategory: 'VAR',
+                    data: {
+                        'Value': '10k',
+                        'Package': '3296W', 
+                        'Tolerance': '10%',
+                        'Temp Rating': '-40°C to +85°C',
+                        'Preferred Vendor': 'Newark'
+                    }
+                },
+                
+                // CAPACITORS - Ceramic, Electrolytic, Tantalum, Film
                 {
                     category: 'capacitors', 
                     subcategory: 'CER',
@@ -993,15 +1018,297 @@
                     }
                 },
                 {
+                    category: 'capacitors', 
+                    subcategory: 'ELE',
+                    data: {
+                        'Value': '470uF',
+                        'Package': '8x12mm',
+                        'Tolerance': '20%', 
+                        'Voltage': '25V',
+                        'Rating': 'Low ESR',
+                        'Preferred Vendor': 'Mouser'
+                    }
+                },
+                {
+                    category: 'capacitors', 
+                    subcategory: 'TAN',
+                    data: {
+                        'Value': '22uF',
+                        'Package': '1206',
+                        'Tolerance': '10%', 
+                        'Voltage': '16V',
+                        'Rating': 'Industrial',
+                        'Preferred Vendor': 'Arrow'
+                    }
+                },
+                {
+                    category: 'capacitors', 
+                    subcategory: 'FIL',
+                    data: {
+                        'Value': '1uF',
+                        'Package': '1210',
+                        'Tolerance': '5%', 
+                        'Voltage': '250V',
+                        'Rating': 'X2',
+                        'Preferred Vendor': 'Farnell'
+                    }
+                },
+                
+                // INTEGRATED CIRCUITS - MCU, Analog, Digital, Power
+                {
                     category: 'ics',
                     subcategory: 'MCU', 
                     data: {
                         'Manufacturer PN': 'STM32F103C8T6',
-                        'Description': '32-bit ARM Cortex-M3 MCU',
+                        'Description': '32-bit ARM Cortex-M3 MCU 72MHz',
                         'Package': 'LQFP-48',
                         'Rating': 'Industrial',
-                        'Datasheet/Product Link': 'https://www.st.com/en/microcontrollers-microprocessors/stm32f103c8.html',
+                        'Datasheet/Product Link': 'https://www.st.com/stm32f103c8',
                         'Preferred Vendor': 'Mouser'
+                    }
+                },
+                {
+                    category: 'ics',
+                    subcategory: 'ANA', 
+                    data: {
+                        'Manufacturer PN': 'LM358DR',
+                        'Description': 'Dual Operational Amplifier',
+                        'Package': 'SOIC-8',
+                        'Rating': 'Industrial',
+                        'Datasheet/Product Link': 'https://www.ti.com/product/LM358',
+                        'Preferred Vendor': 'Digi-Key'
+                    }
+                },
+                {
+                    category: 'ics',
+                    subcategory: 'DIG', 
+                    data: {
+                        'Manufacturer PN': '74HC595D',
+                        'Description': '8-bit Serial-In Parallel-Out Shift Register',
+                        'Package': 'SOIC-16',
+                        'Rating': 'Commercial',
+                        'Datasheet/Product Link': 'https://www.nxp.com/products/logic/shift-registers',
+                        'Preferred Vendor': 'Newark'
+                    }
+                },
+                {
+                    category: 'ics',
+                    subcategory: 'PWR', 
+                    data: {
+                        'Manufacturer PN': 'LM2596S-5.0',
+                        'Description': 'Step-Down Voltage Regulator 5V 3A',
+                        'Package': 'TO-263-5',
+                        'Rating': 'Industrial',
+                        'Datasheet/Product Link': 'https://www.ti.com/product/LM2596',
+                        'Preferred Vendor': 'Mouser'
+                    }
+                },
+                
+                // INDUCTORS - Power, Choke, Ferrite
+                {
+                    category: 'inductors',
+                    subcategory: 'PWR',
+                    data: {
+                        'Value': '22uH',
+                        'Package': '1210',
+                        'Tolerance': '20%',
+                        'Current Rating': '2A',
+                        'Preferred Vendor': 'Coilcraft'
+                    }
+                },
+                {
+                    category: 'inductors',
+                    subcategory: 'CHK',
+                    data: {
+                        'Value': '100uH',
+                        'Package': '0805',
+                        'Tolerance': '10%',
+                        'Current Rating': '500mA',
+                        'Preferred Vendor': 'Murata'
+                    }
+                },
+                {
+                    category: 'inductors',
+                    subcategory: 'FER',
+                    data: {
+                        'Value': '220nH',
+                        'Package': '0603',
+                        'Tolerance': '25%',
+                        'Current Rating': '200mA',
+                        'Preferred Vendor': 'TDK'
+                    }
+                },
+                
+                // DIODES - Standard, LED, Zener, Schottky
+                {
+                    category: 'diodes',
+                    subcategory: 'STD',
+                    data: {
+                        'Manufacturer PN': '1N4148WS',
+                        'Package': 'SOD-323',
+                        'Voltage Rating': '75V',
+                        'Current Rating': '150mA',
+                        'Preferred Vendor': 'Vishay'
+                    }
+                },
+                {
+                    category: 'diodes',
+                    subcategory: 'LED',
+                    data: {
+                        'Manufacturer PN': 'LTST-C170KRKT',
+                        'Package': '0805',
+                        'Voltage Rating': '2.1V',
+                        'Current Rating': '20mA',
+                        'Preferred Vendor': 'Lite-On'
+                    }
+                },
+                {
+                    category: 'diodes',
+                    subcategory: 'ZEN',
+                    data: {
+                        'Manufacturer PN': 'BZX84C5V1',
+                        'Package': 'SOT-23',
+                        'Voltage Rating': '5.1V',
+                        'Current Rating': '250mA',
+                        'Preferred Vendor': 'NXP'
+                    }
+                },
+                {
+                    category: 'diodes',
+                    subcategory: 'SCH',
+                    data: {
+                        'Manufacturer PN': 'BAT54S',
+                        'Package': 'SOT-23',
+                        'Voltage Rating': '30V',
+                        'Current Rating': '200mA',
+                        'Preferred Vendor': 'Infineon'
+                    }
+                },
+                
+                // TRANSISTORS - BJT, FET, MOSFET
+                {
+                    category: 'transistors',
+                    subcategory: 'BJT',
+                    data: {
+                        'Manufacturer PN': 'MMBT3904',
+                        'Package': 'SOT-23',
+                        'Voltage Rating': '40V',
+                        'Current Rating': '200mA',
+                        'Preferred Vendor': 'ON Semi'
+                    }
+                },
+                {
+                    category: 'transistors',
+                    subcategory: 'FET',
+                    data: {
+                        'Manufacturer PN': '2N7002K',
+                        'Package': 'SOT-23',
+                        'Voltage Rating': '60V',
+                        'Current Rating': '300mA',
+                        'Preferred Vendor': 'Nexperia'
+                    }
+                },
+                {
+                    category: 'transistors',
+                    subcategory: 'MOS',
+                    data: {
+                        'Manufacturer PN': 'BSS138',
+                        'Package': 'SOT-23',
+                        'Voltage Rating': '50V',
+                        'Current Rating': '220mA',
+                        'Preferred Vendor': 'Fairchild'
+                    }
+                },
+                
+                // CONNECTORS - Header, JST, USB, RJ45
+                {
+                    category: 'connectors',
+                    subcategory: 'HDR',
+                    data: {
+                        'Manufacturer PN': 'TSW-102-07-G-S',
+                        'Description': '2-pin 0.1" header socket',
+                        'Pitch': '2.54mm',
+                        'Pins': '2',
+                        'Preferred Vendor': 'Samtec'
+                    }
+                },
+                {
+                    category: 'connectors',
+                    subcategory: 'JST',
+                    data: {
+                        'Manufacturer PN': 'B4B-XH-A(LF)(SN)',
+                        'Description': '4-pin JST XH connector',
+                        'Pitch': '2.5mm',
+                        'Pins': '4',
+                        'Preferred Vendor': 'JST'
+                    }
+                },
+                {
+                    category: 'connectors',
+                    subcategory: 'USB',
+                    data: {
+                        'Manufacturer PN': 'USB4085-GF-A',
+                        'Description': 'USB-C receptacle',
+                        'Pitch': '0.5mm',
+                        'Pins': '24',
+                        'Preferred Vendor': 'GCT'
+                    }
+                },
+                {
+                    category: 'connectors',
+                    subcategory: 'RJ45',
+                    data: {
+                        'Manufacturer PN': 'SI-60062-F',
+                        'Description': 'RJ45 Ethernet connector with LEDs',
+                        'Pitch': '1.27mm',
+                        'Pins': '8',
+                        'Preferred Vendor': 'Bel Fuse'
+                    }
+                },
+                
+                // SWITCHES - Tactile, DIP, Rotary, Slide
+                {
+                    category: 'switches',
+                    subcategory: 'TAC',
+                    data: {
+                        'Manufacturer PN': 'SKHHPNA010',
+                        'Description': 'Tactile switch 4.3x4.3mm',
+                        'Package': '4.3x4.3mm',
+                        'Actuation Force': '160gf',
+                        'Preferred Vendor': 'Alps'
+                    }
+                },
+                {
+                    category: 'switches',
+                    subcategory: 'DIP',
+                    data: {
+                        'Manufacturer PN': 'DS01-254-1-04BK-SMT',
+                        'Description': '4-position DIP switch',
+                        'Package': 'SMT',
+                        'Actuation Force': '250gf',
+                        'Preferred Vendor': 'CTS'
+                    }
+                },
+                {
+                    category: 'switches',
+                    subcategory: 'ROT',
+                    data: {
+                        'Manufacturer PN': 'PEC11R-4015F-S0024',
+                        'Description': 'Rotary encoder with switch',
+                        'Package': 'Through-hole',
+                        'Actuation Force': '200gf',
+                        'Preferred Vendor': 'Bourns'
+                    }
+                },
+                {
+                    category: 'switches',
+                    subcategory: 'SLI',
+                    data: {
+                        'Manufacturer PN': 'SS12D00G3',
+                        'Description': 'SPDT slide switch',
+                        'Package': '4.5x1.8mm',
+                        'Actuation Force': '120gf',
+                        'Preferred Vendor': 'E-Switch'
                     }
                 }
             ];
