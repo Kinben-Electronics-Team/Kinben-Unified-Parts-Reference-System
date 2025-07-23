@@ -36,7 +36,11 @@ export const getComponents = onRequest(async (request, response) => {
     
     const components: Component[] = [];
     snapshot.forEach(doc => {
-      components.push({ id: doc.id, ...doc.data() } as Component);
+      const data = doc.data();
+      components.push({ 
+        ...data,
+        id: parseInt(doc.id) || Date.now() // Convert Firestore doc id to number
+      } as Component);
     });
 
     response.status(200).json({
