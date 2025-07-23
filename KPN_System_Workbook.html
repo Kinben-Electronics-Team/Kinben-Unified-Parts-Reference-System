@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Kinben KPN System - Simplified</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
     <style>
         body { 
             font-family: Calibri, Arial, sans-serif; 
@@ -529,16 +535,17 @@
     <div id="login-modal" class="login-modal">
         <div class="login-container">
             <h2>🔐 Login to KPN System</h2>
-            <p>Choose your user role to access the system</p>
+            <p>Sign in with your Google account to access the system</p>
             <div class="login-form">
-                <input type="text" id="username" placeholder="Username" />
-                <input type="password" id="password" placeholder="Password" />
-                <button onclick="attemptLogin()">Login</button>
+                <button onclick="signInWithGoogle()" style="background: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px;">
+                    <span style="margin-right: 10px;">🔍</span>Sign in with Google
+                </button>
+                <div id="login-status" style="text-align: center; color: #666; font-size: 14px;"></div>
             </div>
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                <strong>Demo Credentials:</strong><br>
-                Team User: team / team<br>
-                Admin User: admin / admin
+                <strong>Note:</strong><br>
+                After signing in, an admin can assign you a role (Team or Admin).<br>
+                Contact your administrator if you need access.
             </div>
         </div>
     </div>
@@ -576,6 +583,7 @@
             <button class="tab" onclick="showTab('systems')">🏗️ Systems</button>
             <button class="tab" onclick="showTab('export')">📊 Export</button>
             <button class="tab" onclick="showTab('config')">⚙️ Config</button>
+            <button class="tab" id="user-mgmt-tab" onclick="showTab('user-management')" style="display: none;">👥 Users</button>
         </div>
         
         <div class="content" id="simplified-structure">
@@ -857,6 +865,45 @@
                     </div>
                 </div>
             </div>
+
+            <!-- User Management Tab (Admin Only) -->
+            <div id="user-management" class="tab-panel">
+                <h2>User Management</h2>
+                <p>Manage user roles and permissions (Admin access required)</p>
+                
+                <div style="max-width: 800px;">
+                    <div id="users-list">
+                        <h3>System Users</h3>
+                        <p>All users who have signed in to the system</p>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                                <thead>
+                                    <tr style="background: #f5f5f5;">
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">User</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Email</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Current Role</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Last Sign In</th>
+                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="users-table-body">
+                                    <!-- Users will be populated here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
+                            <h4>Role Descriptions</h4>
+                            <ul style="margin: 10px 0;">
+                                <li><strong>Team:</strong> Can create and archive components, create PCBs and systems</li>
+                                <li><strong>Admin:</strong> All team permissions plus ability to delete components and manage users</li>
+                                <li><strong>None:</strong> User has no system access (can sign in but cannot use features)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -880,6 +927,27 @@
     </div>
 
     <script>
+        // Firebase Configuration
+        // NOTE: Replace these with actual Firebase project credentials
+        const firebaseConfig = {
+            apiKey: "your-api-key-here",
+            authDomain: "the-clever-studio-f3b16.firebaseapp.com",
+            projectId: "the-clever-studio-f3b16",
+            storageBucket: "the-clever-studio-f3b16.appspot.com",
+            messagingSenderId: "your-sender-id",
+            appId: "your-app-id"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Configure Google Auth Provider
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        googleProvider.addScope('email');
+        googleProvider.addScope('profile');
+
         // Simplified data storage
         let data = {
             components: [],
@@ -894,57 +962,151 @@
             role: null // 'team' or 'admin'
         };
 
-        // Check authentication status
-        function checkAuth() {
-            const savedAuth = localStorage.getItem('kinben-auth');
-            if (savedAuth) {
-                currentUser = JSON.parse(savedAuth);
-                showUserInfo();
-                hideLogin();
-                return true;
-            }
-            showLogin();
-            return false;
-        }
-
-        // Login function
-        function attemptLogin() {
-            const username = document.getElementById('username').value.toLowerCase().trim();
-            const password = document.getElementById('password').value;
-            
-            // Simple authentication - in production, this would be secured
-            if ((username === 'team' && password === 'team') || 
-                (username === 'admin' && password === 'admin')) {
-                
-                currentUser = {
-                    username: username,
-                    role: username // team or admin
-                };
-                
-                localStorage.setItem('kinben-auth', JSON.stringify(currentUser));
-                showUserInfo();
-                hideLogin();
-                
-                // Initialize the application
-                loadData();
+        // Firebase Auth State Listener
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                // User is signed in
+                await handleUserSignIn(user);
             } else {
-                alert('Invalid credentials. Use team/team or admin/admin');
+                // User is signed out
+                handleUserSignOut();
+            }
+        });
+
+        // Handle user sign in
+        async function handleUserSignIn(user) {
+            try {
+                // Get user role from Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                let userRole = 'none'; // Default role
+                
+                if (userDoc.exists) {
+                    userRole = userDoc.data().role || 'none';
+                } else {
+                    // New user - create document with no role
+                    await db.collection('users').doc(user.uid).set({
+                        email: user.email,
+                        displayName: user.displayName,
+                        role: 'none',
+                        firstSignIn: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                // Update last sign in
+                await db.collection('users').doc(user.uid).update({
+                    lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Set current user
+                currentUser = {
+                    uid: user.uid,
+                    username: user.displayName || user.email.split('@')[0],
+                    email: user.email,
+                    role: userRole
+                };
+
+                if (userRole === 'none') {
+                    // User has no role assigned
+                    showNoRoleMessage();
+                } else {
+                    // User has a role, allow access
+                    hideLogin();
+                    showUserInfo();
+                    loadData(); // Load app data
+                    
+                    // Show user management tab for admins
+                    if (userRole === 'admin') {
+                        document.getElementById('user-mgmt-tab').style.display = 'block';
+                        loadUsersForManagement();
+                    }
+                }
+            } catch (error) {
+                console.error('Error handling user sign in:', error);
+                showLoginError('Failed to load user data. Please try again.');
             }
         }
 
-        // Logout function
-        function logout() {
-            localStorage.removeItem('kinben-auth');
-            currentUser = { username: null, role: null };
+        // Handle user sign out
+        function handleUserSignOut() {
+            currentUser = { username: null, role: null, uid: null, email: null };
             showLogin();
             hideUserInfo();
+            document.getElementById('user-mgmt-tab').style.display = 'none';
+        }
+
+        // Show no role message
+        function showNoRoleMessage() {
+            hideLogin();
+            hideUserInfo();
+            document.getElementById('login-status').innerHTML = `
+                <div style="padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; margin-top: 15px;">
+                    <h4 style="margin: 0 0 10px 0; color: #856404;">⏳ Access Pending</h4>
+                    <p style="margin: 0; color: #856404;">
+                        You have successfully signed in as <strong>${currentUser.email}</strong>, 
+                        but you haven't been assigned a role yet.
+                        <br><br>
+                        Please contact your system administrator to request access.
+                    </p>
+                    <div style="margin-top: 15px;">
+                        <button onclick="signOutUser()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 3px; cursor: pointer;">
+                            Sign Out
+                        </button>
+                    </div>
+                </div>
+            `;
+            showLogin(); // Keep login modal visible with status message
+        }
+
+        // Sign in with Google
+        async function signInWithGoogle() {
+            try {
+                document.getElementById('login-status').innerHTML = 'Signing in...';
+                await auth.signInWithPopup(googleProvider);
+            } catch (error) {
+                console.error('Error signing in with Google:', error);
+                showLoginError('Sign in failed: ' + error.message);
+            }
+        }
+
+        // Sign out user
+        async function signOutUser() {
+            try {
+                await auth.signOut();
+            } catch (error) {
+                console.error('Error signing out:', error);
+            }
+        }
+
+        // Show login error
+        function showLoginError(message) {
+            document.getElementById('login-status').innerHTML = `
+                <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 3px; margin-top: 10px;">
+                    ${message}
+                </div>
+            `;
+        }
+
+        // Check authentication status (legacy function - now handled by auth state listener)
+        function checkAuth() {
+            // This is now handled by Firebase Auth state listener
+            return currentUser.role && currentUser.role !== 'none';
+        }
+
+        // Legacy login function - replaced with Google Sign-In
+        function attemptLogin() {
+            // This function is no longer used but kept for compatibility
+            signInWithGoogle();
+        }
+
+        // Logout function - updated for Firebase
+        function logout() {
+            signOutUser();
         }
 
         // Show/hide login modal
         function showLogin() {
             document.getElementById('login-modal').style.display = 'flex';
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
         }
 
         function hideLogin() {
@@ -963,22 +1125,95 @@
             document.getElementById('user-info').style.display = 'none';
         }
 
-        // Initialize authentication on page load
-        window.addEventListener('load', function() {
-            if (!checkAuth()) {
-                // Don't load data if not authenticated
+        // User Management Functions
+        async function loadUsersForManagement() {
+            if (currentUser.role !== 'admin') {
                 return;
             }
+
+            try {
+                const usersSnapshot = await db.collection('users').orderBy('email').get();
+                const usersTableBody = document.getElementById('users-table-body');
+                usersTableBody.innerHTML = '';
+
+                usersSnapshot.forEach(doc => {
+                    const userData = doc.data();
+                    const row = document.createElement('tr');
+                    
+                    const lastSignIn = userData.lastSignIn ? 
+                        userData.lastSignIn.toDate().toLocaleDateString() : 'Never';
+                    
+                    row.innerHTML = `
+                        <td style="padding: 10px; border: 1px solid #ddd;">${userData.displayName || 'N/A'}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${userData.email}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">
+                            <span style="padding: 3px 8px; border-radius: 3px; font-size: 12px; background: ${getRoleColor(userData.role)}; color: white;">
+                                ${userData.role.toUpperCase()}
+                            </span>
+                        </td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">${lastSignIn}</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">
+                            <select onchange="updateUserRole('${doc.id}', this.value)" style="padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
+                                <option value="none" ${userData.role === 'none' ? 'selected' : ''}>None</option>
+                                <option value="team" ${userData.role === 'team' ? 'selected' : ''}>Team</option>
+                                <option value="admin" ${userData.role === 'admin' ? 'selected' : ''}>Admin</option>
+                            </select>
+                        </td>
+                    `;
+                    
+                    usersTableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading users:', error);
+                alert('Failed to load users: ' + error.message);
+            }
+        }
+
+        // Get role color for display
+        function getRoleColor(role) {
+            switch (role) {
+                case 'admin': return '#dc3545';
+                case 'team': return '#28a745';
+                case 'none': return '#6c757d';
+                default: return '#6c757d';
+            }
+        }
+
+        // Update user role
+        async function updateUserRole(userId, newRole) {
+            if (currentUser.role !== 'admin') {
+                alert('Only admins can update user roles.');
+                return;
+            }
+
+            try {
+                await db.collection('users').doc(userId).update({
+                    role: newRole,
+                    updatedBy: currentUser.email,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Refresh the users list
+                await loadUsersForManagement();
+                
+                alert(`User role updated to ${newRole.toUpperCase()}`);
+            } catch (error) {
+                console.error('Error updating user role:', error);
+                alert('Failed to update user role: ' + error.message);
+            }
+        }
+
+        // Initialize authentication on page load
+        window.addEventListener('load', function() {
+            // Firebase Auth will handle initialization via onAuthStateChanged
+            // Show login initially - auth state listener will handle the rest
+            showLogin();
         });
 
         // Add keyboard support for login modal
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && document.getElementById('login-modal').style.display !== 'none') {
-                const username = document.getElementById('username');
-                const password = document.getElementById('password');
-                if (username.value || password.value) {
-                    attemptLogin();
-                }
+                signInWithGoogle();
             }
         });
 
@@ -2980,7 +3215,8 @@
 
         // Initialize application
         document.addEventListener('DOMContentLoaded', function() {
-            loadData();
+            // Don't automatically load data - Firebase auth state listener will handle this
+            // loadData(); // Commented out - now handled by auth state change
         });
     </script>
 </body>
