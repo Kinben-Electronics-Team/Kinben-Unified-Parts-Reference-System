@@ -1272,9 +1272,11 @@
                     const newValue = (componentData[field] || '').toString().toLowerCase().trim();
                     const existingValue = (existingComp[field] || '').toString().toLowerCase().trim();
                     
-                    // Skip comparison if both values are empty (not identifying)
-                    if (newValue === '' && existingValue === '') {
-                        continue;
+                    // Track if at least one field is non-empty for both components
+                    const isFieldIdentifying = newValue !== '' || existingValue !== '';
+                    
+                    if (!isFieldIdentifying) {
+                        continue; // Skip non-identifying fields
                     }
                     
                     if (newValue !== existingValue) {
