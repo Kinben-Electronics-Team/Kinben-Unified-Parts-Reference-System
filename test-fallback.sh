@@ -41,15 +41,15 @@ if ! grep -q "\.tab" KPN_System_Workbook.html && ! grep -q "class.*tab" KPN_Syst
     exit 1
 fi
 
-# Test 5: Check for modal elements
-if ! grep -q "modal" KPN_System_Workbook.html; then
-    echo "❌ Error: No modal elements found"
+# Test 5: Check for essential simplified elements (no modals in simplified version)
+if ! grep -q "tab-panel" KPN_System_Workbook.html; then
+    echo "❌ Error: No tab panels found in simplified structure"
     exit 1
 fi
 
-# Test 6: Check for basic workbook structure
-if ! grep -q "workbook" KPN_System_Workbook.html; then
-    echo "❌ Error: No workbook structure found"
+# Test 6: Check for simplified system structure
+if ! grep -q "Three Core Data Types Only" KPN_System_Workbook.html; then
+    echo "❌ Error: Simplified system structure not found"
     exit 1
 fi
 
