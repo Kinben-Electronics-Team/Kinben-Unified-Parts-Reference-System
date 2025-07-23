@@ -314,36 +314,18 @@
                     </div>
                 </div>
                 
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Manufacturer</label>
-                        <input type="text" id="comp-manufacturer" placeholder="e.g., Texas Instruments">
-                    </div>
-                    <div class="form-group">
-                        <label>Part Number</label>
-                        <input type="text" id="comp-part-number" placeholder="Manufacturer part number">
-                    </div>
-                    <div class="form-group">
-                        <label>Package</label>
-                        <input type="text" id="comp-package" placeholder="e.g., 0805, SOIC-8">
-                    </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select id="comp-status">
-                            <option value="Active">Active</option>
-                            <option value="Inactive">Inactive</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label>Description</label>
-                    <input type="text" id="comp-description" placeholder="Brief component description">
+                <!-- Dynamic component fields based on category -->
+                <div id="component-dynamic-fields">
+                    <p style="color: #666; text-align: center; margin: 40px 0;">
+                        Select a category and subcategory to display component-specific fields
+                    </p>
                 </div>
                 
                 <div class="actions">
                     <button class="btn btn-primary" onclick="addComponent()">Add Component</button>
                     <button class="btn btn-success" onclick="exportComponents()">Export CSV</button>
+                    <input type="file" id="csv-import-input" accept=".csv" style="display: none;" onchange="importCSV()">
+                    <button class="btn btn-info" onclick="document.getElementById('csv-import-input').click()">Import CSV</button>
                 </div>
                 
                 <input type="text" class="search-box" id="comp-search" placeholder="Search components..." onkeyup="filterComponents()">
@@ -352,11 +334,12 @@
                     <thead>
                         <tr>
                             <th>KPN</th>
-                            <th>Manufacturer</th>
-                            <th>Part Number</th>
-                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Subcategory</th>
+                            <th>Value/PN</th>
                             <th>Package</th>
-                            <th>Status</th>
+                            <th>Specs</th>
+                            <th>Vendor</th>
                         </tr>
                     </thead>
                     <tbody id="components-tbody">
@@ -560,16 +543,98 @@
             updateStats();
         }
 
-        // Category configurations (simplified)
+        // Category configurations with component-specific fields
         const categoryConfigs = {
-            capacitors: { code: 'CAP', subcategories: ['CER', 'ELE', 'TAN', 'FIL'] },
-            resistors: { code: 'RES', subcategories: ['STD', 'PRE', 'VAR', 'NET'] },
-            inductors: { code: 'IND', subcategories: ['PWR', 'CHK', 'FER'] },
-            diodes: { code: 'DIO', subcategories: ['STD', 'LED', 'ZEN', 'SCH'] },
-            transistors: { code: 'TRA', subcategories: ['BJT', 'FET', 'MOS'] },
-            ics: { code: 'IC', subcategories: ['MCU', 'ANA', 'DIG', 'PWR'] },
-            connectors: { code: 'CON', subcategories: ['HDR', 'JST', 'USB', 'RJ45'] },
-            switches: { code: 'SWI', subcategories: ['TAC', 'DIP', 'ROT', 'SLI'] }
+            resistors: { 
+                code: 'RES', 
+                subcategories: ['STD', 'PRE', 'VAR', 'NET'],
+                fields: [
+                    { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10k, 4.7k' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'text', required: true, placeholder: 'e.g., 1%, 5%' },
+                    { id: 'temp-rating', label: 'Temp Rating', type: 'text', required: false, placeholder: 'e.g., -55°C to +125°C' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                ]
+            },
+            capacitors: { 
+                code: 'CAP', 
+                subcategories: ['CER', 'ELE', 'TAN', 'FIL'],
+                fields: [
+                    { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10uF, 100nF' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
+                    { id: 'voltage', label: 'Voltage', type: 'text', required: true, placeholder: 'e.g., 25V, 50V' },
+                    { id: 'rating', label: 'Rating', type: 'text', required: false, placeholder: 'e.g., X7R, X5R, Y5V' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                ]
+            },
+            ics: { 
+                code: 'IC', 
+                subcategories: ['MCU', 'ANA', 'DIG', 'PWR'],
+                fields: [
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., STM32F103C8T6' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 32-bit ARM Cortex-M3 MCU' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., LQFP-48, QFN-32' },
+                    { id: 'rating', label: 'Rating', type: 'text', required: false, placeholder: 'e.g., Automotive, Industrial' },
+                    { id: 'datasheet-link', label: 'Datasheet/Product Link', type: 'url', required: false, placeholder: 'https://...' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                ]
+            },
+            inductors: { 
+                code: 'IND', 
+                subcategories: ['PWR', 'CHK', 'FER'],
+                fields: [
+                    { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10uH, 220nH' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1210' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
+                    { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 1A, 500mA' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                ]
+            },
+            diodes: { 
+                code: 'DIO', 
+                subcategories: ['STD', 'LED', 'ZEN', 'SCH'],
+                fields: [
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 1N4148WS' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOD-323, SOT-23' },
+                    { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 75V, 100V' },
+                    { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 150mA, 1A' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                ]
+            },
+            transistors: { 
+                code: 'TRA', 
+                subcategories: ['BJT', 'FET', 'MOS'],
+                fields: [
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 2N7002K' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOT-23, TO-220' },
+                    { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 60V, 100V' },
+                    { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 300mA, 1A' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                ]
+            },
+            connectors: { 
+                code: 'CON', 
+                subcategories: ['HDR', 'JST', 'USB', 'RJ45'],
+                fields: [
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., B2B-XH-A(LF)(SN)' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 2-pin JST XH connector' },
+                    { id: 'pitch', label: 'Pitch', type: 'text', required: false, placeholder: 'e.g., 2.54mm, 1.25mm' },
+                    { id: 'pins', label: 'Pins', type: 'number', required: false, placeholder: 'e.g., 2, 4, 8' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                ]
+            },
+            switches: { 
+                code: 'SWI', 
+                subcategories: ['TAC', 'DIP', 'ROT', 'SLI'],
+                fields: [
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., SKHHPNA010' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Tactile switch 4.3x4.3mm' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 4.3x4.3mm, SMD' },
+                    { id: 'actuation-force', label: 'Actuation Force', type: 'text', required: false, placeholder: 'e.g., 160gf, 260gf' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                ]
+            }
         };
 
         // Tab management
@@ -610,7 +675,70 @@
                 });
             }
             
+            // Update dynamic fields
+            updateComponentFields();
             generateComponentKPN();
+        }
+
+        // Update component fields based on selected category
+        function updateComponentFields() {
+            const category = document.getElementById('comp-category').value;
+            const dynamicFieldsContainer = document.getElementById('component-dynamic-fields');
+            
+            if (!category || !categoryConfigs[category]) {
+                dynamicFieldsContainer.innerHTML = `
+                    <p style="color: #666; text-align: center; margin: 40px 0;">
+                        Select a category and subcategory to display component-specific fields
+                    </p>
+                `;
+                return;
+            }
+            
+            const config = categoryConfigs[category];
+            let fieldsHTML = '<div class="form-grid">';
+            
+            // Add KPN field (always present)
+            fieldsHTML += `
+                <div class="form-group">
+                    <label>KPN <span style="color: red;">*</span></label>
+                    <input type="text" id="comp-kpn" readonly style="background: #f5f5f5;">
+                </div>
+                <div class="form-group">
+                    <label>Category <span style="color: red;">*</span></label>
+                    <input type="text" id="comp-category-display" readonly style="background: #f5f5f5;">
+                </div>
+                <div class="form-group">
+                    <label>Subcategory <span style="color: red;">*</span></label>
+                    <input type="text" id="comp-subcategory-display" readonly style="background: #f5f5f5;">
+                </div>
+            `;
+            
+            // Add category-specific fields
+            config.fields.forEach(field => {
+                const requiredMark = field.required ? '<span style="color: red;">*</span>' : '';
+                fieldsHTML += `
+                    <div class="form-group">
+                        <label>${field.label} ${requiredMark}</label>
+                        <input type="${field.type}" 
+                               id="comp-${field.id}" 
+                               placeholder="${field.placeholder}"
+                               ${field.required ? 'required' : ''}>
+                    </div>
+                `;
+            });
+            
+            fieldsHTML += '</div>';
+            dynamicFieldsContainer.innerHTML = fieldsHTML;
+            
+            // Update readonly fields if category/subcategory are already selected
+            const categorySelect = document.getElementById('comp-category');
+            const subcategorySelect = document.getElementById('comp-subcategory');
+            if (categorySelect.value) {
+                document.getElementById('comp-category-display').value = categorySelect.options[categorySelect.selectedIndex].text;
+            }
+            if (subcategorySelect.value) {
+                document.getElementById('comp-subcategory-display').value = subcategorySelect.value;
+            }
         }
 
         // Generate KPN for component
@@ -630,8 +758,30 @@
                 const kpn = `${config.code}-${subcategory}-${nextNumber.toString().padStart(3, '0')}`;
                 
                 preview.textContent = kpn;
+                
+                // Update KPN in dynamic form if it exists
+                const compKpnField = document.getElementById('comp-kpn');
+                if (compKpnField) {
+                    compKpnField.value = kpn;
+                }
+                
+                // Update category and subcategory display fields
+                const compCategoryDisplay = document.getElementById('comp-category-display');
+                const compSubcategoryDisplay = document.getElementById('comp-subcategory-display');
+                if (compCategoryDisplay) {
+                    const categorySelect = document.getElementById('comp-category');
+                    compCategoryDisplay.value = categorySelect.options[categorySelect.selectedIndex].text;
+                }
+                if (compSubcategoryDisplay) {
+                    compSubcategoryDisplay.value = subcategory;
+                }
             } else {
                 preview.textContent = 'Select category and subcategory';
+                // Clear dynamic form KPN field
+                const compKpnField = document.getElementById('comp-kpn');
+                if (compKpnField) {
+                    compKpnField.value = '';
+                }
             }
         }
 
@@ -639,30 +789,41 @@
         function addComponent() {
             const category = document.getElementById('comp-category').value;
             const subcategory = document.getElementById('comp-subcategory').value;
-            const manufacturer = document.getElementById('comp-manufacturer').value;
-            const partNumber = document.getElementById('comp-part-number').value;
-            const packageType = document.getElementById('comp-package').value;
-            const status = document.getElementById('comp-status').value;
-            const description = document.getElementById('comp-description').value;
             
-            if (!category || !subcategory || !manufacturer || !partNumber) {
-                alert('Please fill in all required fields');
+            if (!category || !subcategory) {
+                alert('Please select category and subcategory first');
                 return;
             }
             
-            const kpn = document.getElementById('comp-kpn-preview').textContent;
+            const kpn = document.getElementById('comp-kpn').value || document.getElementById('comp-kpn-preview').textContent;
             
+            // Collect data from dynamic fields
             const component = {
                 kpn,
                 category,
                 subcategory,
-                manufacturer,
-                partNumber,
-                package: packageType,
-                status,
-                description,
                 dateAdded: new Date().toISOString().split('T')[0]
             };
+            
+            // Validate required fields and collect data
+            const config = categoryConfigs[category];
+            let missingRequired = [];
+            
+            config.fields.forEach(field => {
+                const fieldElement = document.getElementById(`comp-${field.id}`);
+                if (fieldElement) {
+                    const value = fieldElement.value.trim();
+                    if (field.required && !value) {
+                        missingRequired.push(field.label);
+                    }
+                    component[field.id.replace('-', '_')] = value;
+                }
+            });
+            
+            if (missingRequired.length > 0) {
+                alert(`Please fill in all required fields: ${missingRequired.join(', ')}`);
+                return;
+            }
             
             data.components.push(component);
             saveData();
@@ -671,11 +832,125 @@
             // Clear form
             document.getElementById('comp-category').value = '';
             document.getElementById('comp-subcategory').value = '';
-            document.getElementById('comp-manufacturer').value = '';
-            document.getElementById('comp-part-number').value = '';
-            document.getElementById('comp-package').value = '';
-            document.getElementById('comp-description').value = '';
             document.getElementById('comp-kpn-preview').textContent = 'Select category and subcategory';
+            
+            // Clear dynamic fields
+            const dynamicFieldsContainer = document.getElementById('component-dynamic-fields');
+            dynamicFieldsContainer.innerHTML = `
+                <p style="color: #666; text-align: center; margin: 40px 0;">
+                    Select a category and subcategory to display component-specific fields
+                </p>
+            `;
+            
+            // Show success message
+            alert('Component added successfully!');
+        }
+
+        // Import components from CSV
+        function importCSV() {
+            const fileInput = document.getElementById('csv-import-input');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csv = e.target.result;
+                    const lines = csv.split('\n').filter(line => line.trim());
+                    
+                    if (lines.length < 2) {
+                        alert('CSV file must have at least a header row and one data row');
+                        return;
+                    }
+                    
+                    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+                    let importedCount = 0;
+                    let errors = [];
+                    
+                    // Check for required headers
+                    const requiredHeaders = ['category', 'subcategory'];
+                    const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
+                    if (missingHeaders.length > 0) {
+                        alert(`Missing required columns: ${missingHeaders.join(', ')}`);
+                        return;
+                    }
+                    
+                    // Process each data row
+                    for (let i = 1; i < lines.length; i++) {
+                        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+                        if (values.length !== headers.length) continue;
+                        
+                        const rowData = {};
+                        headers.forEach((header, index) => {
+                            rowData[header] = values[index];
+                        });
+                        
+                        // Validate category and subcategory
+                        const category = rowData.category?.toLowerCase();
+                        const subcategory = rowData.subcategory?.toUpperCase();
+                        
+                        if (!category || !categoryConfigs[category]) {
+                            errors.push(`Row ${i + 1}: Invalid category "${rowData.category}"`);
+                            continue;
+                        }
+                        
+                        if (!subcategory || !categoryConfigs[category].subcategories.includes(subcategory)) {
+                            errors.push(`Row ${i + 1}: Invalid subcategory "${rowData.subcategory}" for category "${category}"`);
+                            continue;
+                        }
+                        
+                        // Generate KPN
+                        const config = categoryConfigs[category];
+                        const existingKPNs = data.components
+                            .filter(c => c.kpn.startsWith(`${config.code}-${subcategory}`))
+                            .map(c => parseInt(c.kpn.split('-')[2]))
+                            .filter(n => !isNaN(n));
+                        
+                        const nextNumber = existingKPNs.length > 0 ? Math.max(...existingKPNs) + 1 + importedCount : 1 + importedCount;
+                        const kpn = `${config.code}-${subcategory}-${nextNumber.toString().padStart(3, '0')}`;
+                        
+                        // Create component object
+                        const component = {
+                            kpn,
+                            category,
+                            subcategory,
+                            dateAdded: new Date().toISOString().split('T')[0]
+                        };
+                        
+                        // Map CSV fields to component fields
+                        config.fields.forEach(field => {
+                            const csvKey = field.label.toLowerCase().replace(/\s+/g, '-');
+                            const altKey = field.id.replace('_', '-');
+                            const value = rowData[csvKey] || rowData[altKey] || '';
+                            component[field.id.replace('-', '_')] = value;
+                        });
+                        
+                        data.components.push(component);
+                        importedCount++;
+                    }
+                    
+                    if (importedCount > 0) {
+                        saveData();
+                        renderComponents();
+                        alert(`Successfully imported ${importedCount} components${errors.length > 0 ? ` with ${errors.length} errors` : ''}`);
+                        
+                        if (errors.length > 0) {
+                            console.log('Import errors:', errors);
+                        }
+                    } else {
+                        alert('No components were imported. Please check your CSV format.');
+                    }
+                    
+                } catch (error) {
+                    alert('Error reading CSV file: ' + error.message);
+                }
+                
+                // Clear the input
+                fileInput.value = '';
+            };
+            
+            reader.readAsText(file);
         }
 
         // Current BOM items for PCB form
@@ -895,13 +1170,39 @@
             
             data.components.forEach(comp => {
                 const row = document.createElement('tr');
+                
+                // Get category config for this component
+                const config = categoryConfigs[comp.category];
+                
+                // Determine value/PN field
+                let valuePn = comp.value || comp.manufacturer_pn || comp.manufacturer_PN || '';
+                
+                // Determine package
+                let packageValue = comp.package || '';
+                
+                // Build specs string
+                let specs = [];
+                if (comp.tolerance) specs.push(`±${comp.tolerance}`);
+                if (comp.voltage) specs.push(`${comp.voltage}`);
+                if (comp.rating) specs.push(`${comp.rating}`);
+                if (comp.temp_rating) specs.push(`${comp.temp_rating}`);
+                if (comp.current_rating) specs.push(`${comp.current_rating}`);
+                if (comp.voltage_rating) specs.push(`${comp.voltage_rating}`);
+                if (comp.actuation_force) specs.push(`${comp.actuation_force}`);
+                if (comp.pitch) specs.push(`${comp.pitch}`);
+                if (comp.pins) specs.push(`${comp.pins}P`);
+                
+                // Get vendor
+                let vendor = comp.preferred_vendor || '';
+                
                 row.innerHTML = `
-                    <td>${comp.kpn}</td>
-                    <td>${comp.manufacturer}</td>
-                    <td>${comp.partNumber}</td>
-                    <td>${comp.description}</td>
-                    <td>${comp.package}</td>
-                    <td><span class="status-${comp.status.toLowerCase()}">${comp.status}</span></td>
+                    <td><strong>${comp.kpn}</strong></td>
+                    <td>${comp.category.charAt(0).toUpperCase() + comp.category.slice(1)}</td>
+                    <td>${comp.subcategory}</td>
+                    <td>${valuePn}</td>
+                    <td>${packageValue}</td>
+                    <td>${specs.join(', ')}</td>
+                    <td>${vendor}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -997,10 +1298,45 @@
                 return;
             }
             
-            const csv = 'KPN,Category,Subcategory,Manufacturer,Part Number,Package,Status,Description,Date Added\n' +
-                data.components.map(c => 
-                    `${c.kpn},${c.category},${c.subcategory},${c.manufacturer},"${c.partNumber}",${c.package},${c.status},"${c.description}",${c.dateAdded}`
-                ).join('\n');
+            // Get all possible field names
+            const allFields = new Set(['KPN', 'Category', 'Subcategory', 'Date Added']);
+            Object.values(categoryConfigs).forEach(config => {
+                config.fields.forEach(field => {
+                    allFields.add(field.label);
+                });
+            });
+            
+            const headers = Array.from(allFields);
+            let csv = headers.join(',') + '\n';
+            
+            csv += data.components.map(c => {
+                return headers.map(header => {
+                    let value = '';
+                    switch(header) {
+                        case 'KPN': value = c.kpn; break;
+                        case 'Category': value = c.category; break;
+                        case 'Subcategory': value = c.subcategory; break;
+                        case 'Date Added': value = c.dateAdded; break;
+                        case 'Value': value = c.value || ''; break;
+                        case 'Package': value = c.package || ''; break;
+                        case 'Tolerance': value = c.tolerance || ''; break;
+                        case 'Temp Rating': value = c.temp_rating || ''; break;
+                        case 'Preferred Vendor': value = c.preferred_vendor || ''; break;
+                        case 'Voltage': value = c.voltage || ''; break;
+                        case 'Rating': value = c.rating || ''; break;
+                        case 'Manufacturer PN': value = c.manufacturer_pn || ''; break;
+                        case 'Description': value = c.description || ''; break;
+                        case 'Datasheet/Product Link': value = c.datasheet_link || ''; break;
+                        case 'Current Rating': value = c.current_rating || ''; break;
+                        case 'Voltage Rating': value = c.voltage_rating || ''; break;
+                        case 'Pitch': value = c.pitch || ''; break;
+                        case 'Pins': value = c.pins || ''; break;
+                        case 'Actuation Force': value = c.actuation_force || ''; break;
+                        default: value = '';
+                    }
+                    return `"${value}"`;
+                }).join(',');
+            }).join('\n');
             
             downloadCSV(csv, 'kinben-components.csv');
         }
