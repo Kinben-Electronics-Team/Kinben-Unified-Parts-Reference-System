@@ -3,23 +3,10 @@
   "version": "2.1.0",
   "description": "Advanced multi-level hierarchy management system for electronic components, PCBs, assemblies, and complete systems with image support and full traceability",
   "private": true,
-  "packageManager": "pnpm@8.15.0",
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "test": "turbo run test",
-    "lint": "turbo run lint",
-    "type-check": "turbo run type-check",
-    "clean": "turbo run clean",
-    "web:dev": "pnpm --filter @kinben/web dev",
-    "web:build": "pnpm --filter @kinben/web build",
-    "admin:dev": "pnpm --filter @kinben/admin dev",
-    "admin:build": "pnpm --filter @kinben/admin build",
-    "functions:build": "pnpm --filter @kinben/api-functions build",
-    "functions:deploy": "pnpm --filter @kinben/api-functions deploy",
-    "legacy:start": "python3 serve.py",
-    "legacy:build": "node build-for-firebase.js",
-    "legacy:test": "npx playwright test || npm run test:fallback",
+    "build": "node build-for-firebase.js",
+    "start": "python3 serve.py",
+    "test": "npx playwright test",
     "test:fallback": "./test-fallback.sh"
   },
   "repository": {
@@ -35,10 +22,7 @@
     "system-design",
     "component-tracking",
     "engineering-tools",
-    "kinben",
-    "hierarchy-management",
-    "monorepo",
-    "workspace"
+    "kinben"
   ],
   "author": "Kinben Electronics Team",
   "license": "MIT",
@@ -48,17 +32,10 @@
   },
   "engines": {
     "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
+    "npm": ">=8.0.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.40.0",
-    "@types/node": "^20.0.0",
-    "firebase-tools": "^14.11.0",
-    "turbo": "^1.13.0",
-    "typescript": "^5.0.0"
-  },
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ]
+    "firebase-tools": "^14.11.0"
+  }
 }
