@@ -31,6 +31,7 @@ test-results/
 playwright-report/
 coverage/
 .nyc_output/
+test-auth-integration.js
 
 # Claude files (optional - keep if you want to track)
 # .claude/test-navigation.js
