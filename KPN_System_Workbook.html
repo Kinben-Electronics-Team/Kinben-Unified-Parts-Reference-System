@@ -279,6 +279,7 @@
             <button class="tab" onclick="showTab('pcbs')">🔌 PCBs</button>
             <button class="tab" onclick="showTab('systems')">🏗️ Systems</button>
             <button class="tab" onclick="showTab('export')">📊 Export</button>
+            <button class="tab" onclick="showTab('config')">⚙️ Config</button>
         </div>
         
         <div class="content" id="simplified-structure">
@@ -323,6 +324,7 @@
                 
                 <div class="actions">
                     <button class="btn btn-primary" onclick="addComponent()">Add Component</button>
+                    <button class="btn" onclick="resetComponentForm()" style="background: #6c757d; color: white; display: none;" id="cancel-edit-btn">Cancel Edit</button>
                     <button class="btn btn-success" onclick="exportComponents()">Export CSV</button>
                     <input type="file" id="csv-import-input" accept=".csv" style="display: none;" onchange="importCSV()">
                     <button class="btn btn-info" onclick="document.getElementById('csv-import-input').click()">Import CSV</button>
@@ -341,6 +343,7 @@
                             <th>Package</th>
                             <th>Specs</th>
                             <th>Vendor</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="components-tbody">
@@ -517,6 +520,33 @@
                     <button class="btn btn-success" onclick="exportSystems()">Export Systems Only</button>
                 </div>
             </div>
+            
+            <!-- Config Tab -->
+            <div id="config" class="tab-panel">
+                <h2>Configuration</h2>
+                <p>Manage system settings and preferred vendors</p>
+                
+                <div style="max-width: 800px;">
+                    <h3>Preferred Vendors</h3>
+                    <p>Add and manage your preferred component vendors for dropdown selection</p>
+                    
+                    <div class="form-grid" style="grid-template-columns: 1fr auto; align-items: end;">
+                        <div class="form-group">
+                            <label>Vendor Name</label>
+                            <input type="text" id="new-vendor-name" placeholder="e.g., Mouser, Digi-Key, Arrow">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary" onclick="addVendor()">Add Vendor</button>
+                        </div>
+                    </div>
+                    
+                    <div id="vendors-list" style="margin-top: 20px;">
+                        <h4>Current Vendors:</h4>
+                        <div id="vendors-container" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -525,7 +555,8 @@
         let data = {
             components: [],
             pcbs: [],
-            systems: []
+            systems: [],
+            vendors: ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics']
         };
 
         // Load data from localStorage
@@ -533,6 +564,11 @@
             const saved = localStorage.getItem('kinben-simple-data');
             if (saved) {
                 data = JSON.parse(saved);
+                // Ensure vendors array exists for backward compatibility
+                if (!data.vendors) {
+                    data.vendors = ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics'];
+                    saveData();
+                }
             }
             updateStats();
             renderAll();
@@ -554,7 +590,7 @@
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: true, placeholder: 'e.g., 1%, 5%' },
                     { id: 'temp-rating', label: 'Temp Rating', type: 'text', required: false, placeholder: 'e.g., -55°C to +125°C' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
             capacitors: { 
@@ -566,7 +602,7 @@
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
                     { id: 'voltage', label: 'Voltage', type: 'text', required: true, placeholder: 'e.g., 25V, 50V' },
                     { id: 'rating', label: 'Rating', type: 'text', required: false, placeholder: 'e.g., X7R, X5R, Y5V' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
             ics: { 
@@ -578,7 +614,7 @@
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., LQFP-48, QFN-32' },
                     { id: 'rating', label: 'Rating', type: 'text', required: false, placeholder: 'e.g., Automotive, Industrial' },
                     { id: 'datasheet-link', label: 'Datasheet/Product Link', type: 'url', required: false, placeholder: 'https://...' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
             inductors: { 
@@ -589,7 +625,7 @@
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1210' },
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
                     { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 1A, 500mA' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
             diodes: { 
@@ -600,7 +636,7 @@
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOD-323, SOT-23' },
                     { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 75V, 100V' },
                     { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 150mA, 1A' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
             transistors: { 
@@ -611,7 +647,7 @@
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOT-23, TO-220' },
                     { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 60V, 100V' },
                     { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 300mA, 1A' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
             connectors: { 
@@ -622,7 +658,7 @@
                     { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 2-pin JST XH connector' },
                     { id: 'pitch', label: 'Pitch', type: 'text', required: false, placeholder: 'e.g., 2.54mm, 1.25mm' },
                     { id: 'pins', label: 'Pins', type: 'number', required: false, placeholder: 'e.g., 2, 4, 8' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
             switches: { 
@@ -633,7 +669,7 @@
                     { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Tactile switch 4.3x4.3mm' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 4.3x4.3mm, SMD' },
                     { id: 'actuation-force', label: 'Actuation Force', type: 'text', required: false, placeholder: 'e.g., 160gf, 260gf' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'text', required: false, placeholder: 'e.g., Mouser, Digi-Key' }
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             }
         };
@@ -717,15 +753,34 @@
             // Add category-specific fields
             config.fields.forEach(field => {
                 const requiredMark = field.required ? '<span style="color: red;">*</span>' : '';
-                fieldsHTML += `
-                    <div class="form-group">
-                        <label>${field.label} ${requiredMark}</label>
-                        <input type="${field.type}" 
-                               id="comp-${field.id}" 
-                               placeholder="${field.placeholder}"
-                               ${field.required ? 'required' : ''}>
-                    </div>
-                `;
+                
+                if (field.type === 'vendor-select') {
+                    // Create vendor dropdown
+                    let vendorOptions = '<option value="">Select Vendor</option>';
+                    data.vendors.forEach(vendor => {
+                        vendorOptions += `<option value="${vendor}">${vendor}</option>`;
+                    });
+                    
+                    fieldsHTML += `
+                        <div class="form-group">
+                            <label>${field.label} ${requiredMark}</label>
+                            <select id="comp-${field.id}" ${field.required ? 'required' : ''}>
+                                ${vendorOptions}
+                            </select>
+                        </div>
+                    `;
+                } else {
+                    // Regular input field
+                    fieldsHTML += `
+                        <div class="form-group">
+                            <label>${field.label} ${requiredMark}</label>
+                            <input type="${field.type}" 
+                                   id="comp-${field.id}" 
+                                   placeholder="${field.placeholder || ''}"
+                                   ${field.required ? 'required' : ''}>
+                        </div>
+                    `;
+                }
             });
             
             fieldsHTML += '</div>';
@@ -1575,6 +1630,9 @@
                     <td>${packageValue}</td>
                     <td>${specs.join(', ')}</td>
                     <td>${vendor}</td>
+                    <td>
+                        <button class="btn" onclick="editComponent('${comp.kpn}')" style="background: #ff9800; color: white; padding: 4px 8px; font-size: 12px;">Edit</button>
+                    </td>
                 `;
                 tbody.appendChild(row);
             });
@@ -1618,6 +1676,7 @@
             renderComponents();
             renderPCBs();
             renderSystems();
+            renderVendors();
             updateDropdowns();
         }
 
@@ -1745,6 +1804,179 @@
             exportComponents();
             exportPCBs();
             exportSystems();
+        }
+
+        // Vendor management functions
+        function addVendor() {
+            const vendorName = document.getElementById('new-vendor-name').value.trim();
+            if (!vendorName) {
+                alert('Please enter a vendor name');
+                return;
+            }
+            
+            if (data.vendors.includes(vendorName)) {
+                alert('Vendor already exists');
+                return;
+            }
+            
+            data.vendors.push(vendorName);
+            data.vendors.sort(); // Keep vendors sorted
+            saveData();
+            renderVendors();
+            
+            // Clear input
+            document.getElementById('new-vendor-name').value = '';
+            
+            alert(`Added vendor: ${vendorName}`);
+        }
+        
+        function removeVendor(vendorName) {
+            if (confirm(`Remove vendor "${vendorName}"?`)) {
+                data.vendors = data.vendors.filter(v => v !== vendorName);
+                saveData();
+                renderVendors();
+            }
+        }
+        
+        function renderVendors() {
+            const container = document.getElementById('vendors-container');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            data.vendors.forEach(vendor => {
+                const vendorTag = document.createElement('div');
+                vendorTag.style.cssText = 'background: #e3f2fd; padding: 8px 12px; border-radius: 20px; display: flex; align-items: center; gap: 8px;';
+                vendorTag.innerHTML = `
+                    <span>${vendor}</span>
+                    <button onclick="removeVendor('${vendor}')" style="background: #f44336; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; font-size: 12px;">×</button>
+                `;
+                container.appendChild(vendorTag);
+            });
+        }
+        
+        // Component editing functionality
+        function editComponent(kpn) {
+            const component = data.components.find(c => c.kpn === kpn);
+            if (!component) {
+                alert('Component not found');
+                return;
+            }
+            
+            // Switch to components tab
+            showTab('components');
+            
+            // Set category and subcategory
+            document.getElementById('comp-category').value = component.category;
+            updateComponentSubcategories();
+            document.getElementById('comp-subcategory').value = component.subcategory;
+            updateComponentFields();
+            generateComponentKPN();
+            
+            // Fill in the dynamic fields
+            const config = categoryConfigs[component.category];
+            if (config) {
+                config.fields.forEach(field => {
+                    const fieldElement = document.getElementById(`comp-${field.id}`);
+                    if (fieldElement) {
+                        const value = component[field.id.replace('-', '_')] || '';
+                        if (field.type === 'vendor-select') {
+                            fieldElement.value = value;
+                        } else {
+                            fieldElement.value = value;
+                        }
+                    }
+                });
+            }
+            
+            // Change the add button to update mode
+            const addButton = document.querySelector('button[onclick="addComponent()"]');
+            addButton.textContent = 'Update Component';
+            addButton.setAttribute('onclick', `updateComponent('${kpn}')`);
+            
+            // Show cancel edit button
+            document.getElementById('cancel-edit-btn').style.display = 'inline-block';
+            
+            // Scroll to form
+            document.getElementById('components').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function updateComponent(originalKPN) {
+            const category = document.getElementById('comp-category').value;
+            const subcategory = document.getElementById('comp-subcategory').value;
+            
+            if (!category || !subcategory) {
+                alert('Please select category and subcategory first');
+                return;
+            }
+            
+            // Find component index
+            const componentIndex = data.components.findIndex(c => c.kpn === originalKPN);
+            if (componentIndex === -1) {
+                alert('Component not found');
+                return;
+            }
+            
+            const kpn = document.getElementById('comp-kpn').value || document.getElementById('comp-kpn-preview').textContent;
+            
+            // Collect data from dynamic fields
+            const component = {
+                kpn,
+                category,
+                subcategory,
+                dateAdded: data.components[componentIndex].dateAdded // Keep original date
+            };
+            
+            // Validate required fields and collect data
+            const config = categoryConfigs[category];
+            let missingRequired = [];
+            
+            config.fields.forEach(field => {
+                const fieldElement = document.getElementById(`comp-${field.id}`);
+                if (fieldElement) {
+                    const value = fieldElement.value.trim();
+                    if (field.required && !value) {
+                        missingRequired.push(field.label);
+                    }
+                    component[field.id.replace('-', '_')] = value;
+                }
+            });
+            
+            if (missingRequired.length > 0) {
+                alert(`Please fill in all required fields: ${missingRequired.join(', ')}`);
+                return;
+            }
+            
+            // Update component
+            data.components[componentIndex] = component;
+            saveData();
+            renderComponents();
+            
+            // Reset form
+            resetComponentForm();
+            
+            alert('Component updated successfully!');
+        }
+        
+        function resetComponentForm() {
+            document.getElementById('comp-category').value = '';
+            document.getElementById('comp-subcategory').value = '';
+            document.getElementById('comp-kpn-preview').textContent = 'Select category and subcategory';
+            
+            // Clear dynamic fields
+            const dynamicFieldsContainer = document.getElementById('component-dynamic-fields');
+            dynamicFieldsContainer.innerHTML = `
+                <p style="color: #666; text-align: center; margin: 40px 0;">
+                    Select a category and subcategory to display component-specific fields
+                </p>
+            `;
+            
+            // Reset button
+            const addButton = document.querySelector('button[onclick^="updateComponent"], button[onclick="addComponent()"]');
+            addButton.textContent = 'Add Component';
+            addButton.setAttribute('onclick', 'addComponent()');
+            
+            // Hide cancel edit button
+            document.getElementById('cancel-edit-btn').style.display = 'none';
         }
 
         function downloadCSV(csv, filename) {
