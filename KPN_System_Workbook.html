@@ -1664,7 +1664,8 @@
             // Add all non-duplicate components
             validComponents.forEach(component => {
                 // Generate KPN for new component
-                const kpn = generateKPNForComponent(component, importedCount + reassignedCount);
+                const kpn = generateKPNForComponent(component, kpnCounter);
+                kpnCounter++;
                 component.kpn = kpn;
                 componentsToAdd.push(component);
                 importedCount++;
