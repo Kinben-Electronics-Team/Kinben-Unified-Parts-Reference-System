@@ -5,7 +5,7 @@
 This system is deployed and accessible at multiple locations:
 
 ### Firebase Hosting (Primary Production)
-- **URL**: https://the-clever-studio-f3b16.web.app/KPS/
+- **URL**: https://the-clever-studio-f3b16.web.app/
 - **Status**: ✅ Active (Auto-deployed from GitHub)
 - **Features**: Full application with demo data
 - **Update Method**: Automatic deployment on push to master/main
@@ -162,6 +162,6 @@ For issues or customization requests:
 
 ---
 
-**Version**: 2.1  
-**Last Updated**: July 21, 2025  
+**Version**: 2.1.2  
+**Last Updated**: July 23, 2025  
 **Status**: Production Ready ✅

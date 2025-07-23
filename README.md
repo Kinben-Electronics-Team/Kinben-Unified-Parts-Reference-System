@@ -1,28 +1,28 @@
 # 🔧 Kinben Unified Parts Reference System
 
 [![Deploy Status](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/workflows/Deploy%20KPN%20System%20Workbook/badge.svg)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/actions)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://the-clever-studio-f3b16.web.app/KPS)
-[![Version](https://img.shields.io/badge/Version-2.1-blue)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/releases)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://the-clever-studio-f3b16.web.app/)
+[![Version](https://img.shields.io/badge/Version-2.1.2-blue)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/releases)
 
-## 🚀 [**LAUNCH APPLICATION**](https://the-clever-studio-f3b16.web.app/KPS)
+## 🚀 [**LAUNCH APPLICATION**](https://the-clever-studio-f3b16.web.app/)
 
 **🎯 SINGLE SOURCE OF TRUTH**: GitHub Repository → Automatic Firebase Deployment → Live Site
 
 ## 🌟 Live Production System
 
-**Production URL**: [https://the-clever-studio-f3b16.web.app/KPS](https://the-clever-studio-f3b16.web.app/KPS)
+**Production URL**: [https://the-clever-studio-f3b16.web.app/](https://the-clever-studio-f3b16.web.app/)
 
 **Deployment Flow**: 
 - ✅ **Source**: This GitHub repository
 - ✅ **Auto-Deploy**: Every push to `master` → Firebase
-- ✅ **Live Site**: https://the-clever-studio-f3b16.web.app/KPS
+- ✅ **Live Site**: https://the-clever-studio-f3b16.web.app/
 
-The live demo includes:
-- 🏗️ **3 Complete Systems** with full hierarchical breakdowns
-- 🔧 **6 Assemblies** (PCBAs, mechanical, sensor modules)  
-- 🟩 **7 PCBs** (2L-6L layer counts, flex, rigid-flex)
-- 🖨️ **9 3D Parts** (various materials and applications)
-- 🔗 **8 Cable Assemblies** (power, data, RF applications)
+The live system includes:
+- 🎯 **KPN Management**: Complete part numbering system
+- 📚 **Component Library**: 338+ KiCad library files
+- 🖥️ **Interactive Interface**: Modern web-based management
+- 📊 **Analytics**: Real-time statistics and insights
+- 💾 **Export**: CSV/JSON data export capabilities
 
 ## 🌟 Project Overview
 
