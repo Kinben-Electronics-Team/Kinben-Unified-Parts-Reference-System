@@ -1471,13 +1471,43 @@
                             rowNumber: i + 1
                         };
                         
-                        // Map CSV fields to component fields
+                        // Map CSV fields to component fields - improved mapping logic
                         const config = categoryConfigs[category];
                         config.fields.forEach(field => {
-                            const csvKey = field.label.toLowerCase().replace(/\s+/g, '-');
-                            const altKey = field.id.replace('_', '-');
-                            const value = rowData[csvKey] || rowData[altKey] || '';
-                            component[field.id.replace(/-/g, '_')] = value;
+                            // Get the field label and create variations to search for
+                            const fieldLabel = field.label.toLowerCase();
+                            
+                            // Find matching CSV column by checking all possible variations
+                            let value = '';
+                            
+                            // First, try exact match with the field label
+                            for (const [csvKey, csvValue] of Object.entries(rowData)) {
+                                if (csvKey.toLowerCase() === fieldLabel) {
+                                    value = csvValue;
+                                    break;
+                                }
+                            }
+                            
+                            // If not found, try common variations
+                            if (!value) {
+                                const variations = [
+                                    fieldLabel.replace(/\s+/g, '-'),   // "manufacturer pn" -> "manufacturer-pn"
+                                    fieldLabel.replace(/\s+/g, '_'),   // "manufacturer pn" -> "manufacturer_pn" 
+                                    fieldLabel.replace(/\s+/g, ''),    // "manufacturer pn" -> "manufacturerpn"
+                                    field.id.replace(/-/g, '_'),       // "manufacturer-pn" -> "manufacturer_pn"
+                                    field.id                            // "manufacturer-pn"
+                                ];
+                                
+                                for (const variation of variations) {
+                                    if (rowData[variation] !== undefined) {
+                                        value = rowData[variation];
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            // Store with underscored field name
+                            component[field.id.replace(/-/g, '_')] = value || '';
                         });
                         
                         // Check for duplicate components
