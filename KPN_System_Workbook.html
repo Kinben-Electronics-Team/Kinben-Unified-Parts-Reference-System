@@ -752,7 +752,7 @@
             <!-- Systems Tab -->
             <div id="systems" class="tab-panel">
                 <h2>System Hierarchy</h2>
-                <p>Systems containing multiple PCBs with simple hierarchical structure</p>
+                <p>Systems containing assemblies, mechanical/3D-printed parts, cable assemblies, and other systems</p>
                 
                 <div class="form-grid">
                     <div class="form-group">
@@ -777,12 +777,23 @@
                     <input type="text" id="system-description" placeholder="System description and purpose">
                 </div>
                 
-                <h3>System PCBs</h3>
+                <h3>System Items</h3>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>PCB</label>
+                        <label>Item Type</label>
+                        <select id="system-item-type" onchange="updateSystemItemOptions()">
+                            <option value="">Select Item Type</option>
+                            <option value="assembly">Assembly</option>
+                            <option value="mechanical">Mechanical Part</option>
+                            <option value="printed3d">3D-Printed Part</option>
+                            <option value="cable">Cable Assembly</option>
+                            <option value="system">Other System</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Item</label>
                         <select id="system-pcb">
-                            <option value="">Select PCB</option>
+                            <option value="">Select Item Type First</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -790,11 +801,11 @@
                         <input type="number" id="system-pcb-quantity" min="1" value="1">
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-primary" onclick="addSystemPCB()">Add PCB</button>
+                        <button class="btn btn-primary" onclick="addSystemItem()">Add Item</button>
                     </div>
                 </div>
                 
-                <div id="system-pcbs"></div>
+                <div id="system-items"></div>
                 
                 <div class="actions">
                     <button class="btn btn-primary" onclick="addSystem()">Add System</button>
@@ -809,7 +820,7 @@
                             <th>Name</th>
                             <th>Version</th>
                             <th>Description</th>
-                            <th>PCB Count</th>
+                            <th>Item Count</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -1016,6 +1027,22 @@
                 // Ensure assemblies array exists
                 if (!data.assemblies) {
                     data.assemblies = [];
+                    saveData();
+                }
+                // Migrate system pcbs to items for backward compatibility
+                if (data.systems) {
+                    data.systems.forEach(system => {
+                        if (system.pcbs && !system.items) {
+                            system.items = system.pcbs.map(pcb => ({
+                                type: 'assembly',
+                                value: pcb.name,
+                                name: pcb.name,
+                                version: pcb.version,
+                                quantity: pcb.quantity
+                            }));
+                            delete system.pcbs;
+                        }
+                    });
                     saveData();
                 }
             }
@@ -2326,58 +2353,104 @@
             renderBOMItems();
         }
 
-        // Current system PCBs
-        let currentSystemPCBs = [];
+        // Current system items
+        let currentSystemItems = [];
 
-        // Add system PCB
-        function addSystemPCB() {
-            const pcbName = document.getElementById('system-pcb').value;
+        // Add system item
+        function addSystemItem() {
+            const itemType = document.getElementById('system-item-type').value;
+            const itemValue = document.getElementById('system-pcb').value;
             const quantity = parseInt(document.getElementById('system-pcb-quantity').value);
             
-            if (!pcbName || !quantity) {
-                alert('Please select PCB and quantity');
+            if (!itemType || !itemValue || !quantity) {
+                alert('Please select item type, item, and quantity');
                 return;
             }
             
-            const pcb = data.pcbs.find(p => p.name === pcbName);
-            if (!pcb) {
-                alert('PCB not found');
-                return;
+            let itemName = '';
+            let itemVersion = '';
+            
+            if (itemType === 'assembly') {
+                const assembly = data.assemblies.find(a => a.name === itemValue);
+                if (!assembly) {
+                    alert('Assembly not found');
+                    return;
+                }
+                itemName = assembly.name;
+                itemVersion = assembly.version;
+            } else if (['mechanical', 'printed3d', 'cable'].includes(itemType)) {
+                const component = data.components.find(c => c.kpn === itemValue);
+                if (!component) {
+                    alert('Component not found');
+                    return;
+                }
+                itemName = component.kpn;
+                itemVersion = component.description || component.manufacturer_pn || 'Unknown';
+            } else if (itemType === 'system') {
+                const system = data.systems.find(s => s.name === itemValue);
+                if (!system) {
+                    alert('System not found');
+                    return;
+                }
+                itemName = system.name;
+                itemVersion = system.version;
             }
             
-            const systemPCB = {
-                name: pcbName,
-                version: pcb.version,
+            const systemItem = {
+                type: itemType,
+                value: itemValue,
+                name: itemName,
+                version: itemVersion,
                 quantity
             };
             
-            currentSystemPCBs.push(systemPCB);
-            renderSystemPCBs();
+            currentSystemItems.push(systemItem);
+            renderSystemItems();
             
             // Clear form
+            document.getElementById('system-item-type').value = '';
             document.getElementById('system-pcb').value = '';
             document.getElementById('system-pcb-quantity').value = '1';
+            updateSystemItemOptions();
         }
 
-        // Remove system PCB
-        function removeSystemPCB(index) {
-            currentSystemPCBs.splice(index, 1);
-            renderSystemPCBs();
+        // Remove system item
+        function removeSystemItem(index) {
+            currentSystemItems.splice(index, 1);
+            renderSystemItems();
         }
 
-        // Render system PCBs
-        function renderSystemPCBs() {
-            const container = document.getElementById('system-pcbs');
+        // Render system items
+        function renderSystemItems() {
+            const container = document.getElementById('system-items');
             container.innerHTML = '';
             
-            currentSystemPCBs.forEach((item, index) => {
+            currentSystemItems.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'bom-row';
+                let displayText = '';
+                switch(item.type) {
+                    case 'assembly':
+                        displayText = `Assembly: ${item.name} (${item.version})`;
+                        break;
+                    case 'mechanical':
+                        displayText = `Mechanical: ${item.name} - ${item.version}`;
+                        break;
+                    case 'printed3d':
+                        displayText = `3D-Printed: ${item.name} - ${item.version}`;
+                        break;
+                    case 'cable':
+                        displayText = `Cable: ${item.name} - ${item.version}`;
+                        break;
+                    case 'system':
+                        displayText = `System: ${item.name} (${item.version})`;
+                        break;
+                }
                 div.innerHTML = `
-                    <span>${item.name} (${item.version})</span>
+                    <span>${displayText}</span>
                     <span>Qty: ${item.quantity}</span>
                     <span></span>
-                    <button class="remove-btn" onclick="removeSystemPCB(${index})">Remove</button>
+                    <button class="remove-btn" onclick="removeSystemItem(${index})">Remove</button>
                 `;
                 container.appendChild(div);
             });
@@ -2390,8 +2463,8 @@
             const status = document.getElementById('system-status').value;
             const description = document.getElementById('system-description').value;
             
-            if (!name || !version || currentSystemPCBs.length === 0) {
-                alert('Please fill in system details and add at least one PCB');
+            if (!name || !version || currentSystemItems.length === 0) {
+                alert('Please fill in system details and add at least one item');
                 return;
             }
             
@@ -2400,7 +2473,7 @@
                 version,
                 status,
                 description,
-                pcbs: [...currentSystemPCBs],
+                items: [...currentSystemItems],
                 dateAdded: new Date().toISOString().split('T')[0]
             };
             
@@ -2412,11 +2485,50 @@
             document.getElementById('system-name').value = '';
             document.getElementById('system-version').value = '';
             document.getElementById('system-description').value = '';
-            currentSystemPCBs = [];
-            renderSystemPCBs();
+            currentSystemItems = [];
+            renderSystemItems();
         }
 
         // Update dropdowns
+        // Update system item options based on selected type
+        function updateSystemItemOptions() {
+            const type = document.getElementById('system-item-type').value;
+            const itemSelect = document.getElementById('system-pcb');
+            itemSelect.innerHTML = '<option value="">Select Item</option>';
+            
+            if (type === 'assembly') {
+                // Show assemblies
+                data.assemblies.forEach(assembly => {
+                    if (assembly.status === 'Active') {
+                        const option = document.createElement('option');
+                        option.value = assembly.name;
+                        option.textContent = `${assembly.name} (${assembly.version})`;
+                        itemSelect.appendChild(option);
+                    }
+                });
+            } else if (['mechanical', 'printed3d', 'cable'].includes(type)) {
+                // Show components of the selected type
+                data.components.forEach(comp => {
+                    if (comp.status === 'Active' && comp.category === type) {
+                        const option = document.createElement('option');
+                        option.value = comp.kpn;
+                        option.textContent = `${comp.kpn} - ${comp.description || comp.manufacturer_pn || 'Unknown'}`;
+                        itemSelect.appendChild(option);
+                    }
+                });
+            } else if (type === 'system') {
+                // Show other systems (excluding current one being edited if applicable)
+                data.systems.forEach(system => {
+                    if (system.status === 'Active') {
+                        const option = document.createElement('option');
+                        option.value = system.name;
+                        option.textContent = `${system.name} (${system.version})`;
+                        itemSelect.appendChild(option);
+                    }
+                });
+            }
+        }
+
         // Update BOM item options based on selected type
         function updateBOMItemOptions() {
             const type = document.getElementById('bom-type').value;
@@ -2450,17 +2562,8 @@
             // Update BOM KPN dropdown - now handled by updateBOMItemOptions
             updateBOMItemOptions();
             
-            // Update system assembly dropdown
-            const systemAssemblySelect = document.getElementById('system-pcb');
-            systemAssemblySelect.innerHTML = '<option value="">Select Assembly</option>';
-            data.assemblies.forEach(assembly => {
-                if (assembly.status === 'Active') {
-                    const option = document.createElement('option');
-                    option.value = assembly.name;
-                    option.textContent = `${assembly.name} (${assembly.version})`;
-                    systemAssemblySelect.appendChild(option);
-                }
-            });
+            // Update system item dropdown
+            updateSystemItemOptions();
         }
 
         // Render functions
@@ -2565,11 +2668,13 @@
             
             data.systems.forEach(system => {
                 const row = document.createElement('tr');
+                // Handle backward compatibility - migrate pcbs to items if needed
+                const itemCount = system.items ? system.items.length : (system.pcbs ? system.pcbs.length : 0);
                 row.innerHTML = `
                     <td>${system.name}</td>
                     <td>${system.version}</td>
                     <td>${system.description}</td>
-                    <td>${system.pcbs.length} PCBs</td>
+                    <td>${itemCount} items</td>
                     <td><span class="status-${system.status.toLowerCase()}">${system.status}</span></td>
                 `;
                 tbody.appendChild(row);
@@ -2707,10 +2812,11 @@
                 return;
             }
             
-            const csv = 'System Name,Version,Status,Description,PCB Count,Date Added\n' +
-                data.systems.map(s => 
-                    `"${s.name}",${s.version},${s.status},"${s.description}",${s.pcbs.length},${s.dateAdded}`
-                ).join('\n');
+            const csv = 'System Name,Version,Status,Description,Item Count,Date Added\n' +
+                data.systems.map(s => {
+                    const itemCount = s.items ? s.items.length : (s.pcbs ? s.pcbs.length : 0);
+                    return `"${s.name}",${s.version},${s.status},"${s.description}",${itemCount},${s.dateAdded}`;
+                }).join('\n');
             
             downloadCSV(csv, 'kinben-systems.csv');
         }
