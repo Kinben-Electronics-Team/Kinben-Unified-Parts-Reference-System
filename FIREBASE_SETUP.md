@@ -91,7 +91,12 @@ Temporarily add this code after line 943 (after Firebase initialization):
 // TEMPORARY: Create first admin - REMOVE AFTER USE
 async function createFirstAdmin() {
     const user = auth.currentUser;
-    if (user && user.email === 'your-email@gmail.com') {
+    const firstAdminEmail = process.env.FIRST_ADMIN_EMAIL;
+    if (!firstAdminEmail) {
+        console.warn('Environment variable FIRST_ADMIN_EMAIL is not set. Admin creation skipped.');
+        return;
+    }
+    if (user && user.email === firstAdminEmail) {
         await db.collection('users').doc(user.uid).update({role: 'admin'});
         console.log('First admin created!');
     }
