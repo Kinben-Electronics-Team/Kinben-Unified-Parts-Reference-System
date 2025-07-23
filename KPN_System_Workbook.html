@@ -326,6 +326,7 @@
                     <button class="btn btn-success" onclick="exportComponents()">Export CSV</button>
                     <input type="file" id="csv-import-input" accept=".csv" style="display: none;" onchange="importCSV()">
                     <button class="btn btn-info" onclick="document.getElementById('csv-import-input').click()">Import CSV</button>
+                    <button class="btn" onclick="exportTemplate()" style="background: #6c757d; color: white;">Download Template</button>
                 </div>
                 
                 <input type="text" class="search-box" id="comp-search" placeholder="Search components..." onkeyup="filterComponents()">
@@ -951,6 +952,70 @@
             };
             
             reader.readAsText(file);
+        }
+
+        // Export CSV template for component import
+        function exportTemplate() {
+            // Create template with all possible fields from all categories
+            const allFields = new Set(['Category', 'Subcategory']);
+            Object.values(categoryConfigs).forEach(config => {
+                config.fields.forEach(field => {
+                    allFields.add(field.label);
+                });
+            });
+            
+            const headers = Array.from(allFields);
+            let csv = headers.join(',') + '\n';
+            
+            // Add example rows for each component category
+            const examples = [
+                {
+                    category: 'resistors',
+                    subcategory: 'STD',
+                    data: {
+                        'Value': '10k',
+                        'Package': '0805', 
+                        'Tolerance': '1%',
+                        'Temp Rating': '-55°C to +125°C',
+                        'Preferred Vendor': 'Mouser'
+                    }
+                },
+                {
+                    category: 'capacitors', 
+                    subcategory: 'CER',
+                    data: {
+                        'Value': '100nF',
+                        'Package': '0805',
+                        'Tolerance': '10%', 
+                        'Voltage': '50V',
+                        'Rating': 'X7R',
+                        'Preferred Vendor': 'Digi-Key'
+                    }
+                },
+                {
+                    category: 'ics',
+                    subcategory: 'MCU', 
+                    data: {
+                        'Manufacturer PN': 'STM32F103C8T6',
+                        'Description': '32-bit ARM Cortex-M3 MCU',
+                        'Package': 'LQFP-48',
+                        'Rating': 'Industrial',
+                        'Datasheet/Product Link': 'https://www.st.com/en/microcontrollers-microprocessors/stm32f103c8.html',
+                        'Preferred Vendor': 'Mouser'
+                    }
+                }
+            ];
+            
+            examples.forEach(example => {
+                const row = headers.map(header => {
+                    if (header === 'Category') return example.category;
+                    if (header === 'Subcategory') return example.subcategory;
+                    return example.data[header] || '';
+                });
+                csv += row.map(cell => `"${cell}"`).join(',') + '\n';
+            });
+            
+            downloadCSV(csv, 'kinben-components-template.csv');
         }
 
         // Current BOM items for PCB form
