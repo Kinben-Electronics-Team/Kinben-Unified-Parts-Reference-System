@@ -1254,7 +1254,10 @@
             // Get all fields to check for this category
             const allFieldsToCheck = [
                 ...coreFields,
-                ...(categoryIdentifyingFields[category] || ['manufacturer_pn', 'description', 'package'])
+                ...(categoryIdentifyingFields[category] || (() => {
+                    console.warn(`Unknown category "${category}" encountered. Using fallback fields.`);
+                    return ['manufacturer_pn', 'description', 'package'];
+                })())
             ];
             
             // Find existing components with same category and subcategory first
