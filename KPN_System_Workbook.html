@@ -541,17 +541,40 @@
     <div id="login-modal" class="login-modal">
         <div class="login-container">
             <h2>🔐 Login to KPN System</h2>
-            <p>Sign in with your Google account to access the system</p>
+            <p id="login-description">Choose your login method</p>
             <div class="login-form">
-                <button onclick="signInWithGoogle()" style="background: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px;">
+                <!-- Google Sign-In (shown when Firebase is configured) -->
+                <button id="google-signin-btn" onclick="signInWithGoogle()" style="background: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px;">
                     <span style="margin-right: 10px;">🔍</span>Sign in with Google
                 </button>
+                
+                <!-- Local Authentication Form (backup) -->
+                <div id="local-auth-form" style="display: none;">
+                    <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
+                    <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
+                    <button onclick="signInLocal()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 10px;">
+                        🔑 Sign In Locally
+                    </button>
+                </div>
+                
+                <!-- Toggle between authentication methods -->
+                <button id="toggle-auth-btn" onclick="toggleAuthMethod()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 15px;">
+                    Use Local Login
+                </button>
+                
                 <div id="login-status" style="text-align: center; color: #666; font-size: 14px;"></div>
+                
+                <!-- Local Login Credentials Info -->
+                <div id="local-credentials-info" style="display: none; margin-top: 15px; padding: 15px; background: #e9ecef; border-radius: 5px; font-size: 12px; color: #495057;">
+                    <strong>Local Login Credentials:</strong><br>
+                    <strong>Admin:</strong> admin / admin123<br>
+                    <strong>Team:</strong> team / team123<br>
+                    <em>These are backup accounts when Google auth is unavailable</em>
+                </div>
             </div>
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
                 <strong>Note:</strong><br>
-                After signing in, an admin can assign you a role (Team or Admin).<br>
-                Contact your administrator if you need access.
+                <span id="auth-note">Firebase authentication is not configured. Using local authentication.</span>
             </div>
         </div>
     </div>
@@ -944,15 +967,35 @@
             appId: "your-app-id"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        // Check if Firebase config is valid (not placeholder values)
+        const isFirebaseConfigured = firebaseConfig.apiKey !== "your-api-key-here" && 
+                                    firebaseConfig.appId !== "your-app-id" &&
+                                    firebaseConfig.messagingSenderId !== "actual-sender-id";
 
-        // Configure Google Auth Provider
-        const googleProvider = new firebase.auth.GoogleAuthProvider();
-        googleProvider.addScope('email');
-        googleProvider.addScope('profile');
+        // Initialize Firebase only if properly configured and Firebase SDK is available
+        let auth = null;
+        let db = null;
+        let googleProvider = null;
+        
+        if (isFirebaseConfigured && typeof firebase !== 'undefined') {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                // Configure Google Auth Provider
+                googleProvider = new firebase.auth.GoogleAuthProvider();
+                googleProvider.addScope('email');
+                googleProvider.addScope('profile');
+                console.log('Firebase initialized successfully');
+            } catch (error) {
+                console.warn('Firebase initialization failed:', error);
+            }
+        } else {
+            console.log('Firebase not configured or SDK not available, using local authentication');
+        }
+
+        // Local authentication mode flag
+        let useLocalAuth = !isFirebaseConfigured || typeof firebase === 'undefined';
 
         // Simplified data storage
         let data = {
@@ -962,25 +1005,31 @@
             vendors: ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics']
         };
 
-        // Authentication state
-        let currentUser = {
-            username: null,
-            role: null // 'team' or 'admin'
+        // Current user object (compatible with both auth methods)
+        let currentUser = { role: 'none', email: '', uid: '', displayName: '', username: null };
+
+        // Local user accounts (backup authentication)
+        const localUsers = {
+            'admin': { password: 'admin123', role: 'admin', email: 'admin@kinben.local', displayName: 'Local Admin' },
+            'team': { password: 'team123', role: 'team', email: 'team@kinben.local', displayName: 'Team User' }
         };
 
-        // Firebase Auth State Listener
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                // User is signed in
-                await handleUserSignIn(user);
-            } else {
-                // User is signed out
-                handleUserSignOut();
-            }
-        });
+        // Firebase Authentication State Listener (only if Firebase is configured)
+        if (auth) {
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    // User is signed in via Firebase
+                    await handleFirebaseUser(user);
+                } else {
+                    // User is signed out
+                    currentUser = { role: 'none', email: '', uid: '', displayName: '', username: null };
+                    showLogin();
+                }
+            });
+        }
 
-        // Handle user sign in
-        async function handleUserSignIn(user) {
+        // Handle Firebase user sign in
+        async function handleFirebaseUser(user) {
             try {
                 // Get user role from Firestore
                 const userDoc = await db.collection('users').doc(user.uid).get();
@@ -1009,6 +1058,7 @@
                     uid: user.uid,
                     username: user.displayName || user.email.split('@')[0],
                     email: user.email,
+                    displayName: user.displayName || user.email,
                     role: userRole
                 };
 
@@ -1021,25 +1071,97 @@
                     showUserInfo();
                     loadData(); // Load app data
                     
-                    // Show user management tab for admins
+                    // Show appropriate tabs based on role
                     if (userRole === 'admin') {
-                        document.getElementById('user-mgmt-tab').style.display = 'block';
-                        loadUsersForManagement();
+                        showUserManagementTab();
+                    } else {
+                        hideUserManagementTab();
                     }
                 }
             } catch (error) {
-                console.error('Error handling user sign in:', error.message); // Log only the error message
-                
-                // Optionally, send full error details to a secure logging service
-                // logErrorToService(error); // Uncomment and implement this function if needed
-                
-                showLoginError('Failed to load user data. Please try again.');
+                console.error('Error handling Firebase user:', error);
+                showLoginError('Authentication error. Please try again.');
             }
         }
 
-        // Handle user sign out
+        // Handle local authentication
+        function signInLocal() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                showLoginError('Please enter both username and password.');
+                return;
+            }
+            
+            const user = localUsers[username];
+            if (user && user.password === password) {
+                // Successful local login
+                currentUser = {
+                    uid: 'local_' + username,
+                    username: username,
+                    email: user.email,
+                    displayName: user.displayName,
+                    role: user.role
+                };
+                
+                hideLogin();
+                showUserInfo();
+                loadData(); // Load app data
+                
+                // Show appropriate tabs based on role
+                if (user.role === 'admin') {
+                    showUserManagementTab();
+                } else {
+                    hideUserManagementTab();
+                }
+                
+                // Clear form
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                
+                console.log('Local authentication successful for:', username);
+            } else {
+                showLoginError('Invalid username or password.');
+            }
+        }
+
+        // Toggle between Google and local authentication
+        function toggleAuthMethod() {
+            const localForm = document.getElementById('local-auth-form');
+            const googleBtn = document.getElementById('google-signin-btn');
+            const toggleBtn = document.getElementById('toggle-auth-btn');
+            const credentialsInfo = document.getElementById('local-credentials-info');
+            const authNote = document.getElementById('auth-note');
+            
+            if (useLocalAuth) {
+                // Switch to Google auth (if available)
+                if (isFirebaseConfigured && typeof firebase !== 'undefined') {
+                    useLocalAuth = false;
+                    localForm.style.display = 'none';
+                    googleBtn.style.display = 'block';
+                    toggleBtn.textContent = 'Use Local Login';
+                    credentialsInfo.style.display = 'none';
+                    authNote.textContent = 'Using Google authentication via Firebase.';
+                    document.getElementById('login-description').textContent = 'Sign in with your Google account to access the system';
+                } else {
+                    showLoginError('Google authentication is not configured or available.');
+                }
+            } else {
+                // Switch to local auth
+                useLocalAuth = true;
+                localForm.style.display = 'block';
+                googleBtn.style.display = 'none';
+                toggleBtn.textContent = 'Use Google Login';
+                credentialsInfo.style.display = 'block';
+                authNote.textContent = 'Using local authentication. Google auth is not configured.';
+                document.getElementById('login-description').textContent = 'Enter your local credentials to access the system';
+            }
+        }
+
+        // Handle user sign out (works for both Firebase and local auth)
         function handleUserSignOut() {
-            currentUser = { username: null, role: null, uid: null, email: null };
+            currentUser = { username: null, role: null, uid: null, email: null, displayName: null };
             showLogin();
             hideUserInfo();
             document.getElementById('user-mgmt-tab').style.display = 'none';
@@ -1068,8 +1190,13 @@
             showLogin(); // Keep login modal visible with status message
         }
 
-        // Sign in with Google
+        // Sign in with Google (only if Firebase is configured)
         async function signInWithGoogle() {
+            if (!isFirebaseConfigured || !auth || !googleProvider || typeof firebase === 'undefined') {
+                showLoginError('Google authentication is not configured or available.');
+                return;
+            }
+            
             try {
                 document.getElementById('login-status').innerHTML = 'Signing in...';
                 await auth.signInWithPopup(googleProvider);
@@ -1079,12 +1206,18 @@
             }
         }
 
-        // Sign out user
+        // Sign out user (works for both auth methods)
         async function signOutUser() {
             try {
-                await auth.signOut();
+                if (auth && currentUser.uid && !currentUser.uid.startsWith('local_')) {
+                    await auth.signOut();
+                } else {
+                    // Local authentication sign out
+                    handleUserSignOut();
+                }
             } catch (error) {
                 console.error('Error signing out:', error);
+                handleUserSignOut(); // Fallback to local sign out
             }
         }
 
@@ -1215,15 +1348,38 @@
 
         // Initialize authentication on page load
         window.addEventListener('load', function() {
-            // Firebase Auth will handle initialization via onAuthStateChanged
-            // Show login initially - auth state listener will handle the rest
+            // Set up initial authentication mode based on Firebase configuration
+            if (!isFirebaseConfigured || typeof firebase === 'undefined') {
+                // Default to local auth when Firebase is not configured or not available
+                useLocalAuth = true;
+                document.getElementById('local-auth-form').style.display = 'block';
+                document.getElementById('google-signin-btn').style.display = 'none';
+                document.getElementById('toggle-auth-btn').textContent = 'Use Google Login';
+                document.getElementById('local-credentials-info').style.display = 'block';
+                document.getElementById('auth-note').textContent = 'Firebase authentication is not configured. Using local authentication.';
+                document.getElementById('login-description').textContent = 'Enter your local credentials to access the system';
+            } else {
+                // Firebase is configured, start with Google auth
+                useLocalAuth = false;
+                document.getElementById('local-auth-form').style.display = 'none';
+                document.getElementById('google-signin-btn').style.display = 'block';
+                document.getElementById('toggle-auth-btn').textContent = 'Use Local Login';
+                document.getElementById('local-credentials-info').style.display = 'none';
+                document.getElementById('auth-note').textContent = 'Using Google authentication via Firebase.';
+                document.getElementById('login-description').textContent = 'Sign in with your Google account to access the system';
+            }
+            
             showLogin();
         });
 
         // Add keyboard support for login modal
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && document.getElementById('login-modal').style.display !== 'none') {
-                signInWithGoogle();
+                if (useLocalAuth && document.getElementById('local-auth-form').style.display !== 'none') {
+                    signInLocal();
+                } else if (isFirebaseConfigured && typeof firebase !== 'undefined') {
+                    signInWithGoogle();
+                }
             }
         });
 
@@ -1372,6 +1528,25 @@
             // Update component dropdowns when switching tabs
             if (tabName === 'pcbs' || tabName === 'systems') {
                 updateDropdowns();
+            }
+        }
+
+        // Show/hide user management tab functions
+        function showUserManagementTab() {
+            const userMgmtTab = document.getElementById('user-mgmt-tab');
+            if (userMgmtTab) {
+                userMgmtTab.style.display = 'block';
+                // Load users if Firebase is available
+                if (db) {
+                    loadUsersForManagement();
+                }
+            }
+        }
+
+        function hideUserManagementTab() {
+            const userMgmtTab = document.getElementById('user-mgmt-tab');
+            if (userMgmtTab) {
+                userMgmtTab.style.display = 'none';
             }
         }
 
