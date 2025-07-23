@@ -1,13 +1,12 @@
 {
   "name": "kinben-unified-parts-reference-system",
-  "version": "2.1.0",
-  "description": "Advanced multi-level hierarchy management system for electronic components, PCBs, assemblies, and complete systems with image support and full traceability",
+  "version": "3.0.0",
+  "description": "Simplified KPN management system - Three core data types only: Components, PCBs, and Systems",
   "private": true,
   "scripts": {
-    "build": "node build-for-firebase.js",
     "start": "python3 serve.py",
-    "test": "npx playwright test",
-    "test:fallback": "./test-fallback.sh"
+    "build": "node build-for-firebase.js",
+    "test": "./test-fallback.sh"
   },
   "repository": {
     "type": "git",
@@ -18,11 +17,10 @@
     "pcb",
     "parts-management",
     "bom",
-    "assembly",
-    "system-design",
     "component-tracking",
     "engineering-tools",
-    "kinben"
+    "kinben",
+    "simplified"
   ],
   "author": "Kinben Electronics Team",
   "license": "MIT",
@@ -31,11 +29,9 @@
     "url": "https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/issues"
   },
   "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=8.0.0"
+    "node": ">=18.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.40.0",
     "firebase-tools": "^14.11.0"
   }
 }
