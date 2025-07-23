@@ -846,6 +846,8 @@
                 code: 'RES', 
                 subcategories: ['STD', 'PRE', 'VAR', 'NET'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Yageo, Vishay' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., RC0805FR-0710KL' },
                     { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10k, 4.7k' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: true, placeholder: 'e.g., 1%, 5%' },
@@ -857,6 +859,8 @@
                 code: 'CAP', 
                 subcategories: ['CER', 'ELE', 'TAN', 'FIL'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, TDK' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., GRM21BR71H104KA01L' },
                     { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10uF, 100nF' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
@@ -869,6 +873,7 @@
                 code: 'IC', 
                 subcategories: ['MCU', 'ANA', 'DIG', 'PWR'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., STMicroelectronics, TI' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., STM32F103C8T6' },
                     { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 32-bit ARM Cortex-M3 MCU' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., LQFP-48, QFN-32' },
@@ -881,6 +886,8 @@
                 code: 'IND', 
                 subcategories: ['PWR', 'CHK', 'FER'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, Coilcraft' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., LQM18FN1R0M00D' },
                     { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10uH, 220nH' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1210' },
                     { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
@@ -892,6 +899,7 @@
                 code: 'DIO', 
                 subcategories: ['STD', 'LED', 'ZEN', 'SCH'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Vishay, Diodes Inc' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 1N4148WS' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOD-323, SOT-23' },
                     { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 75V, 100V' },
@@ -903,6 +911,7 @@
                 code: 'TRA', 
                 subcategories: ['BJT', 'FET', 'MOS'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Infineon, ON Semi' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 2N7002K' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOT-23, TO-220' },
                     { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 60V, 100V' },
@@ -914,6 +923,7 @@
                 code: 'CON', 
                 subcategories: ['HDR', 'JST', 'USB', 'RJ45'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., JST, Molex' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., B2B-XH-A(LF)(SN)' },
                     { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 2-pin JST XH connector' },
                     { id: 'pitch', label: 'Pitch', type: 'text', required: false, placeholder: 'e.g., 2.54mm, 1.25mm' },
@@ -925,6 +935,7 @@
                 code: 'SWI', 
                 subcategories: ['TAC', 'DIP', 'ROT', 'SLI'],
                 fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., ALPS, Omron' },
                     { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., SKHHPNA010' },
                     { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Tactile switch 4.3x4.3mm' },
                     { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 4.3x4.3mm, SMD' },
@@ -1058,6 +1069,53 @@
         }
 
         // Generate KPN for component
+        // Check if a component with the same key fields already exists
+        function findDuplicateComponent(componentData) {
+            const { category, subcategory } = componentData;
+            
+            // Define key fields that identify a unique component for each category
+            const keyFields = {
+                resistors: ['value', 'package', 'tolerance'],
+                capacitors: ['value', 'package', 'voltage'],
+                inductors: ['value', 'package'],
+                ics: ['manufacturer_pn'],
+                diodes: ['manufacturer_pn'],
+                transistors: ['manufacturer_pn'],
+                connectors: ['manufacturer_pn'],
+                switches: ['manufacturer_pn']
+            };
+            
+            const fieldsToCheck = keyFields[category] || [];
+            
+            // Find existing components with same category and subcategory
+            const similarComponents = data.components.filter(comp => 
+                comp.category === category && 
+                comp.subcategory === subcategory &&
+                comp.status === 'Active' // Only check active components
+            );
+            
+            // Check if any existing component has matching key fields
+            for (const existingComp of similarComponents) {
+                let isMatch = true;
+                
+                for (const field of fieldsToCheck) {
+                    const newValue = (componentData[field] || '').toString().toLowerCase().trim();
+                    const existingValue = (existingComp[field] || '').toString().toLowerCase().trim();
+                    
+                    if (newValue !== existingValue) {
+                        isMatch = false;
+                        break;
+                    }
+                }
+                
+                if (isMatch) {
+                    return existingComp;
+                }
+            }
+            
+            return null;
+        }
+
         function generateComponentKPN() {
             const category = document.getElementById('comp-category').value;
             const subcategory = document.getElementById('comp-subcategory').value;
@@ -1151,6 +1209,13 @@
             
             if (missingRequired.length > 0) {
                 alert(`Please fill in all required fields: ${missingRequired.join(', ')}`);
+                return;
+            }
+            
+            // Check for duplicate components
+            const duplicateComponent = findDuplicateComponent(component);
+            if (duplicateComponent) {
+                alert(`A component with matching specifications already exists with KPN: ${duplicateComponent.kpn}. Cannot create duplicate.`);
                 return;
             }
             
@@ -1254,6 +1319,13 @@
                             const value = rowData[csvKey] || rowData[altKey] || '';
                             component[field.id.replace('-', '_')] = value;
                         });
+                        
+                        // Check for duplicate components
+                        const duplicateComponent = findDuplicateComponent(component);
+                        if (duplicateComponent) {
+                            errors.push(`Row ${i + 1}: Component already exists with KPN ${duplicateComponent.kpn} - skipping duplicate`);
+                            continue;
+                        }
                         
                         data.components.push(component);
                         importedCount++;
