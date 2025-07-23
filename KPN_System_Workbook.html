@@ -1711,7 +1711,7 @@
                 .map(c => parseInt(c.kpn.split('-')[2]))
                 .filter(n => !isNaN(n));
             
-            const nextNumber = existingKPNs.length > 0 ? Math.max(...existingKPNs) + 1 + offset : 1 + offset;
+            const nextNumber = existingKPNs.length > 0 ? existingKPNs.reduce((max, n) => Math.max(max, n), -Infinity) + 1 + offset : 1 + offset;
             return `${config.code}-${subcategory}-${nextNumber.toString().padStart(3, '0')}`;
         }
 
