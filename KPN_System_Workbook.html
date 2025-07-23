@@ -1075,7 +1075,7 @@
                 await auth.signInWithPopup(googleProvider);
             } catch (error) {
                 console.error('Error signing in with Google:', error);
-                showLoginError('Sign in failed: ' + error.message);
+                showLoginError('Sign in failed. Please try again later.');
             }
         }
 
