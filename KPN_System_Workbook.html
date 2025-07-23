@@ -1232,38 +1232,55 @@
         }
 
         // Generate KPN for component
-        // Check if a component with the same key fields already exists
+        // Check if a component with the same identifying fields already exists
         function findDuplicateComponent(componentData) {
             const { category, subcategory } = componentData;
             
-            // Define key fields that identify a unique component for each category
-            const keyFields = {
-                resistors: ['value', 'package', 'tolerance'],
-                capacitors: ['value', 'package', 'voltage_rating'],
-                inductors: ['value', 'package', 'tolerance'],
-                ics: ['manufacturer_pn'],
-                diodes: ['manufacturer_pn'],
-                transistors: ['manufacturer_pn'],
-                connectors: ['manufacturer_pn'],
-                switches: ['manufacturer_pn']
+            // Core identifying fields that must match for all components
+            const coreFields = ['category', 'subcategory'];
+            
+            // Additional identifying fields per category - comprehensive list based on schema
+            const categoryIdentifyingFields = {
+                resistors: ['value', 'package', 'tolerance', 'temp_rating', 'manufacturer', 'manufacturer_pn'],
+                capacitors: ['value', 'package', 'tolerance', 'voltage_rating', 'rating', 'manufacturer', 'manufacturer_pn'],
+                inductors: ['value', 'package', 'tolerance', 'current_rating', 'manufacturer', 'manufacturer_pn'],
+                ics: ['manufacturer_pn', 'description', 'package', 'rating', 'manufacturer'],
+                diodes: ['manufacturer_pn', 'description', 'package', 'rating', 'manufacturer'],
+                transistors: ['manufacturer_pn', 'description', 'package', 'rating', 'manufacturer'],
+                connectors: ['manufacturer_pn', 'description', 'package', 'rating', 'manufacturer'],
+                switches: ['manufacturer_pn', 'description', 'package', 'rating', 'manufacturer']
             };
             
-            const fieldsToCheck = keyFields[category] || [];
+            // Get all fields to check for this category
+            const allFieldsToCheck = [
+                ...coreFields,
+                ...(categoryIdentifyingFields[category] || (() => {
+                    console.warn(`Unknown category "${category}" encountered. Using fallback fields.`);
+                    return ['manufacturer_pn', 'description', 'package'];
+                })())
+            ];
             
-            // Find existing components with same category and subcategory
+            // Find existing components with same category and subcategory first
             const similarComponents = data.components.filter(comp => 
                 comp.category === category && 
                 comp.subcategory === subcategory &&
                 comp.status === 'Active' // Only check active components
             );
             
-            // Check if any existing component has matching key fields
+            // Check if any existing component has ALL matching identifying fields
             for (const existingComp of similarComponents) {
                 let isMatch = true;
                 
-                for (const field of fieldsToCheck) {
+                for (const field of allFieldsToCheck) {
                     const newValue = (componentData[field] || '').toString().toLowerCase().trim();
                     const existingValue = (existingComp[field] || '').toString().toLowerCase().trim();
+                    
+                    // Track if at least one field is non-empty for both components
+                    const isFieldIdentifying = newValue !== '' || existingValue !== '';
+                    
+                    if (!isFieldIdentifying) {
+                        continue; // Skip non-identifying fields
+                    }
                     
                     if (newValue !== existingValue) {
                         isMatch = false;
@@ -1690,6 +1707,7 @@
             let reusedCount = 0;
             let reassignedCount = 0;
             let componentsToAdd = [];
+            let kpnCounter = 0; // Initialize counter for KPN generation
             
             // Add all non-duplicate components
             validComponents.forEach(component => {
