@@ -68,6 +68,10 @@ export class ComponentDataManager {
    * Update component
    */
   updateComponent(category: ComponentCategoryType, id: number, updates: Partial<Component>): boolean {
+    if (category === '__proto__' || category === 'constructor' || category === 'prototype') {
+      throw new Error('Invalid category key');
+    }
+
     const components = this.data[category];
     if (!components) return false;
 
