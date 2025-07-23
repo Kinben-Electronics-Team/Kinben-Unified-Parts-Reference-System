@@ -1575,22 +1575,52 @@
                 const componentDesc = createComponentDescription(component);
                 const existingDesc = createComponentDescription(existing);
                 
-                itemDiv.innerHTML = `
-                    <div class="duplicate-item-header">
-                        <span>⚠️ Row ${component.rowNumber}: ${componentDesc}</span>
-                    </div>
-                    <div class="duplicate-item-existing">
-                        <strong>Existing KPN:</strong> ${existing.kpn}<br>
-                        <strong>Details:</strong> ${existingDesc}
-                    </div>
-                    <div class="duplicate-choices">
-                        <input type="radio" id="keep-${index}" name="choice-${index}" value="keep" checked>
-                        <label for="keep-${index}">✅ Keep Existing KPN (${existing.kpn})</label>
-                        
-                        <input type="radio" id="new-${index}" name="choice-${index}" value="new">
-                        <label for="new-${index}">➕ Assign New KPN</label>
-                    </div>
-                `;
+                const headerDiv = document.createElement('div');
+                headerDiv.className = 'duplicate-item-header';
+                const headerSpan = document.createElement('span');
+                headerSpan.textContent = `⚠️ Row ${component.rowNumber}: ${componentDesc}`;
+                headerDiv.appendChild(headerSpan);
+                
+                const existingDiv = document.createElement('div');
+                existingDiv.className = 'duplicate-item-existing';
+                const existingKpnStrong = document.createElement('strong');
+                existingKpnStrong.textContent = 'Existing KPN:';
+                existingDiv.appendChild(existingKpnStrong);
+                existingDiv.appendChild(document.createTextNode(` ${existing.kpn}`));
+                existingDiv.appendChild(document.createElement('br'));
+                const detailsStrong = document.createElement('strong');
+                detailsStrong.textContent = 'Details:';
+                existingDiv.appendChild(detailsStrong);
+                existingDiv.appendChild(document.createTextNode(` ${existingDesc}`));
+                
+                const choicesDiv = document.createElement('div');
+                choicesDiv.className = 'duplicate-choices';
+                const keepInput = document.createElement('input');
+                keepInput.type = 'radio';
+                keepInput.id = `keep-${index}`;
+                keepInput.name = `choice-${index}`;
+                keepInput.value = 'keep';
+                keepInput.checked = true;
+                const keepLabel = document.createElement('label');
+                keepLabel.htmlFor = `keep-${index}`;
+                keepLabel.textContent = `✅ Keep Existing KPN (${existing.kpn})`;
+                choicesDiv.appendChild(keepInput);
+                choicesDiv.appendChild(keepLabel);
+                
+                const newInput = document.createElement('input');
+                newInput.type = 'radio';
+                newInput.id = `new-${index}`;
+                newInput.name = `choice-${index}`;
+                newInput.value = 'new';
+                const newLabel = document.createElement('label');
+                newLabel.htmlFor = `new-${index}`;
+                newLabel.textContent = '➕ Assign New KPN';
+                choicesDiv.appendChild(newInput);
+                choicesDiv.appendChild(newLabel);
+                
+                itemDiv.appendChild(headerDiv);
+                itemDiv.appendChild(existingDiv);
+                itemDiv.appendChild(choicesDiv);
                 
                 duplicateList.appendChild(itemDiv);
             });
