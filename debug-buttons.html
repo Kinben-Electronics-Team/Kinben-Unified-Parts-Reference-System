@@ -14,6 +14,11 @@
         <p>Click buttons to test functionality...</p>
     </div>
 
+    <!-- Load Firebase SDK like the main app -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <script>
         // Basic JavaScript test
         function testFunction1() {
@@ -25,12 +30,54 @@
         function testFunction2() {
             const output = document.getElementById('output');
             
+            // More detailed Firebase testing
+            output.innerHTML += '<h3>Detailed Firebase Debug:</h3>';
+            
+            // Test if firebase exists
             if (typeof firebase !== 'undefined') {
                 output.innerHTML += '<p style="color: green;">✅ Firebase object available!</p>';
                 console.log('Firebase object found:', firebase);
+                
+                // Test Firebase properties
+                if (firebase.initializeApp) {
+                    output.innerHTML += '<p style="color: green;">✅ firebase.initializeApp exists</p>';
+                } else {
+                    output.innerHTML += '<p style="color: red;">❌ firebase.initializeApp missing</p>';
+                }
+                
+                if (firebase.auth) {
+                    output.innerHTML += '<p style="color: green;">✅ firebase.auth exists</p>';
+                } else {
+                    output.innerHTML += '<p style="color: red;">❌ firebase.auth missing</p>';
+                }
+                
+                // Try to initialize Firebase
+                try {
+                    const config = {
+                        apiKey: "test-key",
+                        authDomain: "test.firebaseapp.com",
+                        projectId: "test"
+                    };
+                    const app = firebase.initializeApp(config, 'test-app');
+                    output.innerHTML += '<p style="color: green;">✅ Firebase can initialize apps</p>';
+                } catch (error) {
+                    output.innerHTML += '<p style="color: orange;">⚠️ Firebase init test failed: ' + error.message + '</p>';
+                }
+                
             } else {
                 output.innerHTML += '<p style="color: red;">❌ Firebase object NOT available!</p>';
                 console.log('Firebase object not found');
+                
+                // Check if scripts loaded
+                const scripts = document.querySelectorAll('script[src*="firebase"]');
+                if (scripts.length > 0) {
+                    output.innerHTML += '<p style="color: orange;">⚠️ Firebase script tags found (' + scripts.length + ') but Firebase object missing</p>';
+                    scripts.forEach((script, i) => {
+                        output.innerHTML += '<p style="font-size: 12px;">Script ' + (i+1) + ': ' + script.src + '</p>';
+                    });
+                } else {
+                    output.innerHTML += '<p style="color: red;">❌ No Firebase script tags found</p>';
+                }
             }
             
             // Test if createAccountWithFirebase exists
@@ -40,6 +87,11 @@
                 output.innerHTML += '<p style="color: red;">❌ createAccountWithFirebase function NOT found!</p>';
             }
         }
+        
+        // Wait for Firebase to load then test
+        setTimeout(() => {
+            console.log('Firebase availability after delay:', typeof firebase !== 'undefined');
+        }, 2000);
         
         console.log('Debug script loaded');
     </script>
