@@ -146,6 +146,8 @@ npm run test:safe         # Fallback first, then full tests
 ### 🛡️ Security Features
 - **Client-side Only**: No server-side data storage
 - **LocalStorage**: User data stored locally
+- **Local User Management**: Username/password authentication system
+- **Role-based Access**: Admin and Team user permissions
 - **File Validation**: CSV format verification
 - **Input Sanitization**: Prevent XSS attacks
 
