@@ -9,6 +9,76 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     
+    <!-- Authentication Functions - Loaded early to ensure global availability -->
+    <script>
+        // Global authentication functions - defined immediately
+        window.signInWithFirebase = function() {
+            const email = document.getElementById('email')?.value?.trim();
+            const password = document.getElementById('password')?.value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+            
+            // Simple validation - Firebase integration will be handled by main script
+            console.log('signInWithFirebase called with:', email);
+            alert('Sign in function called successfully! (Firebase integration will be handled once script loads)');
+        };
+
+        window.createAccountWithFirebase = function() {
+            const email = document.getElementById('email')?.value?.trim();
+            const password = document.getElementById('password')?.value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters.');
+                return;
+            }
+            
+            // Simple validation - Firebase integration will be handled by main script
+            console.log('createAccountWithFirebase called with:', email);
+            alert('Create account function called successfully! (Firebase integration will be handled once script loads)');
+        };
+
+        window.logout = function() {
+            console.log('logout called');
+            alert('Logout function called successfully!');
+        };
+
+        window.showTab = function(tabName) {
+            console.log('showTab called with:', tabName);
+            // Basic tab switching functionality
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            const targetPanel = document.getElementById(tabName + '-panel') || document.getElementById(tabName);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+            
+            const targetTab = document.querySelector(`[onclick*="${tabName}"]`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+        };
+        
+        // Log that functions are available
+        console.log('✅ Authentication functions loaded and available globally');
+        console.log('signInWithFirebase:', typeof window.signInWithFirebase);
+        console.log('createAccountWithFirebase:', typeof window.createAccountWithFirebase);
+        console.log('logout:', typeof window.logout);
+        console.log('showTab:', typeof window.showTab);
+    </script>
+    
     <style>
         body { 
             font-family: Calibri, Arial, sans-serif; 
@@ -1067,6 +1137,99 @@
         let db = null;
         let currentUser = { role: 'none', email: '', uid: '', displayName: '' };
         
+        // Define authentication functions immediately to ensure global availability
+        window.signInWithFirebase = async function() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+            
+            if (!auth) {
+                alert('Firebase not initialized. Please refresh the page.');
+                return;
+            }
+            
+            try {
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                console.log('✅ Firebase authentication successful for:', email);
+                // Clear form
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            } catch (error) {
+                console.error('❌ Firebase sign in error:', error);
+                alert('Sign in failed: ' + error.message);
+            }
+        };
+
+        window.createAccountWithFirebase = async function() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters.');
+                return;
+            }
+            
+            if (!auth) {
+                alert('Firebase not initialized. Please refresh the page.');
+                return;
+            }
+            
+            try {
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                console.log('✅ Firebase account created successfully for:', email);
+                // Clear form
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            } catch (error) {
+                console.error('❌ Firebase account creation error:', error);
+                alert('Account creation failed: ' + error.message);
+            }
+        };
+
+        window.logout = async function() {
+            if (auth) {
+                try {
+                    await firebase.auth().signOut();
+                    console.log('✅ User signed out successfully');
+                } catch (error) {
+                    console.error('❌ Error signing out:', error);
+                }
+            }
+            currentUser = { role: 'none', email: '', uid: '', displayName: '' };
+            showLogin();
+        };
+
+        window.showTab = function(tabName) {
+            // Basic tab switching functionality
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            const targetPanel = document.getElementById(tabName + '-panel') || document.getElementById(tabName);
+            if (targetPanel) {
+                targetPanel.classList.add('active');
+            }
+            
+            const targetTab = document.querySelector(`[onclick*="${tabName}"]`);
+            if (targetTab) {
+                targetTab.classList.add('active');
+            }
+            
+            console.log('Switched to tab:', tabName);
+        };
+        
         // Wait for the DOM to load, then initialize Firebase
         document.addEventListener('DOMContentLoaded', async () => {
             if (typeof firebase !== 'undefined') {
@@ -1148,14 +1311,6 @@
             } catch (error) {
                 console.error('❌ Error handling Firebase user:', error);
                 alert('Error loading user data. Please try again.');
-            }
-        }
-                    if (currentUser.role === 'admin') {
-                        showUserManagementTab();
-                    } else {
-                        hideUserManagementTab();
-                    }
-                };
             }
         }
 
@@ -1611,24 +1766,6 @@
                 
             } catch (error) {
                 console.error('❌ Error loading data from Firestore:', error);
-                throw error;
-            }
-        }
-                });
-            } else {
-                // Initialize default vendors if none exist
-                    data.vendors = ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics'];
-                    await saveVendorsToFirestore();
-                }
-                
-                // Store unsubscribe functions for cleanup
-                firestoreListenerManager.addUnsubscribers([componentsUnsubscribe, pcbsUnsubscribe, systemsUnsubscribe]);
-                
-                updateStats();
-                renderAll();
-                
-            } catch (error) {
-                console.error('Error loading from Firestore:', error);
                 throw error;
             }
         }
