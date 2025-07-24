@@ -46,7 +46,9 @@ The repository is configured for automatic deployment to Firebase when you push 
 
 ### Step 4: Add Secret to GitHub Repository
 
-1. Go to your GitHub repository: `https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System`
+1. Go to your GitHub repository: `<YOUR_REPOSITORY_URL>`
+
+> Replace `<YOUR_REPOSITORY_URL>` with the URL of your GitHub repository (e.g., `https://github.com/your-username/your-repository-name`).
 2. Click **Settings** tab (in the repository, not your profile)
 3. In the left sidebar, click **Secrets and variables** → **Actions**
 4. Click **New repository secret**
