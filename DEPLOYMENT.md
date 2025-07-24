@@ -25,11 +25,10 @@ This system is deployed and accessible at multiple locations:
 ### 🔥 Firebase (Recommended for Production)
 **Automatic deployment configured via GitHub Actions**
 
-```bash
-# Setup (one-time only)
-./setup-firebase-deployment.sh
+> 🔑 **First-time setup required**: Follow the [Firebase Service Account Setup Guide](FIREBASE_SERVICE_ACCOUNT_SETUP.md) to configure automated deployment.
 
-# Deployment happens automatically on push to master/main
+```bash
+# After setup, deployment happens automatically on push to master/main
 git add .
 git commit -m "Deploy updates"
 git push origin main
@@ -39,7 +38,7 @@ git push origin main
 - Validates HTML and JavaScript
 - Builds Firebase-ready distribution
 - Deploys to Firebase hosting automatically
-- Updates both GitHub Pages and Firebase simultaneously
+- Updates Firebase hosting with latest changes
 
 ### 1. GitHub Pages (Fallback)
 ```bash
