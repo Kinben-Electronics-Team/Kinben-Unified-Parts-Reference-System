@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Debug Buttons Test</title>
+</head>
+<body>
+    <h1>Button Functionality Debug Test</h1>
+    
+    <button onclick="testFunction1()">Test Button 1 (Basic JS)</button><br><br>
+    <button onclick="testFunction2()">Test Button 2 (Firebase Test)</button><br><br>
+    
+    <div id="output" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px; min-height: 100px;">
+        <p>Click buttons to test functionality...</p>
+    </div>
+
+    <script>
+        // Basic JavaScript test
+        function testFunction1() {
+            document.getElementById('output').innerHTML += '<p style="color: green;">✅ Basic JavaScript working!</p>';
+            console.log('Basic JavaScript function executed');
+        }
+        
+        // Firebase availability test
+        function testFunction2() {
+            const output = document.getElementById('output');
+            
+            if (typeof firebase !== 'undefined') {
+                output.innerHTML += '<p style="color: green;">✅ Firebase object available!</p>';
+                console.log('Firebase object found:', firebase);
+            } else {
+                output.innerHTML += '<p style="color: red;">❌ Firebase object NOT available!</p>';
+                console.log('Firebase object not found');
+            }
+            
+            // Test if createAccountWithFirebase exists
+            if (typeof createAccountWithFirebase === 'function') {
+                output.innerHTML += '<p style="color: green;">✅ createAccountWithFirebase function exists!</p>';
+            } else {
+                output.innerHTML += '<p style="color: red;">❌ createAccountWithFirebase function NOT found!</p>';
+            }
+        }
+        
+        console.log('Debug script loaded');
+    </script>
+</body>
+</html>
