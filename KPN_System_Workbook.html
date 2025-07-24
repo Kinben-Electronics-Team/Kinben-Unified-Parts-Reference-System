@@ -4,16 +4,7 @@
     <meta charset="UTF-8">
     <title>Kinben KPN System - Simplified</title>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" 
-            integrity="sha384-<HASH_FOR_APP>" 
-            crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" 
-            integrity="sha384-<HASH_FOR_AUTH>" 
-            crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" 
-            integrity="sha384-<HASH_FOR_FIRESTORE>" 
-            crossorigin="anonymous"></script>
+    <!-- Removed Firebase SDK - using local authentication only -->
     
     <style>
         body { 
@@ -541,40 +532,22 @@
     <div id="login-modal" class="login-modal">
         <div class="login-container">
             <h2>🔐 Login to KPN System</h2>
-            <p id="login-description">Choose your login method</p>
+            <p id="login-description">Enter your credentials to access the system</p>
             <div class="login-form">
-                <!-- Google Sign-In (shown when Firebase is configured) -->
-                <button id="google-signin-btn" onclick="signInWithGoogle()" style="background: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px;">
-                    <span style="margin-right: 10px;">🔍</span>Sign in with Google
-                </button>
-                
-                <!-- Local Authentication Form (backup) -->
-                <div id="local-auth-form" style="display: none;">
+                <!-- Local Authentication Form -->
+                <div id="local-auth-form">
                     <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
                     <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
                     <button onclick="signInLocal()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 10px;">
-                        🔑 Sign In Locally
+                        🔑 Sign In
                     </button>
                 </div>
                 
-                <!-- Toggle between authentication methods -->
-                <button id="toggle-auth-btn" onclick="toggleAuthMethod()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 15px;">
-                    Use Local Login
-                </button>
-                
                 <div id="login-status" style="text-align: center; color: #666; font-size: 14px;"></div>
-                
-                <!-- Local Login Credentials Info -->
-                <div id="local-credentials-info" style="display: none; margin-top: 15px; padding: 15px; background: #e9ecef; border-radius: 5px; font-size: 12px; color: #495057;">
-                    <strong>Local Login Credentials:</strong><br>
-                    <strong>Admin:</strong> admin / admin123<br>
-                    <strong>Team:</strong> team / team123<br>
-                    <em>These are backup accounts when Google auth is unavailable</em>
-                </div>
             </div>
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
                 <strong>Note:</strong><br>
-                <span id="auth-note">Firebase authentication is not configured. Using local authentication.</span>
+                <span id="auth-note">Contact your administrator for login credentials.</span>
             </div>
         </div>
     </div>
@@ -612,7 +585,6 @@
             <button class="tab" onclick="showTab('systems')">🏗️ Systems</button>
             <button class="tab" onclick="showTab('export')">📊 Export</button>
             <button class="tab" onclick="showTab('config')">⚙️ Config</button>
-            <button class="tab" id="user-mgmt-tab" onclick="showTab('user-management')" style="display: none;">👥 Users</button>
         </div>
         
         <div class="content" id="simplified-structure">
@@ -900,6 +872,98 @@
                 <p>Manage system settings and preferred vendors</p>
                 
                 <div style="max-width: 800px;">
+                    <!-- User Management Section (Admin Only) -->
+                    <div id="user-management-section" style="display: none;">
+                        <h3>👥 User Management</h3>
+                        <p>Manage user accounts and permissions (Admin only)</p>
+                        
+                        <!-- Current Users -->
+                        <div style="margin-bottom: 30px;">
+                            <h4>Current Users</h4>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                                    <thead>
+                                        <tr style="background: #f5f5f5;">
+                                            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Username</th>
+                                            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Display Name</th>
+                                            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Role</th>
+                                            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table-body">
+                                        <!-- Users will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Add New User -->
+                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
+                            <h4>Add New User</h4>
+                            <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                                <div class="form-group">
+                                    <label>Username <span style="color: red;">*</span></label>
+                                    <input type="text" id="new-username" placeholder="e.g., john.doe">
+                                </div>
+                                <div class="form-group">
+                                    <label>Display Name <span style="color: red;">*</span></label>
+                                    <input type="text" id="new-displayname" placeholder="e.g., John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label>Password <span style="color: red;">*</span></label>
+                                    <input type="password" id="new-password" placeholder="Minimum 6 characters">
+                                </div>
+                                <div class="form-group">
+                                    <label>Role <span style="color: red;">*</span></label>
+                                    <select id="new-role">
+                                        <option value="team">Team</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-primary" onclick="addUser()">Add User</button>
+                                <button class="btn" onclick="clearUserForm()" style="background: #6c757d; color: white;">Clear</button>
+                            </div>
+                            <div style="margin-top: 15px; font-size: 12px; color: #666;">
+                                <strong>Note:</strong> Maximum 5 additional users (team + admin combined). One admin user is required.
+                            </div>
+                        </div>
+                        
+                        <!-- Role Descriptions -->
+                        <div style="padding: 15px; background: #e3f2fd; border-radius: 5px; margin-bottom: 20px;">
+                            <h4>Role Descriptions</h4>
+                            <ul style="margin: 10px 0;">
+                                <li><strong>Team:</strong> Can create and archive components, create PCBs and systems</li>
+                                <li><strong>Admin:</strong> All team permissions plus ability to delete components and manage users</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Team User Profile Section -->
+                    <div id="user-profile-section" style="display: none;">
+                        <h3>👤 My Profile</h3>
+                        <p>Update your personal information</p>
+                        
+                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px; max-width: 400px;">
+                            <div class="form-group">
+                                <label>Display Name</label>
+                                <input type="text" id="profile-displayname" placeholder="Your display name">
+                            </div>
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" id="profile-current-password" placeholder="Enter current password">
+                            </div>
+                            <div class="form-group">
+                                <label>New Password (leave blank to keep current)</label>
+                                <input type="password" id="profile-new-password" placeholder="Enter new password">
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-primary" onclick="updateProfile()">Update Profile</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <h3>Preferred Vendors</h3>
                     <p>Add and manage your preferred component vendors for dropdown selection</p>
                     
@@ -921,44 +985,6 @@
                 </div>
             </div>
 
-            <!-- User Management Tab (Admin Only) -->
-            <div id="user-management" class="tab-panel">
-                <h2>User Management</h2>
-                <p>Manage user roles and permissions (Admin access required)</p>
-                
-                <div style="max-width: 800px;">
-                    <div id="users-list">
-                        <h3>System Users</h3>
-                        <p>All users who have signed in to the system</p>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                                <thead>
-                                    <tr style="background: #f5f5f5;">
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">User</th>
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Email</th>
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Current Role</th>
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Last Sign In</th>
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table-body">
-                                    <!-- Users will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
-                            <h4>Role Descriptions</h4>
-                            <ul style="margin: 10px 0;">
-                                <li><strong>Team:</strong> Can create and archive components, create PCBs and systems</li>
-                                <li><strong>Admin:</strong> All team permissions plus ability to delete components and manage users</li>
-                                <li><strong>None:</strong> User has no system access (can sign in but cannot use features)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -982,47 +1008,9 @@
     </div>
 
     <script>
-        // Firebase Configuration
-        // NOTE: Replace these with actual Firebase project credentials
-        const firebaseConfig = {
-            apiKey: "your-api-key-here",
-            authDomain: "the-clever-studio-f3b16.firebaseapp.com",
-            projectId: "the-clever-studio-f3b16",
-            storageBucket: "the-clever-studio-f3b16.appspot.com",
-            messagingSenderId: "actual-sender-id", // Replace with your Firebase project's messaging sender ID
-            appId: "your-app-id"
-        };
-
-        // Check if Firebase config is valid (not placeholder values)
-        const isFirebaseConfigured = firebaseConfig.apiKey !== "your-api-key-here" && 
-                                    firebaseConfig.appId !== "your-app-id" &&
-                                    firebaseConfig.messagingSenderId !== "actual-sender-id";
-
-        // Initialize Firebase only if properly configured and Firebase SDK is available
-        let auth = null;
-        let db = null;
-        let googleProvider = null;
+        // Local user management system
+        // User data stored in localStorage
         
-        if (isFirebaseConfigured && typeof firebase !== 'undefined') {
-            try {
-                firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.firestore();
-                // Configure Google Auth Provider
-                googleProvider = new firebase.auth.GoogleAuthProvider();
-                googleProvider.addScope('email');
-                googleProvider.addScope('profile');
-                console.log('Firebase initialized successfully');
-            } catch (error) {
-                console.warn('Firebase initialization failed:', error);
-            }
-        } else {
-            console.log('Firebase not configured or SDK not available, using local authentication');
-        }
-
-        // Local authentication mode flag
-        let useLocalAuth = !isFirebaseConfigured || typeof firebase === 'undefined';
-
         // Simplified data storage
         let data = {
             components: [],
@@ -1031,84 +1019,35 @@
             vendors: ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics']
         };
 
-        // Current user object (compatible with both auth methods)
+        // Current user object
         let currentUser = { role: 'none', email: '', uid: '', displayName: '', username: null };
 
-        // Local user accounts (backup authentication)
-        const localUsers = {
-            'admin': { password: 'admin123', role: 'admin', email: 'admin@kinben.local', displayName: 'Local Admin' },
-            'team': { password: 'team123', role: 'team', email: 'team@kinben.local', displayName: 'Team User' }
-        };
-
-        // Firebase Authentication State Listener (only if Firebase is configured)
-        if (auth) {
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    // User is signed in via Firebase
-                    await handleFirebaseUser(user);
-                } else {
-                    // User is signed out
-                    currentUser = { role: 'none', email: '', uid: '', displayName: '', username: null };
-                    showLogin();
-                }
-            });
-        }
-
-        // Handle Firebase user sign in
-        async function handleFirebaseUser(user) {
-            try {
-                // Get user role from Firestore
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                let userRole = 'none'; // Default role
-                
-                if (userDoc.exists) {
-                    userRole = userDoc.data().role || 'none';
-                } else {
-                    // New user - create document with no role
-                    await db.collection('users').doc(user.uid).set({
-                        email: user.email,
-                        displayName: user.displayName,
-                        role: 'none',
-                        firstSignIn: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-
-                // Update last sign in
-                await db.collection('users').doc(user.uid).update({
-                    lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // Set current user
-                currentUser = {
-                    uid: user.uid,
-                    username: user.displayName || user.email.split('@')[0],
-                    email: user.email,
-                    displayName: user.displayName || user.email,
-                    role: userRole
-                };
-
-                if (userRole === 'none') {
-                    // User has no role assigned
-                    showNoRoleMessage();
-                } else {
-                    // User has a role, allow access
-                    hideLogin();
-                    showUserInfo();
-                    loadData(); // Load app data
-                    
-                    // Show appropriate tabs based on role
-                    if (userRole === 'admin') {
-                        showUserManagementTab();
-                    } else {
-                        hideUserManagementTab();
+        // Load users from localStorage or initialize with default admin
+        function loadUsers() {
+            const saved = localStorage.getItem('kpn_users');
+            if (saved) {
+                return JSON.parse(saved);
+            } else {
+                // Initialize with default admin user
+                return {
+                    'admin': { 
+                        password: 'admin123', 
+                        role: 'admin', 
+                        email: 'admin@kinben.local', 
+                        displayName: 'Administrator',
+                        created: new Date().toISOString()
                     }
-                }
-            } catch (error) {
-                console.error('Error handling Firebase user:', error);
-                showLoginError('Authentication error. Please try again.');
+                };
             }
         }
+
+        // Save users to localStorage
+        function saveUsers() {
+            localStorage.setItem('kpn_users', JSON.stringify(localUsers));
+        }
+
+        // Local user accounts
+        let localUsers = loadUsers();
 
         // Handle local authentication
         function signInLocal() {
@@ -1135,12 +1074,8 @@
                 showUserInfo();
                 loadData(); // Load app data
                 
-                // Show appropriate tabs based on role
-                if (user.role === 'admin') {
-                    showUserManagementTab();
-                } else {
-                    hideUserManagementTab();
-                }
+                // Show appropriate features based on role
+                updateUIForRole(user.role);
                 
                 // Clear form
                 document.getElementById('username').value = '';
@@ -1152,99 +1087,215 @@
             }
         }
 
-        // Toggle between Google and local authentication
-        function toggleAuthMethod() {
-            const localForm = document.getElementById('local-auth-form');
-            const googleBtn = document.getElementById('google-signin-btn');
-            const toggleBtn = document.getElementById('toggle-auth-btn');
-            const credentialsInfo = document.getElementById('local-credentials-info');
-            const authNote = document.getElementById('auth-note');
+        // Update UI based on user role
+        function updateUIForRole(role) {
+            const userMgmtSection = document.getElementById('user-management-section');
+            const userProfileSection = document.getElementById('user-profile-section');
             
-            if (useLocalAuth) {
-                // Switch to Google auth (if available)
-                if (isFirebaseConfigured && typeof firebase !== 'undefined') {
-                    useLocalAuth = false;
-                    localForm.style.display = 'none';
-                    googleBtn.style.display = 'block';
-                    toggleBtn.textContent = 'Use Local Login';
-                    credentialsInfo.style.display = 'none';
-                    authNote.textContent = 'Using Google authentication via Firebase.';
-                    document.getElementById('login-description').textContent = 'Sign in with your Google account to access the system';
-                } else {
-                    showLoginError('Google authentication is not configured or available.');
-                }
+            if (role === 'admin') {
+                userMgmtSection.style.display = 'block';
+                userProfileSection.style.display = 'block';
+                loadUsersTable();
+            } else if (role === 'team') {
+                userMgmtSection.style.display = 'none';
+                userProfileSection.style.display = 'block';
+                loadUserProfile();
             } else {
-                // Switch to local auth
-                useLocalAuth = true;
-                localForm.style.display = 'block';
-                googleBtn.style.display = 'none';
-                toggleBtn.textContent = 'Use Google Login';
-                credentialsInfo.style.display = 'block';
-                authNote.textContent = 'Using local authentication. Google auth is not configured.';
-                document.getElementById('login-description').textContent = 'Enter your local credentials to access the system';
+                userMgmtSection.style.display = 'none';
+                userProfileSection.style.display = 'none';
             }
         }
 
-        // Handle user sign out (works for both Firebase and local auth)
+        // Load users table for admin
+        function loadUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+            
+            Object.keys(localUsers).forEach(username => {
+                const user = localUsers[username];
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td style="padding: 10px; border: 1px solid #ddd;">${username}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">${user.displayName}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">
+                        <span style="background: ${user.role === 'admin' ? '#dc3545' : '#28a745'}; color: white; padding: 3px 8px; border-radius: 3px; font-size: 12px;">
+                            ${user.role.toUpperCase()}
+                        </span>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">
+                        ${username === 'admin' ? 
+                            '<span style="color: #666; font-style: italic;">Protected</span>' : 
+                            `<button class="btn" onclick="editUser('${username}')" style="background: #ffc107; color: black; padding: 4px 8px; font-size: 12px; margin-right: 5px;">Edit</button>
+                             <button class="btn" onclick="deleteUser('${username}')" style="background: #dc3545; color: white; padding: 4px 8px; font-size: 12px;">Delete</button>`
+                        }
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load user profile for team users
+        function loadUserProfile() {
+            const user = localUsers[currentUser.username];
+            if (user) {
+                document.getElementById('profile-displayname').value = user.displayName;
+            }
+        }
+
+        // Add new user (admin only)
+        function addUser() {
+            if (currentUser.role !== 'admin') {
+                alert('Only administrators can add users.');
+                return;
+            }
+            
+            const username = document.getElementById('new-username').value.trim();
+            const displayName = document.getElementById('new-displayname').value.trim();
+            const password = document.getElementById('new-password').value;
+            const role = document.getElementById('new-role').value;
+            
+            // Validation
+            if (!username || !displayName || !password || !role) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+            
+            if (localUsers[username]) {
+                alert('Username already exists. Please choose a different username.');
+                return;
+            }
+            
+            // Check user limit (max 6 total: 1 admin + 5 others)
+            const userCount = Object.keys(localUsers).length;
+            if (userCount >= 6) {
+                alert('Maximum number of users (6) reached. Please delete a user before adding a new one.');
+                return;
+            }
+            
+            // Add user
+            localUsers[username] = {
+                password: password,
+                role: role,
+                email: `${username}@kinben.local`,
+                displayName: displayName,
+                created: new Date().toISOString()
+            };
+            
+            saveUsers();
+            loadUsersTable();
+            clearUserForm();
+            alert(`User "${username}" added successfully.`);
+        }
+
+        // Clear user form
+        function clearUserForm() {
+            document.getElementById('new-username').value = '';
+            document.getElementById('new-displayname').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('new-role').value = 'team';
+        }
+
+        // Edit user (admin only)
+        function editUser(username) {
+            if (currentUser.role !== 'admin') {
+                alert('Only administrators can edit users.');
+                return;
+            }
+            
+            const user = localUsers[username];
+            if (!user) return;
+            
+            const newDisplayName = prompt('Enter new display name:', user.displayName);
+            if (newDisplayName && newDisplayName.trim() !== user.displayName) {
+                user.displayName = newDisplayName.trim();
+                saveUsers();
+                loadUsersTable();
+                alert('Display name updated successfully.');
+            }
+        }
+
+        // Delete user (admin only)
+        function deleteUser(username) {
+            if (currentUser.role !== 'admin') {
+                alert('Only administrators can delete users.');
+                return;
+            }
+            
+            if (username === 'admin') {
+                alert('Cannot delete the admin user.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) {
+                delete localUsers[username];
+                saveUsers();
+                loadUsersTable();
+                alert('User deleted successfully.');
+            }
+        }
+
+        // Update user profile (team users can update their own info)
+        function updateProfile() {
+            const user = localUsers[currentUser.username];
+            if (!user) {
+                alert('User not found.');
+                return;
+            }
+            
+            const newDisplayName = document.getElementById('profile-displayname').value.trim();
+            const currentPassword = document.getElementById('profile-current-password').value;
+            const newPassword = document.getElementById('profile-new-password').value;
+            
+            // Verify current password
+            if (user.password !== currentPassword) {
+                alert('Current password is incorrect.');
+                return;
+            }
+            
+            // Update display name
+            if (newDisplayName && newDisplayName !== user.displayName) {
+                user.displayName = newDisplayName;
+            }
+            
+            // Update password if provided
+            if (newPassword) {
+                if (newPassword.length < 6) {
+                    alert('New password must be at least 6 characters long.');
+                    return;
+                }
+                user.password = newPassword;
+            }
+            
+            saveUsers();
+            
+            // Update current user object
+            currentUser.displayName = user.displayName;
+            showUserInfo();
+            
+            // Clear password fields
+            document.getElementById('profile-current-password').value = '';
+            document.getElementById('profile-new-password').value = '';
+            
+            alert('Profile updated successfully.');
+        }
+
+        // Handle user sign out
         function handleUserSignOut() {
             currentUser = { username: null, role: null, uid: null, email: null, displayName: null };
             showLogin();
             hideUserInfo();
-            document.getElementById('user-mgmt-tab').style.display = 'none';
         }
 
-        // Show no role message
-        function showNoRoleMessage() {
-            hideLogin();
-            hideUserInfo();
-            document.getElementById('login-status').innerHTML = `
-                <div style="padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; margin-top: 15px;">
-                    <h4 style="margin: 0 0 10px 0; color: #856404;">⏳ Access Pending</h4>
-                    <p style="margin: 0; color: #856404;">
-                        You have successfully signed in as <strong>${currentUser.email}</strong>, 
-                        but you haven't been assigned a role yet.
-                        <br><br>
-                        Please contact your system administrator to request access.
-                    </p>
-                    <div style="margin-top: 15px;">
-                        <button onclick="signOutUser()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 3px; cursor: pointer;">
-                            Sign Out
-                        </button>
-                    </div>
-                </div>
-            `;
-            showLogin(); // Keep login modal visible with status message
-        }
-
-        // Sign in with Google (only if Firebase is configured)
-        async function signInWithGoogle() {
-            if (!isFirebaseConfigured || !auth || !googleProvider || typeof firebase === 'undefined') {
-                showLoginError('Google authentication is not configured or available.');
-                return;
-            }
-            
-            try {
-                document.getElementById('login-status').innerHTML = 'Signing in...';
-                await auth.signInWithPopup(googleProvider);
-            } catch (error) {
-                console.error('Error signing in with Google:', error);
-                showLoginError('Sign in failed. Please try again later.');
-            }
-        }
-
-        // Sign out user (works for both auth methods)
-        async function signOutUser() {
-            try {
-                if (auth && currentUser.uid && !currentUser.uid.startsWith('local_')) {
-                    await auth.signOut();
-                } else {
-                    // Local authentication sign out
-                    handleUserSignOut();
-                }
-            } catch (error) {
-                console.error('Error signing out:', error);
-                handleUserSignOut(); // Fallback to local sign out
-            }
+        // Sign out user
+        function signOutUser() {
+            handleUserSignOut();
         }
 
         // Show login error
@@ -1256,19 +1307,12 @@
             `;
         }
 
-        // Check authentication status (legacy function - now handled by auth state listener)
+        // Check authentication status
         function checkAuth() {
-            // This is now handled by Firebase Auth state listener
             return currentUser.role && currentUser.role !== 'none';
         }
 
-        // Legacy login function - replaced with Google Sign-In
-        function attemptLogin() {
-            // This function is no longer used but kept for compatibility
-            signInWithGoogle();
-        }
-
-        // Logout function - updated for Firebase
+        // Logout function
         function logout() {
             signOutUser();
         }
@@ -1288,124 +1332,22 @@
             const currentUserSpan = document.getElementById('current-user');
             currentUserSpan.textContent = `${currentUser.username.charAt(0).toUpperCase() + currentUser.username.slice(1)} User (${currentUser.role === 'admin' ? 'Admin' : 'Team'})`;
             userInfo.style.display = 'block';
+            updateUIForRole(currentUser.role);
         }
 
         function hideUserInfo() {
             document.getElementById('user-info').style.display = 'none';
         }
 
-        // User Management Functions
-        async function loadUsersForManagement() {
-            if (currentUser.role !== 'admin') {
-                return;
-            }
-
-            try {
-                const usersSnapshot = await db.collection('users').orderBy('email').get();
-                const usersTableBody = document.getElementById('users-table-body');
-                usersTableBody.innerHTML = '';
-
-                usersSnapshot.forEach(doc => {
-                    const userData = doc.data();
-                    const row = document.createElement('tr');
-                    
-                    const lastSignIn = userData.lastSignIn ? 
-                        userData.lastSignIn.toDate().toLocaleDateString() : 'Never';
-                    
-                    row.innerHTML = `
-                        <td style="padding: 10px; border: 1px solid #ddd;">${userData.displayName || 'N/A'}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">${userData.email}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">
-                            <span style="padding: 3px 8px; border-radius: 3px; font-size: 12px; background: ${getRoleColor(userData.role)}; color: white;">
-                                ${userData.role.toUpperCase()}
-                            </span>
-                        </td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">${lastSignIn}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">
-                            <select onchange="updateUserRole('${doc.id}', this.value)" style="padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
-                                <option value="none" ${userData.role === 'none' ? 'selected' : ''}>None</option>
-                                <option value="team" ${userData.role === 'team' ? 'selected' : ''}>Team</option>
-                                <option value="admin" ${userData.role === 'admin' ? 'selected' : ''}>Admin</option>
-                            </select>
-                        </td>
-                    `;
-                    
-                    usersTableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading users:', error);
-                alert('Unable to load users. Please try again or contact support.');
-            }
-        }
-
-        // Get role color for display
-        function getRoleColor(role) {
-            switch (role) {
-                case 'admin': return '#dc3545';
-                case 'team': return '#28a745';
-                case 'none': return '#6c757d';
-                default: return '#6c757d';
-            }
-        }
-
-        // Update user role
-        async function updateUserRole(userId, newRole) {
-            if (currentUser.role !== 'admin') {
-                alert('Only admins can update user roles.');
-                return;
-            }
-
-            try {
-                await db.collection('users').doc(userId).update({
-                    role: newRole,
-                    updatedBy: currentUser.email,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // Refresh the users list
-                await loadUsersForManagement();
-                
-                alert(`User role updated to ${newRole.toUpperCase()}`);
-            } catch (error) {
-                console.error('Error updating user role:', error);
-                alert('An error occurred while updating the user role. Please try again later.');
-            }
-        }
-
         // Initialize authentication on page load
         window.addEventListener('load', function() {
-            // Set up initial authentication mode based on Firebase configuration
-            if (!isFirebaseConfigured || typeof firebase === 'undefined') {
-                // Default to local auth when Firebase is not configured or not available
-                useLocalAuth = true;
-                document.getElementById('local-auth-form').style.display = 'block';
-                document.getElementById('google-signin-btn').style.display = 'none';
-                document.getElementById('toggle-auth-btn').textContent = 'Use Google Login';
-                document.getElementById('local-credentials-info').style.display = 'block';
-                document.getElementById('auth-note').textContent = 'Firebase authentication is not configured. Using local authentication.';
-                document.getElementById('login-description').textContent = 'Enter your local credentials to access the system';
-            } else {
-                // Firebase is configured, start with Google auth
-                useLocalAuth = false;
-                document.getElementById('local-auth-form').style.display = 'none';
-                document.getElementById('google-signin-btn').style.display = 'block';
-                document.getElementById('toggle-auth-btn').textContent = 'Use Local Login';
-                document.getElementById('local-credentials-info').style.display = 'none';
-                document.getElementById('auth-note').textContent = 'Using Google authentication via Firebase.';
-                document.getElementById('login-description').textContent = 'Sign in with your Google account to access the system';
-            }
-            
             showLogin();
         });
 
         // Add keyboard support for login modal
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && document.getElementById('login-modal').style.display !== 'none') {
-                if (useLocalAuth && document.getElementById('local-auth-form').style.display !== 'none') {
-                    signInLocal();
-                } else if (isFirebaseConfigured && typeof firebase !== 'undefined') {
-                    signInWithGoogle();
-                }
+                signInLocal();
             }
         });
 
@@ -1634,25 +1576,6 @@
             // Update component dropdowns when switching tabs
             if (tabName === 'pcbs' || tabName === 'systems') {
                 updateDropdowns();
-            }
-        }
-
-        // Show/hide user management tab functions
-        function showUserManagementTab() {
-            const userMgmtTab = document.getElementById('user-mgmt-tab');
-            if (userMgmtTab) {
-                userMgmtTab.style.display = 'block';
-                // Load users if Firebase is available
-                if (db) {
-                    loadUsersForManagement();
-                }
-            }
-        }
-
-        function hideUserManagementTab() {
-            const userMgmtTab = document.getElementById('user-mgmt-tab');
-            if (userMgmtTab) {
-                userMgmtTab.style.display = 'none';
             }
         }
 
