@@ -1,5 +1,7 @@
 name: Deploy KPN System Workbook
 
+# Workflow fixed to trigger on push events
+
 on:
   push:
     branches: [ main, master ]
