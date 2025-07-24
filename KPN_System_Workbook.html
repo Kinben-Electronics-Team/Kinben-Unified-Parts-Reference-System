@@ -1459,7 +1459,7 @@
                 }
                 
                 // Store unsubscribe functions for cleanup
-                window.firestoreUnsubscribers = [componentsUnsubscribe, pcbsUnsubscribe, systemsUnsubscribe];
+                firestoreListenerManager.addUnsubscribers([componentsUnsubscribe, pcbsUnsubscribe, systemsUnsubscribe]);
                 
                 updateStats();
                 renderAll();
