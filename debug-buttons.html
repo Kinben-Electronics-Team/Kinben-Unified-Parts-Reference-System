@@ -80,12 +80,15 @@
                 }
             }
             
-            // Test if createAccountWithFirebase exists
-            if (typeof createAccountWithFirebase === 'function') {
-                output.innerHTML += '<p style="color: green;">✅ createAccountWithFirebase function exists!</p>';
-            } else {
-                output.innerHTML += '<p style="color: red;">❌ createAccountWithFirebase function NOT found!</p>';
-            }
+            // Test if authentication functions exist
+            const authFunctions = ['createAccountWithFirebase', 'signInWithFirebase', 'logout', 'showTab'];
+            authFunctions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    output.innerHTML += '<p style="color: green;">✅ ' + funcName + ' function exists!</p>';
+                } else {
+                    output.innerHTML += '<p style="color: red;">❌ ' + funcName + ' function NOT found!</p>';
+                }
+            });
         }
         
         // Wait for Firebase to load then test

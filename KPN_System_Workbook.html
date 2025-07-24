@@ -1164,8 +1164,8 @@
             localStorage.setItem('kpn_users', JSON.stringify(localUsers));
         }
 
-        // Firebase Authentication Functions
-        async function signInWithFirebase() {
+        // Firebase Authentication Functions - Make globally accessible
+        window.signInWithFirebase = async function() {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             
@@ -1212,7 +1212,7 @@
             }
         }
 
-        async function createAccountWithFirebase() {
+        window.createAccountWithFirebase = async function() {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             
@@ -1262,10 +1262,10 @@
         }
 
         // Logout function
-        async function logout() {
+        window.logout = async function() {
             if (auth) {
                 try {
-                    await window.firebase.signOut(auth);
+                    await firebase.auth().signOut();
                     console.log('✅ User signed out successfully');
                 } catch (error) {
                     console.error('❌ Error signing out:', error);
@@ -2274,7 +2274,7 @@
         };
 
         // Tab management
-        function showTab(tabName) {
+        window.showTab = function(tabName) {
             // Hide all panels
             document.querySelectorAll('.tab-panel').forEach(panel => {
                 panel.classList.remove('active');
