@@ -104,7 +104,7 @@ dirsToCopy.forEach(dir => {
 
 console.log('🎉 Build completed! Ready for Firebase deployment.');
 console.log('📁 Files prepared in: ./dist/');
-console.log('🌐 Will be accessible at root level: https://the-clever-studio-f3b16.web.app/');
+console.log('🌐 Will be accessible at root level: https://kinbenpartssystem.web.app/');
 
 // Helper function to copy directories recursively
 function copyRecursiveSync(src, dest) {

@@ -37,7 +37,10 @@
       "Bash(npm install:*)",
       "Bash(npm test)",
       "Bash(git branch:*)",
-      "Bash(gh repo edit:*)"
+      "Bash(gh repo edit:*)",
+      "Bash(firebase projects:list:*)",
+      "Bash(gh repo view:*)",
+      "Bash(git remote get-url:*)"
     ],
     "deny": []
   }

@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Components collection - role-based access
+    match /components/{componentId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        (userRole() in ['admin', 'team']);
+      allow delete: if request.auth != null && 
+        userRole() == 'admin';
+    }
+    
+    // PCBs collection - role-based access
+    match /pcbs/{pcbId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        (userRole() in ['admin', 'team']);
+      allow delete: if request.auth != null && 
+        userRole() == 'admin';
+    }
+    
+    // Systems collection - role-based access  
+    match /systems/{systemId} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null && 
+        (userRole() in ['admin', 'team']);
+      allow delete: if request.auth != null && 
+        userRole() == 'admin';
+    }
+    
+    // Vendors collection - admin only for modifications
+    match /vendors/{vendorId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Metadata collection - system settings
+    match /metadata/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+  }
+}
