@@ -1643,9 +1643,9 @@
                 throw error;
             }
         }
-                    });
-                } else {
-                    // Initialize default vendors if none exist
+                });
+            } else {
+                // Initialize default vendors if none exist
                     data.vendors = ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics'];
                     await saveVendorsToFirestore();
                 }
