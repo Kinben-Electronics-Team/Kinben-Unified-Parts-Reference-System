@@ -1,16 +1,4 @@
-// Firestore Database Helpers
-import { 
-    collection, 
-    doc, 
-    getDocs, 
-    getDoc,
-    addDoc, 
-    updateDoc, 
-    deleteDoc, 
-    onSnapshot,
-    orderBy,
-    query 
-} from 'firebase/firestore';
+// Firestore Database Helpers - Mock Version for Testing
 import { db } from './auth.js';
 
 // Database helper methods
@@ -18,8 +6,11 @@ export const dbMethods = {
     // Get all components for a user
     async getComponents(uid) {
         try {
-            const componentsRef = collection(db, 'users', uid, 'components');
-            const querySnapshot = await getDocs(query(componentsRef, orderBy('kpn')));
+            // Initialize user data if not exists
+            window.mockFirebase.initializeMockUserData(uid);
+            
+            const componentsRef = db.collection('users').doc(uid).collection('components');
+            const querySnapshot = await componentsRef.orderBy('kpn').get();
             const components = [];
             querySnapshot.forEach((doc) => {
                 components.push({ id: doc.id, ...doc.data() });
@@ -33,11 +24,13 @@ export const dbMethods = {
     // Add a new component for a user
     async addComponent(uid, componentData) {
         try {
-            const componentsRef = collection(db, 'users', uid, 'components');
-            const docRef = await addDoc(componentsRef, {
+            window.mockFirebase.initializeMockUserData(uid);
+            
+            const componentsRef = db.collection('users').doc(uid).collection('components');
+            const docRef = await componentsRef.add({
                 ...componentData,
-                createdAt: new Date(),
-                updatedAt: new Date()
+                createdAt: window.mockFirebase.FieldValue.serverTimestamp(),
+                updatedAt: window.mockFirebase.FieldValue.serverTimestamp()
             });
             return { success: true, id: docRef.id };
         } catch (error) {
@@ -48,10 +41,10 @@ export const dbMethods = {
     // Update a component
     async updateComponent(uid, componentId, componentData) {
         try {
-            const componentRef = doc(db, 'users', uid, 'components', componentId);
-            await updateDoc(componentRef, {
+            const componentRef = db.collection('users').doc(uid).collection('components').doc(componentId);
+            await componentRef.update({
                 ...componentData,
-                updatedAt: new Date()
+                updatedAt: window.mockFirebase.FieldValue.serverTimestamp()
             });
             return { success: true };
         } catch (error) {
@@ -62,8 +55,8 @@ export const dbMethods = {
     // Delete a component
     async deleteComponent(uid, componentId) {
         try {
-            const componentRef = doc(db, 'users', uid, 'components', componentId);
-            await deleteDoc(componentRef);
+            const componentRef = db.collection('users').doc(uid).collection('components').doc(componentId);
+            await componentRef.delete();
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
@@ -73,8 +66,10 @@ export const dbMethods = {
     // Get all assemblies for a user
     async getAssemblies(uid) {
         try {
-            const assembliesRef = collection(db, 'users', uid, 'assemblies');
-            const querySnapshot = await getDocs(query(assembliesRef, orderBy('kpn')));
+            window.mockFirebase.initializeMockUserData(uid);
+            
+            const assembliesRef = db.collection('users').doc(uid).collection('assemblies');
+            const querySnapshot = await assembliesRef.orderBy('kpn').get();
             const assemblies = [];
             querySnapshot.forEach((doc) => {
                 assemblies.push({ id: doc.id, ...doc.data() });
@@ -88,11 +83,13 @@ export const dbMethods = {
     // Add a new assembly for a user
     async addAssembly(uid, assemblyData) {
         try {
-            const assembliesRef = collection(db, 'users', uid, 'assemblies');
-            const docRef = await addDoc(assembliesRef, {
+            window.mockFirebase.initializeMockUserData(uid);
+            
+            const assembliesRef = db.collection('users').doc(uid).collection('assemblies');
+            const docRef = await assembliesRef.add({
                 ...assemblyData,
-                createdAt: new Date(),
-                updatedAt: new Date()
+                createdAt: window.mockFirebase.FieldValue.serverTimestamp(),
+                updatedAt: window.mockFirebase.FieldValue.serverTimestamp()
             });
             return { success: true, id: docRef.id };
         } catch (error) {
@@ -103,10 +100,10 @@ export const dbMethods = {
     // Update an assembly
     async updateAssembly(uid, assemblyId, assemblyData) {
         try {
-            const assemblyRef = doc(db, 'users', uid, 'assemblies', assemblyId);
-            await updateDoc(assemblyRef, {
+            const assemblyRef = db.collection('users').doc(uid).collection('assemblies').doc(assemblyId);
+            await assemblyRef.update({
                 ...assemblyData,
-                updatedAt: new Date()
+                updatedAt: window.mockFirebase.FieldValue.serverTimestamp()
             });
             return { success: true };
         } catch (error) {
@@ -117,8 +114,8 @@ export const dbMethods = {
     // Delete an assembly
     async deleteAssembly(uid, assemblyId) {
         try {
-            const assemblyRef = doc(db, 'users', uid, 'assemblies', assemblyId);
-            await deleteDoc(assemblyRef);
+            const assemblyRef = db.collection('users').doc(uid).collection('assemblies').doc(assemblyId);
+            await assemblyRef.delete();
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
@@ -128,8 +125,10 @@ export const dbMethods = {
     // Get all systems for a user
     async getSystems(uid) {
         try {
-            const systemsRef = collection(db, 'users', uid, 'systems');
-            const querySnapshot = await getDocs(query(systemsRef, orderBy('kpn')));
+            window.mockFirebase.initializeMockUserData(uid);
+            
+            const systemsRef = db.collection('users').doc(uid).collection('systems');
+            const querySnapshot = await systemsRef.orderBy('kpn').get();
             const systems = [];
             querySnapshot.forEach((doc) => {
                 systems.push({ id: doc.id, ...doc.data() });
@@ -143,11 +142,13 @@ export const dbMethods = {
     // Add a new system for a user
     async addSystem(uid, systemData) {
         try {
-            const systemsRef = collection(db, 'users', uid, 'systems');
-            const docRef = await addDoc(systemsRef, {
+            window.mockFirebase.initializeMockUserData(uid);
+            
+            const systemsRef = db.collection('users').doc(uid).collection('systems');
+            const docRef = await systemsRef.add({
                 ...systemData,
-                createdAt: new Date(),
-                updatedAt: new Date()
+                createdAt: window.mockFirebase.FieldValue.serverTimestamp(),
+                updatedAt: window.mockFirebase.FieldValue.serverTimestamp()
             });
             return { success: true, id: docRef.id };
         } catch (error) {
@@ -158,10 +159,10 @@ export const dbMethods = {
     // Update a system
     async updateSystem(uid, systemId, systemData) {
         try {
-            const systemRef = doc(db, 'users', uid, 'systems', systemId);
-            await updateDoc(systemRef, {
+            const systemRef = db.collection('users').doc(uid).collection('systems').doc(systemId);
+            await systemRef.update({
                 ...systemData,
-                updatedAt: new Date()
+                updatedAt: window.mockFirebase.FieldValue.serverTimestamp()
             });
             return { success: true };
         } catch (error) {
@@ -172,8 +173,8 @@ export const dbMethods = {
     // Delete a system
     async deleteSystem(uid, systemId) {
         try {
-            const systemRef = doc(db, 'users', uid, 'systems', systemId);
-            await deleteDoc(systemRef);
+            const systemRef = db.collection('users').doc(uid).collection('systems').doc(systemId);
+            await systemRef.delete();
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
@@ -183,9 +184,11 @@ export const dbMethods = {
     // Get user preferences
     async getUserPreferences(uid) {
         try {
-            const userRef = doc(db, 'users', uid, 'settings', 'preferences');
-            const docSnap = await getDoc(userRef);
-            if (docSnap.exists()) {
+            window.mockFirebase.initializeMockUserData(uid);
+            
+            const userRef = db.collection('users').doc(uid).collection('settings').doc('preferences');
+            const docSnap = await userRef.get();
+            if (docSnap.exists) {
                 return { success: true, data: docSnap.data() };
             } else {
                 // Return default preferences
@@ -204,11 +207,11 @@ export const dbMethods = {
     // Update user preferences
     async updateUserPreferences(uid, preferences) {
         try {
-            const userRef = doc(db, 'users', uid, 'settings', 'preferences');
-            await updateDoc(userRef, {
+            const userRef = db.collection('users').doc(uid).collection('settings').doc('preferences');
+            await userRef.set({
                 ...preferences,
-                updatedAt: new Date()
-            });
+                updatedAt: window.mockFirebase.FieldValue.serverTimestamp()
+            }, { merge: true });
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
@@ -217,8 +220,8 @@ export const dbMethods = {
 
     // Listen for real-time updates to components
     onComponentsSnapshot(uid, callback) {
-        const componentsRef = collection(db, 'users', uid, 'components');
-        return onSnapshot(query(componentsRef, orderBy('kpn')), (snapshot) => {
+        const componentsRef = db.collection('users').doc(uid).collection('components');
+        return componentsRef.orderBy('kpn').onSnapshot((snapshot) => {
             const components = [];
             snapshot.forEach((doc) => {
                 components.push({ id: doc.id, ...doc.data() });
@@ -229,8 +232,8 @@ export const dbMethods = {
 
     // Listen for real-time updates to assemblies
     onAssembliesSnapshot(uid, callback) {
-        const assembliesRef = collection(db, 'users', uid, 'assemblies');
-        return onSnapshot(query(assembliesRef, orderBy('kpn')), (snapshot) => {
+        const assembliesRef = db.collection('users').doc(uid).collection('assemblies');
+        return assembliesRef.orderBy('kpn').onSnapshot((snapshot) => {
             const assemblies = [];
             snapshot.forEach((doc) => {
                 assemblies.push({ id: doc.id, ...doc.data() });
@@ -241,8 +244,8 @@ export const dbMethods = {
 
     // Listen for real-time updates to systems
     onSystemsSnapshot(uid, callback) {
-        const systemsRef = collection(db, 'users', uid, 'systems');
-        return onSnapshot(query(systemsRef, orderBy('kpn')), (snapshot) => {
+        const systemsRef = db.collection('users').doc(uid).collection('systems');
+        return systemsRef.orderBy('kpn').onSnapshot((snapshot) => {
             const systems = [];
             snapshot.forEach((doc) => {
                 systems.push({ id: doc.id, ...doc.data() });

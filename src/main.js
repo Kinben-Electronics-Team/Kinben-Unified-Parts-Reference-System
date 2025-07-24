@@ -1,5 +1,5 @@
-// Main Application Logic - Firebase Integration
-import { authMethods } from './auth.js';
+// Main Application Logic - Firebase Integration (CDN Version)
+import { authMethods, initializeFirebase } from './auth.js';
 import { dbMethods } from './db.js';
 
 // Application state
@@ -18,8 +18,19 @@ let editingSystem = null;
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    setupAuthListener();
-    setupEventListeners();
+    // Wait for mock Firebase to load
+    if (window.mockFirebase) {
+        initializeFirebase();
+        setupAuthListener();
+        setupEventListeners();
+    } else {
+        // Wait a moment for mock Firebase to load
+        setTimeout(() => {
+            initializeFirebase();
+            setupAuthListener();
+            setupEventListeners();
+        }, 100);
+    }
 });
 
 // Setup authentication state listener

@@ -1,15 +1,7 @@
-// Firebase Authentication Module
-import { initializeApp } from 'firebase/app';
-import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    signOut, 
-    onAuthStateChanged,
-    createUserWithEmailAndPassword 
-} from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+// Firebase Authentication Module - Mock Version for Testing
+// In production, replace this with real Firebase implementation
 
-// Firebase configuration
+// Firebase configuration (same as production)
 const firebaseConfig = {
     apiKey: "AIzaSyDEb-vJyJthW4xZ042Ay_8EDm-RhGBhLxU",
     authDomain: "kinbenpartssystem.firebaseapp.com",
@@ -19,20 +11,23 @@ const firebaseConfig = {
     appId: "1:896608745742:web:2c84cda1dafbc2519fff5f"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Use mock Firebase for testing
+let auth = null;
+let db = null;
 
-// Export initialized instances
-export { auth, db };
+// Initialize Firebase when mock is loaded
+function initializeFirebase() {
+    auth = window.mockFirebase.auth;
+    db = window.mockFirebase.firestore;
+    console.log('Mock Firebase initialized');
+}
 
 // Authentication methods
 export const authMethods = {
     // Sign in with email and password
     async signIn(email, password) {
         try {
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
             return { success: true, user: userCredential.user };
         } catch (error) {
             return { success: false, error: error.message };
@@ -42,7 +37,7 @@ export const authMethods = {
     // Sign out current user
     async signOut() {
         try {
-            await signOut(auth);
+            await auth.signOut();
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
@@ -52,7 +47,7 @@ export const authMethods = {
     // Create new user account
     async createUser(email, password) {
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             return { success: true, user: userCredential.user };
         } catch (error) {
             return { success: false, error: error.message };
@@ -61,7 +56,7 @@ export const authMethods = {
 
     // Listen for authentication state changes
     onAuthStateChanged(callback) {
-        return onAuthStateChanged(auth, callback);
+        return auth.onAuthStateChanged(callback);
     },
 
     // Get current user
@@ -69,3 +64,6 @@ export const authMethods = {
         return auth.currentUser;
     }
 };
+
+// Export Firebase instances
+export { auth, db, initializeFirebase };
