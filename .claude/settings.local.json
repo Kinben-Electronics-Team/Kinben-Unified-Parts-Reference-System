@@ -42,7 +42,8 @@
       "Bash(gh repo view:*)",
       "Bash(git remote get-url:*)",
       "Bash(firebase:*)",
-      "Bash(npx http-server:*)"
+      "Bash(npx http-server:*)",
+      "Bash(curl:*)"
     ],
     "deny": []
   }

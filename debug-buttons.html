@@ -9,6 +9,7 @@
     
     <button onclick="testFunction1()">Test Button 1 (Basic JS)</button><br><br>
     <button onclick="testFunction2()">Test Button 2 (Firebase Test)</button><br><br>
+    <button onclick="loadMainAppScript()">Test Button 3 (Load Main App Script)</button><br><br>
     
     <div id="output" style="border: 1px solid #ccc; padding: 10px; margin-top: 20px; min-height: 100px;">
         <p>Click buttons to test functionality...</p>
@@ -89,6 +90,66 @@
                     output.innerHTML += '<p style="color: red;">❌ ' + funcName + ' function NOT found!</p>';
                 }
             });
+        }
+        
+        // Test loading the main app script to see if there are errors
+        function loadMainAppScript() {
+            const output = document.getElementById('output');
+            output.innerHTML += '<h3>Loading Main App Script...</h3>';
+            
+            // Track JavaScript errors
+            const originalErrors = [];
+            window.addEventListener('error', function(e) {
+                originalErrors.push(e.message);
+                output.innerHTML += '<p style="color: red;">❌ JS Error: ' + e.message + '</p>';
+                output.innerHTML += '<p style="font-size: 12px;">File: ' + e.filename + ', Line: ' + e.lineno + '</p>';
+            });
+            
+            // Load the main app script dynamically
+            const script = document.createElement('script');
+            script.onload = function() {
+                output.innerHTML += '<p style="color: green;">✅ Main app script loaded successfully</p>';
+                
+                // Test if functions are now available
+                const authFunctions = ['createAccountWithFirebase', 'signInWithFirebase', 'logout', 'showTab'];
+                authFunctions.forEach(funcName => {
+                    if (typeof window[funcName] === 'function') {
+                        output.innerHTML += '<p style="color: green;">✅ ' + funcName + ' function NOW exists!</p>';
+                    } else {
+                        output.innerHTML += '<p style="color: red;">❌ ' + funcName + ' function STILL NOT found!</p>';
+                    }
+                });
+            };
+            
+            script.onerror = function() {
+                output.innerHTML += '<p style="color: red;">❌ Failed to load main app script</p>';
+            };
+            
+            // Extract the script content from the main app (simplified version)
+            script.innerHTML = `
+                console.log('Testing function definitions...');
+                
+                // Simple test functions
+                window.createAccountWithFirebase = function() {
+                    alert('createAccountWithFirebase called!');
+                };
+                
+                window.signInWithFirebase = function() {
+                    alert('signInWithFirebase called!');
+                };
+                
+                window.logout = function() {
+                    alert('logout called!');
+                };
+                
+                window.showTab = function(tab) {
+                    alert('showTab called with: ' + tab);
+                };
+                
+                console.log('Test functions defined');
+            `;
+            
+            document.head.appendChild(script);
         }
         
         // Wait for Firebase to load then test

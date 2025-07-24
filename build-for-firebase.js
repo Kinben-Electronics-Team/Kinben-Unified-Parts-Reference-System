@@ -20,7 +20,8 @@ if (!fs.existsSync(distDir)) {
 const filesToCopy = [
     'index.html',
     'KPN_System_Workbook.html',  // Copy the main application file
-    'debug-buttons.html'  // Debug test file
+    'debug-buttons.html',  // Debug test file
+    'minimal-auth-test.html'  // Minimal working auth test
 ];
 
 // Get build timestamp for version tracking

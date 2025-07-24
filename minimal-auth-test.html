@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Minimal Auth Test</title>
+    
+    <!-- Load Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <h1>Minimal Firebase Auth Test</h1>
+    
+    <div style="padding: 20px; border: 1px solid #ccc;">
+        <input type="email" id="email" placeholder="Email" style="padding: 10px; margin: 5px; width: 200px;"><br>
+        <input type="password" id="password" placeholder="Password" style="padding: 10px; margin: 5px; width: 200px;"><br>
+        <button onclick="createAccount()" style="padding: 10px; margin: 5px; background: #007bff; color: white; border: none;">Create Account</button>
+        <button onclick="signIn()" style="padding: 10px; margin: 5px; background: #28a745; color: white; border: none;">Sign In</button>
+    </div>
+    
+    <div id="status" style="margin-top: 20px; padding: 10px; border: 1px solid #ddd;">
+        Status: Ready
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEb-vJyJthW4xZ042Ay_8EDm-RhGBhLxU",
+            authDomain: "kinbenpartssystem.firebaseapp.com",
+            projectId: "kinbenpartssystem",
+            storageBucket: "kinbenpartssystem.firebasestorage.app",
+            messagingSenderId: "896608745742",
+            appId: "1:896608745742:web:2c84cda1dafbc2519fff5f"
+        };
+        
+        // Initialize Firebase
+        let app, auth;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                document.getElementById('status').innerHTML = 'Status: Firebase initialized successfully ✅';
+                console.log('Firebase initialized');
+            } catch (error) {
+                document.getElementById('status').innerHTML = 'Status: Firebase init failed ❌ ' + error.message;
+                console.error('Firebase init error:', error);
+            }
+        });
+        
+        // Global authentication functions
+        window.createAccount = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('status');
+            
+            if (!email || !password) {
+                status.innerHTML = 'Status: Please enter email and password ⚠️';
+                return;
+            }
+            
+            try {
+                status.innerHTML = 'Status: Creating account... ⏳';
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                status.innerHTML = 'Status: Account created successfully ✅ ' + userCredential.user.email;
+                console.log('Account created:', userCredential.user);
+            } catch (error) {
+                status.innerHTML = 'Status: Account creation failed ❌ ' + error.message;
+                console.error('Create account error:', error);
+            }
+        };
+        
+        window.signIn = async function() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('status');
+            
+            if (!email || !password) {
+                status.innerHTML = 'Status: Please enter email and password ⚠️';
+                return;
+            }
+            
+            try {
+                status.innerHTML = 'Status: Signing in... ⏳';
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                status.innerHTML = 'Status: Signed in successfully ✅ ' + userCredential.user.email;
+                console.log('Signed in:', userCredential.user);
+            } catch (error) {
+                status.innerHTML = 'Status: Sign in failed ❌ ' + error.message;
+                console.error('Sign in error:', error);
+            }
+        };
+        
+        console.log('Script loaded - functions should be available');
+        console.log('createAccount function exists:', typeof window.createAccount === 'function');
+        console.log('signIn function exists:', typeof window.signIn === 'function');
+    </script>
+</body>
+</html>
