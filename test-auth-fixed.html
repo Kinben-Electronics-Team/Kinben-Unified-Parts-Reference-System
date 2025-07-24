@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Minimal Firebase Auth Test</title>
+</head>
+<body>
+    <h1>Minimal Firebase Authentication Test</h1>
+    
+    <div style="padding: 20px; border: 1px solid #ccc;">
+        <input type="email" id="email" placeholder="Email" value="test@example.com" style="padding: 10px; margin: 5px; width: 200px;"><br>
+        <input type="password" id="password" placeholder="Password" value="test123456" style="padding: 10px; margin: 5px; width: 200px;"><br>
+        <button onclick="createAccountWithFirebase()" style="padding: 10px; margin: 5px; background: #007bff; color: white; border: none;">Create Account</button>
+        <button onclick="signInWithFirebase()" style="padding: 10px; margin: 5px; background: #28a745; color: white; border: none;">Sign In</button>
+        <button onclick="logout()" style="padding: 10px; margin: 5px; background: #dc3545; color: white; border: none;">Logout</button>
+    </div>
+    
+    <div id="status" style="margin-top: 20px; padding: 10px; border: 1px solid #ddd;">
+        Status: Ready
+    </div>
+
+    <!-- Load Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDEb-vJyJthW4xZ042Ay_8EDm-RhGBhLxU",
+            authDomain: "kinbenpartssystem.firebaseapp.com",
+            projectId: "kinbenpartssystem",
+            storageBucket: "kinbenpartssystem.firebasestorage.app",
+            messagingSenderId: "896608745742",
+            appId: "1:896608745742:web:2c84cda1dafbc2519fff5f"
+        };
+        
+        // Initialize Firebase
+        let app, auth;
+        let currentUser = { role: 'none', email: '', uid: '', displayName: '' };
+        
+        // Wait for the DOM to load, then initialize Firebase
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (typeof firebase !== 'undefined') {
+                try {
+                    // Initialize Firebase app using compat API
+                    app = firebase.initializeApp(firebaseConfig);
+                    auth = firebase.auth();
+                    
+                    console.log('✅ Firebase initialized successfully');
+                    document.getElementById('status').innerHTML = 'Status: Firebase initialized ✅';
+                    
+                } catch (error) {
+                    console.error('❌ Firebase initialization failed:', error);
+                    document.getElementById('status').innerHTML = 'Status: Firebase init failed ❌ ' + error.message;
+                }
+            } else {
+                console.error('❌ Firebase SDK not loaded');
+                document.getElementById('status').innerHTML = 'Status: Firebase SDK not loaded ❌';
+            }
+        });
+
+        // Global authentication functions
+        window.createAccountWithFirebase = async function() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('status');
+            
+            if (!email || !password) {
+                status.innerHTML = 'Status: Please enter both email and password ⚠️';
+                return;
+            }
+            
+            if (!auth) {
+                status.innerHTML = 'Status: Firebase not initialized ❌';
+                return;
+            }
+            
+            try {
+                status.innerHTML = 'Status: Creating account... ⏳';
+                const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                status.innerHTML = 'Status: Account created successfully ✅ ' + userCredential.user.email;
+                console.log('Account created:', userCredential.user);
+            } catch (error) {
+                status.innerHTML = 'Status: Account creation failed ❌ ' + error.message;
+                console.error('Create account error:', error);
+            }
+        };
+
+        window.signInWithFirebase = async function() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('status');
+            
+            if (!email || !password) {
+                status.innerHTML = 'Status: Please enter both email and password ⚠️';
+                return;
+            }
+            
+            if (!auth) {
+                status.innerHTML = 'Status: Firebase not initialized ❌';
+                return;
+            }
+            
+            try {
+                status.innerHTML = 'Status: Signing in... ⏳';
+                const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+                status.innerHTML = 'Status: Signed in successfully ✅ ' + userCredential.user.email;
+                console.log('Signed in:', userCredential.user);
+            } catch (error) {
+                status.innerHTML = 'Status: Sign in failed ❌ ' + error.message;
+                console.error('Sign in error:', error);
+            }
+        };
+
+        window.logout = async function() {
+            const status = document.getElementById('status');
+            
+            if (!auth) {
+                status.innerHTML = 'Status: Firebase not initialized ❌';
+                return;
+            }
+            
+            try {
+                await firebase.auth().signOut();
+                status.innerHTML = 'Status: Logged out successfully ✅';
+                console.log('User signed out');
+            } catch (error) {
+                status.innerHTML = 'Status: Logout failed ❌ ' + error.message;
+                console.error('Logout error:', error);
+            }
+        };
+
+        console.log('Script loaded - functions should be available');
+        console.log('createAccountWithFirebase function exists:', typeof window.createAccountWithFirebase === 'function');
+        console.log('signInWithFirebase function exists:', typeof window.signInWithFirebase === 'function');
+        console.log('logout function exists:', typeof window.logout === 'function');
+    </script>
+</body>
+</html>

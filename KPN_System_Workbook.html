@@ -1106,27 +1106,27 @@
         // Handle Firebase user sign in
         async function handleFirebaseUser(user) {
             try {
-                // Get user role from Firestore
-                const userDocRef = window.firebase.doc(db, 'users', user.uid);
-                const userDoc = await window.firebase.getDoc(userDocRef);
+                // Get user role from Firestore using compat API
+                const userDocRef = db.collection('users').doc(user.uid);
+                const userDoc = await userDocRef.get();
                 let userRole = 'team'; // Default role for new users
                 
-                if (userDoc.exists()) {
+                if (userDoc.exists) {
                     const userData = userDoc.data();
                     userRole = userData.role || 'team';
                     
                     // Update last sign in
-                    await window.firebase.updateDoc(userDocRef, {
-                        lastSignIn: window.firebase.serverTimestamp()
+                    await userDocRef.update({
+                        lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 } else {
                     // New user - create document with team role
-                    await window.firebase.setDoc(userDocRef, {
+                    await userDocRef.set({
                         email: user.email,
                         displayName: user.displayName || user.email.split('@')[0],
                         role: 'team',
-                        firstSignIn: window.firebase.serverTimestamp(),
-                        lastSignIn: window.firebase.serverTimestamp()
+                        firstSignIn: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
 
@@ -1551,10 +1551,9 @@
             
             try {
                 // Load components with real-time listener
-                const componentsRef = window.firebase.collection(db, 'users', currentUser.uid, 'components');
-                const componentsQuery = window.firebase.query(componentsRef, window.firebase.orderBy('kpn'));
+                const componentsRef = db.collection('users').doc(currentUser.uid).collection('components');
                 
-                window.firebase.onSnapshot(componentsQuery, (snapshot) => {
+                componentsRef.orderBy('kpn').onSnapshot((snapshot) => {
                     data.components = [];
                     snapshot.forEach(doc => {
                         data.components.push({ id: doc.id, ...doc.data() });
@@ -1565,10 +1564,9 @@
                 });
                 
                 // Load PCBs with real-time listener
-                const pcbsRef = window.firebase.collection(db, 'users', currentUser.uid, 'pcbs');
-                const pcbsQuery = window.firebase.query(pcbsRef, window.firebase.orderBy('kpn'));
+                const pcbsRef = db.collection('users').doc(currentUser.uid).collection('pcbs');
                 
-                window.firebase.onSnapshot(pcbsQuery, (snapshot) => {
+                pcbsRef.orderBy('kpn').onSnapshot((snapshot) => {
                     data.pcbs = [];
                     snapshot.forEach(doc => {
                         data.pcbs.push({ id: doc.id, ...doc.data() });
@@ -1579,10 +1577,9 @@
                 });
                 
                 // Load systems with real-time listener
-                const systemsRef = window.firebase.collection(db, 'users', currentUser.uid, 'systems');
-                const systemsQuery = window.firebase.query(systemsRef, window.firebase.orderBy('kpn'));
+                const systemsRef = db.collection('users').doc(currentUser.uid).collection('systems');
                 
-                window.firebase.onSnapshot(systemsQuery, (snapshot) => {
+                systemsRef.orderBy('kpn').onSnapshot((snapshot) => {
                     data.systems = [];
                     snapshot.forEach(doc => {
                         data.systems.push({ id: doc.id, ...doc.data() });
@@ -1593,10 +1590,10 @@
                 });
                 
                 // Load user preferences (vendors, etc.)
-                const preferencesRef = window.firebase.doc(db, 'users', currentUser.uid, 'settings', 'preferences');
-                const preferencesDoc = await window.firebase.getDoc(preferencesRef);
+                const preferencesRef = db.collection('users').doc(currentUser.uid).collection('settings').doc('preferences');
+                const preferencesDoc = await preferencesRef.get();
                 
-                if (preferencesDoc.exists()) {
+                if (preferencesDoc.exists) {
                     const preferences = preferencesDoc.data();
                     if (preferences.vendors) {
                         data.vendors = preferences.vendors;
@@ -1604,9 +1601,9 @@
                     console.log('✅ User preferences loaded');
                 } else {
                     // Set default vendors for new user
-                    await window.firebase.setDoc(preferencesRef, {
+                    await preferencesRef.set({
                         vendors: data.vendors,
-                        createdAt: window.firebase.serverTimestamp()
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
                 
@@ -1763,21 +1760,20 @@
             }
             
             try {
-                const componentsRef = window.firebase.collection(db, 'users', currentUser.uid, 'components');
+                const componentsRef = db.collection('users').doc(currentUser.uid).collection('components');
                 
                 if (component.id) {
                     // Update existing component
-                    const componentDoc = window.firebase.doc(componentsRef, component.id);
-                    await window.firebase.updateDoc(componentDoc, {
+                    await componentsRef.doc(component.id).update({
                         ...component,
-                        updatedAt: window.firebase.serverTimestamp()
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 } else {
                     // Add new component
-                    await window.firebase.addDoc(componentsRef, {
+                    await componentsRef.add({
                         ...component,
-                        createdAt: window.firebase.serverTimestamp(),
-                        updatedAt: window.firebase.serverTimestamp()
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
                 
@@ -1798,21 +1794,20 @@
             }
             
             try {
-                const pcbsRef = window.firebase.collection(db, 'users', currentUser.uid, 'pcbs');
+                const pcbsRef = db.collection('users').doc(currentUser.uid).collection('pcbs');
                 
                 if (pcb.id) {
                     // Update existing PCB
-                    const pcbDoc = window.firebase.doc(pcbsRef, pcb.id);
-                    await window.firebase.updateDoc(pcbDoc, {
+                    await pcbsRef.doc(pcb.id).update({
                         ...pcb,
-                        updatedAt: window.firebase.serverTimestamp()
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 } else {
                     // Add new PCB
-                    await window.firebase.addDoc(pcbsRef, {
+                    await pcbsRef.add({
                         ...pcb,
-                        createdAt: window.firebase.serverTimestamp(),
-                        updatedAt: window.firebase.serverTimestamp()
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
                 
@@ -1833,21 +1828,20 @@
             }
             
             try {
-                const systemsRef = window.firebase.collection(db, 'users', currentUser.uid, 'systems');
+                const systemsRef = db.collection('users').doc(currentUser.uid).collection('systems');
                 
                 if (system.id) {
                     // Update existing system
-                    const systemDoc = window.firebase.doc(systemsRef, system.id);
-                    await window.firebase.updateDoc(systemDoc, {
+                    await systemsRef.doc(system.id).update({
                         ...system,
-                        updatedAt: window.firebase.serverTimestamp()
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 } else {
                     // Add new system
-                    await window.firebase.addDoc(systemsRef, {
+                    await systemsRef.add({
                         ...system,
-                        createdAt: window.firebase.serverTimestamp(),
-                        updatedAt: window.firebase.serverTimestamp()
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 }
                 
@@ -1868,10 +1862,10 @@
             }
             
             try {
-                const preferencesRef = window.firebase.doc(db, 'users', currentUser.uid, 'settings', 'preferences');
-                await window.firebase.setDoc(preferencesRef, {
+                const preferencesRef = db.collection('users').doc(currentUser.uid).collection('settings').doc('preferences');
+                await preferencesRef.set({
                     vendors: data.vendors,
-                    updatedAt: window.firebase.serverTimestamp()
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
                 
                 console.log('✅ User preferences saved to Firestore');
@@ -1940,35 +1934,6 @@
             }
         }
         
-        // Save individual PCB to Firestore
-        async function savePCBToFirestore(pcb) {
-            if (!auth || !db || !currentUser.uid) return false;
-            
-            try {
-                if (pcb.id) {
-                    // Update existing PCB
-                    await db.collection('pcbs').doc(pcb.id).update({
-                        ...pcb,
-                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastModifiedBy: currentUser.uid
-                    });
-                } else {
-                    // Add new PCB
-                    const docRef = await db.collection('pcbs').add({
-                        ...pcb,
-                        dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
-                        createdBy: currentUser.uid,
-                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastModifiedBy: currentUser.uid
-                    });
-                    pcb.id = docRef.id;
-                }
-                return true;
-            } catch (error) {
-                console.error('Error saving PCB to Firestore:', error);
-                return false;
-            }
-        }
         
         // Data migration utility for localStorage to Firestore
         async function migrateLocalStorageToFirestore() {
@@ -2085,36 +2050,6 @@
             }
         }
         
-        // Save individual System to Firestore
-        async function saveSystemToFirestore(system) {
-            if (!auth || !db || !currentUser.uid) return false;
-            
-            try {
-                if (system.id) {
-                    // Update existing system
-                    await db.collection('systems').doc(system.id).update({
-                        ...system,
-                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastModifiedBy: currentUser.uid
-                    });
-                } else {
-                    // Add new system
-                    const docRef = await db.collection('systems').add({
-                        ...system,
-                        dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
-                        createdBy: currentUser.uid,
-                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastModifiedBy: currentUser.uid
-                    });
-                    system.id = docRef.id;
-                }
-                return true;
-            } catch (error) {
-                console.error('Error saving system to Firestore:', error);
-                return false;
-            }
-        }
-
         // Category configurations with component-specific fields
         const categoryConfigs = {
             resistors: { 
