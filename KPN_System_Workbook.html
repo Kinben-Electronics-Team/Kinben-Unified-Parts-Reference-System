@@ -2,9 +2,38 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Kinben KPN System - Simplified</title>
+    <title>Kinben KPN System - Online Firebase Only</title>
     
-    <!-- Removed Firebase SDK - using local authentication only -->
+    <!-- Firebase SDK v9+ modular import -->
+    <script type="module">
+        // Import Firebase SDK modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js';
+        import { getFirestore, doc, collection, addDoc, updateDoc, deleteDoc, getDocs, getDoc, setDoc, query, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js';
+        
+        // Make Firebase available globally for the app
+        window.firebase = {
+            initializeApp,
+            getAuth,
+            getFirestore,
+            signInWithEmailAndPassword,
+            signOut,
+            createUserWithEmailAndPassword,
+            onAuthStateChanged,
+            doc,
+            collection,
+            addDoc,
+            updateDoc,
+            deleteDoc,
+            getDocs,
+            getDoc,
+            setDoc,
+            query,
+            orderBy,
+            onSnapshot,
+            serverTimestamp
+        };
+    </script>
     
     <style>
         body { 
@@ -531,23 +560,26 @@
     <!-- Login Modal -->
     <div id="login-modal" class="login-modal">
         <div class="login-container">
-            <h2>🔐 Login to KPN System</h2>
-            <p id="login-description">Enter your credentials to access the system</p>
+            <h2>🔐 Firebase Authentication</h2>
+            <p id="login-description">Sign in with your Firebase account to access the online system</p>
             <div class="login-form">
-                <!-- Local Authentication Form -->
-                <div id="local-auth-form">
-                    <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
+                <!-- Firebase Authentication Form -->
+                <div id="firebase-auth-form">
+                    <input type="email" id="email" placeholder="Email" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
                     <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
-                    <button onclick="signInLocal()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 10px;">
-                        🔑 Sign In
+                    <button onclick="signInWithFirebase()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 10px;">
+                        🔑 Sign In with Firebase
+                    </button>
+                    <button onclick="createAccountWithFirebase()" style="background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%;">
+                        👤 Create New Account
                     </button>
                 </div>
                 
                 <div id="login-status" style="text-align: center; color: #666; font-size: 14px;"></div>
             </div>
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
-                <strong>Note:</strong><br>
-                <span id="auth-note">Contact your administrator for login credentials.</span>
+                <strong>Online Firebase System:</strong><br>
+                <span id="auth-note">All data is stored securely in Firebase cloud database. Create an account or contact admin for access.</span>
             </div>
         </div>
     </div>
@@ -1047,107 +1079,104 @@
         // Firebase Configuration
         // Firebase project configuration for kinbenpartssystem
         const firebaseConfig = {
-  apiKey: "AIzaSyDEb-vJyJthW4xZ042Ay_8EDm-RhGBhLxU",
-  authDomain: "kinbenpartssystem.firebaseapp.com",
-  projectId: "kinbenpartssystem",
-  storageBucket: "kinbenpartssystem.firebasestorage.app",
-  messagingSenderId: "896608745742",
-  appId: "1:896608745742:web:2c84cda1dafbc2519fff5f"
-};
+            apiKey: "AIzaSyDEb-vJyJthW4xZ042Ay_8EDm-RhGBhLxU",
+            authDomain: "kinbenpartssystem.firebaseapp.com",
+            projectId: "kinbenpartssystem",
+            storageBucket: "kinbenpartssystem.firebasestorage.app",
+            messagingSenderId: "896608745742",
+            appId: "1:896608745742:web:2c84cda1dafbc2519fff5f"
+        };
 
-        // Check if Firebase config is valid (should always be true now with real config)
-        const isFirebaseConfigured = firebaseConfig.apiKey && 
-                                    firebaseConfig.appId &&
-                                    firebaseConfig.projectId === "kinbenpartssystem";
-
-        // Initialize Firebase only if properly configured and Firebase SDK is available
+        // Initialize Firebase
+        let app = null;
         let auth = null;
         let db = null;
-        let googleProvider = null;
+        let currentUser = { role: 'none', email: '', uid: '', displayName: '' };
         
-        // Simplified data storage
-        let data = {
-            components: [],
-            assemblies: [],
-            systems: [],
-            vendors: ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics']
-        };
-
-        // Current user object
-        let currentUser = { role: 'none', email: '', uid: '', displayName: '', username: null };
-
-        // Local user accounts (backup authentication)
-        const localUsers = {
-            'admin': { password: 'admin123', role: 'admin', email: 'admin@kinben.local', displayName: 'Local Admin' },
-            'team': { password: 'team123', role: 'team', email: 'team@kinben.local', displayName: 'Team User' }
-        };
-
-        // Firebase Authentication State Listener (only if Firebase is configured)
-        if (auth) {
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    // User is signed in via Firebase
-                    await handleFirebaseUser(user);
-                } else {
-                    // User is signed out
-                    currentUser = { role: 'none', email: '', uid: '', displayName: '', username: null };
-                    showLogin();
+        // Wait for the DOM to load, then initialize Firebase
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (window.firebase) {
+                try {
+                    // Initialize Firebase app
+                    app = window.firebase.initializeApp(firebaseConfig);
+                    auth = window.firebase.getAuth(app);
+                    db = window.firebase.getFirestore(app);
+                    
+                    console.log('✅ Firebase initialized successfully');
+                    
+                    // Set up authentication state listener
+                    window.firebase.onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            // User is signed in via Firebase
+                            await handleFirebaseUser(user);
+                        } else {
+                            // User is signed out
+                            currentUser = { role: 'none', email: '', uid: '', displayName: '' };
+                            showLogin();
+                        }
+                    });
+                    
+                    // Initialize the app UI
+                    initializeApp();
+                    
+                } catch (error) {
+                    console.error('❌ Firebase initialization failed:', error);
+                    alert('Firebase initialization failed. Please check your internet connection.');
                 }
-            });
-        }
+            } else {
+                console.error('❌ Firebase SDK not loaded');
+                alert('Firebase SDK not loaded. Please check your internet connection.');
+            }
+        });
 
         // Handle Firebase user sign in
         async function handleFirebaseUser(user) {
             try {
                 // Get user role from Firestore
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                let userRole = 'none'; // Default role
+                const userDocRef = window.firebase.doc(db, 'users', user.uid);
+                const userDoc = await window.firebase.getDoc(userDocRef);
+                let userRole = 'team'; // Default role for new users
                 
-                if (userDoc.exists) {
-                    userRole = userDoc.data().role || 'none';
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    userRole = userData.role || 'team';
+                    
+                    // Update last sign in
+                    await window.firebase.updateDoc(userDocRef, {
+                        lastSignIn: window.firebase.serverTimestamp()
+                    });
                 } else {
-                    // New user - create document with no role
-                    await db.collection('users').doc(user.uid).set({
+                    // New user - create document with team role
+                    await window.firebase.setDoc(userDocRef, {
                         email: user.email,
-                        displayName: user.displayName,
-                        role: 'none',
-                        firstSignIn: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
+                        displayName: user.displayName || user.email.split('@')[0],
+                        role: 'team',
+                        firstSignIn: window.firebase.serverTimestamp(),
+                        lastSignIn: window.firebase.serverTimestamp()
                     });
                 }
-
-                // Update last sign in
-                await db.collection('users').doc(user.uid).update({
-                    lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
-                });
 
                 // Set current user
                 currentUser = {
                     uid: user.uid,
-                    username: user.displayName || user.email.split('@')[0],
                     email: user.email,
-                    displayName: user.displayName || user.email,
+                    displayName: user.displayName || user.email.split('@')[0],
                     role: userRole
                 };
 
-                if (userRole === 'none') {
-                    // User has no role assigned
-                    showNoRoleMessage();
-                } else {
-                    // User has a role, allow access
-                    hideLogin();
-                    showUserInfo();
-                    
-                    // Attempt data migration from localStorage for new Firebase users
-                    const migrationSuccess = await migrateLocalStorageToFirestore();
-                    if (migrationSuccess) {
-                        console.log('Data migration completed or not needed');
-                    }
-                    
-                    loadData(); // Load app data
-                    
-                    // Show appropriate tabs based on role
-                    if (userRole === 'admin') {
+                // User authenticated, show main app
+                hideLogin();
+                showUserInfo();
+                await loadDataFromFirestore();
+                
+                console.log('✅ User signed in:', currentUser.email, 'Role:', userRole);
+
+            } catch (error) {
+                console.error('❌ Error handling Firebase user:', error);
+                alert('Error loading user data. Please try again.');
+            }
+        }
+                    if (currentUser.role === 'admin') {
                         showUserManagementTab();
                     } else {
                         hideUserManagementTab();
@@ -1161,64 +1190,123 @@
             localStorage.setItem('kpn_users', JSON.stringify(localUsers));
         }
 
-        // Local user accounts
-        let localUsers = loadUsers();
-
-        // Handle local authentication
-        function signInLocal() {
-            const username = document.getElementById('username').value.trim();
+        // Firebase Authentication Functions
+        async function signInWithFirebase() {
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             
-            if (!username || !password) {
-                showLoginError('Please enter both username and password.');
+            if (!email || !password) {
+                showLoginError('Please enter both email and password.');
                 return;
             }
             
-            const user = localUsers[username];
-            if (user && user.password === password) {
-                // Successful local login
-                currentUser = {
-                    uid: 'local_' + username,
-                    username: username,
-                    email: user.email,
-                    displayName: user.displayName,
-                    role: user.role
-                };
-                
-                hideLogin();
-                showUserInfo();
-                loadData(); // Load app data
-                
-                // Show appropriate features based on role
-                updateUIForRole(user.role);
+            if (!auth) {
+                showLoginError('Firebase not initialized. Please refresh the page.');
+                return;
+            }
+            
+            try {
+                showLoginError('Signing in...', 'info');
+                const userCredential = await window.firebase.signInWithEmailAndPassword(auth, email, password);
                 
                 // Clear form
-                document.getElementById('username').value = '';
+                document.getElementById('email').value = '';
                 document.getElementById('password').value = '';
                 
-                console.log('Local authentication successful for:', username);
-            } else {
-                showLoginError('Invalid username or password.');
+                console.log('✅ Firebase authentication successful for:', email);
+                
+            } catch (error) {
+                console.error('❌ Firebase sign in error:', error);
+                let errorMessage = 'Sign in failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = 'No account found with this email.';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'Incorrect password.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email address.';
+                        break;
+                    case 'auth/too-many-requests':
+                        errorMessage = 'Too many failed attempts. Please try again later.';
+                        break;
+                }
+                
+                showLoginError(errorMessage);
             }
+        }
+
+        async function createAccountWithFirebase() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showLoginError('Please enter both email and password.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showLoginError('Password must be at least 6 characters.');
+                return;
+            }
+            
+            if (!auth) {
+                showLoginError('Firebase not initialized. Please refresh the page.');
+                return;
+            }
+            
+            try {
+                showLoginError('Creating account...', 'info');
+                const userCredential = await window.firebase.createUserWithEmailAndPassword(auth, email, password);
+                
+                // Clear form
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                
+                console.log('✅ Firebase account created successfully for:', email);
+                
+            } catch (error) {
+                console.error('❌ Firebase account creation error:', error);
+                let errorMessage = 'Account creation failed. Please try again.';
+                
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'An account with this email already exists.';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'Invalid email address.';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'Password is too weak. Please use at least 6 characters.';
+                        break;
+                }
+                
+                showLoginError(errorMessage);
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            if (auth) {
+                try {
+                    await window.firebase.signOut(auth);
+                    console.log('✅ User signed out successfully');
+                } catch (error) {
+                    console.error('❌ Error signing out:', error);
+                }
+            }
+            
+            // Reset current user
+            currentUser = { role: 'none', email: '', uid: '', displayName: '' };
+            showLogin();
         }
 
         // Update UI based on user role
         function updateUIForRole(role) {
-            const userMgmtSection = document.getElementById('user-management-section');
-            const userProfileSection = document.getElementById('user-profile-section');
-            
-            if (role === 'admin') {
-                userMgmtSection.style.display = 'block';
-                userProfileSection.style.display = 'block';
-                loadUsersTable();
-            } else if (role === 'team') {
-                userMgmtSection.style.display = 'none';
-                userProfileSection.style.display = 'block';
-                loadUserProfile();
-            } else {
-                userMgmtSection.style.display = 'none';
-                userProfileSection.style.display = 'none';
-            }
+            // All authenticated users have access to the full system
+            console.log('User role:', role);
         }
 
         // Load users table for admin
@@ -1470,70 +1558,94 @@
             }
         });
 
-        // Load data from Firestore or localStorage fallback
-        async function loadData() {
-            if (auth && db && currentUser.uid) {
-                // Load from Firestore
-                try {
-                    await loadFromFirestore();
-                } catch (error) {
-                    console.error('Error loading from Firestore:', error);
-                    // Fallback to localStorage on error
-                    loadFromLocalStorage();
-                }
-            } else {
-                // Use localStorage when not authenticated or Firebase unavailable
-                loadFromLocalStorage();
+        // Data storage for the application
+        let data = {
+            components: [],
+            pcbs: [],
+            systems: [],
+            vendors: ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics']
+        };
+
+        // Load data from Firestore (Firebase v9 API)
+        async function loadDataFromFirestore() {
+            if (!db || !currentUser.uid) {
+                console.error('❌ Database not initialized or user not authenticated');
+                return;
             }
-        }
-        
-        // Load data from Firestore
-        async function loadFromFirestore() {
-            console.log('Loading data from Firestore...');
+            
+            console.log('📡 Loading data from Firestore...');
             
             try {
                 // Load components with real-time listener
-                const componentsRef = db.collection('components');
-                const componentsUnsubscribe = componentsRef.onSnapshot((snapshot) => {
+                const componentsRef = window.firebase.collection(db, 'users', currentUser.uid, 'components');
+                const componentsQuery = window.firebase.query(componentsRef, window.firebase.orderBy('kpn'));
+                
+                window.firebase.onSnapshot(componentsQuery, (snapshot) => {
                     data.components = [];
                     snapshot.forEach(doc => {
                         data.components.push({ id: doc.id, ...doc.data() });
                     });
                     updateComponentsTable();
                     updateStats();
+                    console.log('✅ Components loaded:', data.components.length);
                 });
                 
                 // Load PCBs with real-time listener
-                const pcbsRef = db.collection('pcbs');
-                const pcbsUnsubscribe = pcbsRef.onSnapshot((snapshot) => {
+                const pcbsRef = window.firebase.collection(db, 'users', currentUser.uid, 'pcbs');
+                const pcbsQuery = window.firebase.query(pcbsRef, window.firebase.orderBy('kpn'));
+                
+                window.firebase.onSnapshot(pcbsQuery, (snapshot) => {
                     data.pcbs = [];
                     snapshot.forEach(doc => {
                         data.pcbs.push({ id: doc.id, ...doc.data() });
                     });
                     updatePCBsTable();
                     updateStats();
+                    console.log('✅ PCBs loaded:', data.pcbs.length);
                 });
                 
                 // Load systems with real-time listener
-                const systemsRef = db.collection('systems');
-                const systemsUnsubscribe = systemsRef.onSnapshot((snapshot) => {
+                const systemsRef = window.firebase.collection(db, 'users', currentUser.uid, 'systems');
+                const systemsQuery = window.firebase.query(systemsRef, window.firebase.orderBy('kpn'));
+                
+                window.firebase.onSnapshot(systemsQuery, (snapshot) => {
                     data.systems = [];
                     snapshot.forEach(doc => {
                         data.systems.push({ id: doc.id, ...doc.data() });
                     });
                     updateSystemsTable();
                     updateStats();
+                    console.log('✅ Systems loaded:', data.systems.length);
                 });
                 
-                // Load vendors
-                const vendorsSnapshot = await db.collection('vendors').get();
-                if (!vendorsSnapshot.empty) {
-                    data.vendors = [];
-                    vendorsSnapshot.forEach(doc => {
-                        data.vendors.push(doc.data().name);
-                    });
+                // Load user preferences (vendors, etc.)
+                const preferencesRef = window.firebase.doc(db, 'users', currentUser.uid, 'settings', 'preferences');
+                const preferencesDoc = await window.firebase.getDoc(preferencesRef);
+                
+                if (preferencesDoc.exists()) {
+                    const preferences = preferencesDoc.data();
+                    if (preferences.vendors) {
+                        data.vendors = preferences.vendors;
+                    }
+                    console.log('✅ User preferences loaded');
                 } else {
-                    // Initialize default vendors if none exist
+                    // Set default vendors for new user
+                    await window.firebase.setDoc(preferencesRef, {
+                        vendors: data.vendors,
+                        createdAt: window.firebase.serverTimestamp()
+                    });
+                }
+                
+                console.log('✅ All data loaded from Firestore successfully');
+                
+            } catch (error) {
+                console.error('❌ Error loading data from Firestore:', error);
+                throw error;
+            }
+        }
+                });
+            } else {
+                // Initialize default vendors if none exist
                     data.vendors = ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics'];
                     await saveVendorsToFirestore();
                 }
@@ -1551,82 +1663,251 @@
         }
         
         // Load data from localStorage (fallback)
-        function loadFromLocalStorage() {
-            console.log('Loading data from localStorage...');
-            const saved = localStorage.getItem('kinben-simple-data');
-            if (saved) {
-                data = JSON.parse(saved);
-                // Ensure vendors array exists for backward compatibility
-                if (!data.vendors) {
-                    data.vendors = ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics'];
-                    saveData();
-                }
-                // Migrate pcbs to assemblies for backward compatibility
-                if (data.pcbs && !data.assemblies) {
-                    data.assemblies = data.pcbs;
-                    delete data.pcbs;
-                    saveData();
-                }
-                // Ensure assemblies array exists
-                if (!data.assemblies) {
-                    data.assemblies = [];
-                    saveData();
-                }
-                // Migrate system pcbs to items for backward compatibility
-                if (data.systems) {
-                    data.systems.forEach(system => {
-                        if (system.pcbs && !system.items) {
-                            system.items = system.pcbs.map(pcb => ({
-                                type: 'assembly',
-                                value: pcb.name,
-                                name: pcb.name,
-                                version: pcb.version,
-                                quantity: pcb.quantity
-                            }));
-                            delete system.pcbs;
-                        }
-                    });
-                    saveData();
-                }
-            }
+        // Initialize the application UI
+        function initializeApp() {
+            console.log('🚀 Initializing KPN System application...');
+            
+            // Set up tab navigation
+            setupTabs();
+            
+            // Set up form handlers
+            setupFormHandlers();
+            
+            // Initialize UI elements
             updateStats();
             renderAll();
+            
+            console.log('✅ Application initialized successfully');
         }
 
-        // Save data to Firestore or localStorage fallback
-        async function saveData() {
-            if (auth && db && currentUser.uid) {
-                // Save to Firestore
-                try {
-                    await saveToFirestore();
-                } catch (error) {
-                    console.error('Error saving to Firestore:', error);
-                    // Fallback to localStorage on error
-                    saveToLocalStorage();
-                }
-            } else {
-                // Use localStorage when not authenticated or Firebase unavailable
-                saveToLocalStorage();
+        // Set up tab navigation
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+                    
+                    // Add active class to clicked tab
+                    tab.classList.add('active');
+                    
+                    // Hide all tab panels
+                    const panels = document.querySelectorAll('.tab-panel');
+                    panels.forEach(panel => panel.classList.remove('active'));
+                    
+                    // Show corresponding panel
+                    const targetPanel = tab.getAttribute('data-target');
+                    if (targetPanel) {
+                        document.getElementById(targetPanel).classList.add('active');
+                    }
+                });
+            });
+            
+            // Activate first tab by default
+            if (tabs.length > 0) {
+                tabs[0].click();
             }
         }
-        
-        // Save data to Firestore
-        async function saveToFirestore() {
-            console.log('Saving data to Firestore...');
-            // Note: Individual saves are handled by specific functions
-            // This function exists for compatibility but most saves are done directly
-            updateStats();
+
+        // UI Helper Functions
+        function showLogin() {
+            document.getElementById('login-modal').style.display = 'flex';
+            document.getElementById('user-info').style.display = 'none';
+            clearLoginError();
         }
-        
-        // Save data to localStorage (fallback)
-        function saveToLocalStorage() {
-            localStorage.setItem('kinben-simple-data', JSON.stringify(data));
+
+        function hideLogin() {
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('user-info').style.display = 'block';
+        }
+
+        function showUserInfo() {
+            const userInfoElement = document.getElementById('current-user');
+            if (userInfoElement) {
+                userInfoElement.textContent = `👤 ${currentUser.displayName || currentUser.email} (${currentUser.role})`;
+            }
+        }
+
+        function showLoginError(message, type = 'error') {
+            const statusElement = document.getElementById('login-status');
+            if (statusElement) {
+                statusElement.textContent = message;
+                statusElement.style.color = type === 'error' ? '#dc3545' : '#007bff';
+                statusElement.style.display = 'block';
+            }
+        }
+
+        function clearLoginError() {
+            const statusElement = document.getElementById('login-status');
+            if (statusElement) {
+                statusElement.textContent = '';
+                statusElement.style.display = 'none';
+            }
+        }
+
+        // Render all data tables
+        function renderAll() {
+            if (typeof updateComponentsTable === 'function') updateComponentsTable();
+            if (typeof updatePCBsTable === 'function') updatePCBsTable();
+            if (typeof updateSystemsTable === 'function') updateSystemsTable();
+        }
+
+        // Set up form handlers
+        function setupFormHandlers() {
+            // Add enter key handler for login form
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            
+            if (emailInput && passwordInput) {
+                emailInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        signInWithFirebase();
+                    }
+                });
+                
+                passwordInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        signInWithFirebase();
+                    }
+                });
+            }
+        }
+
+        // Save functions (Firestore only - no localStorage fallback)
+        async function saveData() {
+            // Individual items are automatically saved to Firestore via their specific functions
+            // This function exists for compatibility with existing code
+            console.log('📡 Data will be automatically saved to Firestore');
             updateStats();
         }
         
         // Save individual component to Firestore
         async function saveComponentToFirestore(component) {
-            if (!auth || !db || !currentUser.uid) return false;
+            if (!db || !currentUser.uid) {
+                console.error('❌ Cannot save component: Database not initialized or user not authenticated');
+                return false;
+            }
+            
+            try {
+                const componentsRef = window.firebase.collection(db, 'users', currentUser.uid, 'components');
+                
+                if (component.id) {
+                    // Update existing component
+                    const componentDoc = window.firebase.doc(componentsRef, component.id);
+                    await window.firebase.updateDoc(componentDoc, {
+                        ...component,
+                        updatedAt: window.firebase.serverTimestamp()
+                    });
+                } else {
+                    // Add new component
+                    await window.firebase.addDoc(componentsRef, {
+                        ...component,
+                        createdAt: window.firebase.serverTimestamp(),
+                        updatedAt: window.firebase.serverTimestamp()
+                    });
+                }
+                
+                console.log('✅ Component saved to Firestore:', component.kpn);
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error saving component to Firestore:', error);
+                return false;
+            }
+        }
+
+        // Save individual PCB to Firestore
+        async function savePCBToFirestore(pcb) {
+            if (!db || !currentUser.uid) {
+                console.error('❌ Cannot save PCB: Database not initialized or user not authenticated');
+                return false;
+            }
+            
+            try {
+                const pcbsRef = window.firebase.collection(db, 'users', currentUser.uid, 'pcbs');
+                
+                if (pcb.id) {
+                    // Update existing PCB
+                    const pcbDoc = window.firebase.doc(pcbsRef, pcb.id);
+                    await window.firebase.updateDoc(pcbDoc, {
+                        ...pcb,
+                        updatedAt: window.firebase.serverTimestamp()
+                    });
+                } else {
+                    // Add new PCB
+                    await window.firebase.addDoc(pcbsRef, {
+                        ...pcb,
+                        createdAt: window.firebase.serverTimestamp(),
+                        updatedAt: window.firebase.serverTimestamp()
+                    });
+                }
+                
+                console.log('✅ PCB saved to Firestore:', pcb.kpn);
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error saving PCB to Firestore:', error);
+                return false;
+            }
+        }
+
+        // Save individual system to Firestore
+        async function saveSystemToFirestore(system) {
+            if (!db || !currentUser.uid) {
+                console.error('❌ Cannot save system: Database not initialized or user not authenticated');
+                return false;
+            }
+            
+            try {
+                const systemsRef = window.firebase.collection(db, 'users', currentUser.uid, 'systems');
+                
+                if (system.id) {
+                    // Update existing system
+                    const systemDoc = window.firebase.doc(systemsRef, system.id);
+                    await window.firebase.updateDoc(systemDoc, {
+                        ...system,
+                        updatedAt: window.firebase.serverTimestamp()
+                    });
+                } else {
+                    // Add new system
+                    await window.firebase.addDoc(systemsRef, {
+                        ...system,
+                        createdAt: window.firebase.serverTimestamp(),
+                        updatedAt: window.firebase.serverTimestamp()
+                    });
+                }
+                
+                console.log('✅ System saved to Firestore:', system.kpn);
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error saving system to Firestore:', error);
+                return false;
+            }
+        }
+
+        // Save user preferences to Firestore
+        async function saveUserPreferences() {
+            if (!db || !currentUser.uid) {
+                console.error('❌ Cannot save preferences: Database not initialized or user not authenticated');
+                return false;
+            }
+            
+            try {
+                const preferencesRef = window.firebase.doc(db, 'users', currentUser.uid, 'settings', 'preferences');
+                await window.firebase.setDoc(preferencesRef, {
+                    vendors: data.vendors,
+                    updatedAt: window.firebase.serverTimestamp()
+                }, { merge: true });
+                
+                console.log('✅ User preferences saved to Firestore');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Error saving preferences to Firestore:', error);
+                return false;
+            }
+        }
             
             try {
                 if (component.id) {
@@ -2313,13 +2594,11 @@
             if (auth && db && currentUser.uid) {
                 const success = await saveComponentToFirestore(component);
                 if (!success) {
-                    // Fallback to localStorage
-                    data.components.push(component);
-                    saveToLocalStorage();
+                    // Save to Firestore
+                    await saveComponentToFirestore(component);
                 }
             } else {
-                data.components.push(component);
-                saveToLocalStorage();
+                await saveComponentToFirestore(component);
             }
             
             renderComponents();
@@ -3173,13 +3452,11 @@
             if (auth && db && currentUser.uid) {
                 const success = await savePCBToFirestore(pcb);
                 if (!success) {
-                    // Fallback to localStorage
-                    data.pcbs.push(pcb);
-                    saveToLocalStorage();
+                    // Save to Firestore
+                    await savePCBToFirestore(pcb);
                 }
             } else {
-                data.pcbs.push(pcb);
-                saveToLocalStorage();
+                await savePCBToFirestore(pcb);
             }
             
             renderPCBs();
@@ -3320,13 +3597,11 @@
             if (auth && db && currentUser.uid) {
                 const success = await saveSystemToFirestore(system);
                 if (!success) {
-                    // Fallback to localStorage
-                    data.systems.push(system);
-                    saveToLocalStorage();
+                    // Save to Firestore
+                    await saveSystemToFirestore(system);
                 }
             } else {
-                data.systems.push(system);
-                saveToLocalStorage();
+                await saveSystemToFirestore(system);
             }
             
             renderSystems();
@@ -3739,12 +4014,9 @@
             
             // Save to Firestore if available
             if (auth && db && currentUser.uid) {
-                const success = await saveVendorsToFirestore();
-                if (!success) {
-                    saveToLocalStorage();
-                }
+                await saveUserPreferences();
             } else {
-                saveToLocalStorage();
+                await saveUserPreferences();
             }
             
             renderVendors();
@@ -3761,12 +4033,9 @@
                 
                 // Save to Firestore if available
                 if (auth && db && currentUser.uid) {
-                    const success = await saveVendorsToFirestore();
-                    if (!success) {
-                        saveToLocalStorage();
-                    }
+                    await saveUserPreferences();
                 } else {
-                    saveToLocalStorage();
+                    await saveUserPreferences();
                 }
                 
                 renderVendors();

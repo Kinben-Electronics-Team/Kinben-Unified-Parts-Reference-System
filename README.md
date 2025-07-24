@@ -1,8 +1,12 @@
 # 🪒 Kinben Parts Reference System - Simplified
 
+**🚨 CRITICAL: COMPLETE ONLINE FIREBASE SYSTEM ONLY!**  
+**❌ NO LOCAL STORAGE/DEPLOYMENT/API/SDK ALLOWED IN THIS FORK!**  
+**✅ FIREBASE-ONLY: Authentication, Firestore database, and Firebase hosting exclusively!**
+
 [![Deploy Status](https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System/workflows/Deploy%20KPN%20System%20Workbook/badge.svg)](https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System/actions)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://kinbenpartssystem.web.app/)
-[![Version](https://img.shields.io/badge/Version-3.1.0-blue)](https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System/releases)
+[![Version](https://img.shields.io/badge/Version-3.2.0-blue)](https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System/releases)
 
 ## 🚀 [**LAUNCH APPLICATION**](https://kinbenpartssystem.web.app/)
 

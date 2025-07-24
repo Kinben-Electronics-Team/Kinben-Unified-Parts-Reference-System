@@ -1,5 +1,9 @@
 # 📋 Kinben Unified Parts Reference System - Complete Project Overview
 
+**🚨 CRITICAL: COMPLETE ONLINE FIREBASE SYSTEM ONLY!**  
+**❌ NO LOCAL STORAGE/DEPLOYMENT/API/SDK ALLOWED IN THIS FORK!**  
+**✅ FIREBASE-ONLY: Authentication, Firestore database, and Firebase hosting exclusively!**
+
 ## 🎯 Project Summary
 **Repository**: https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System  
 **Live Site**: https://kinbenpartssystem.web.app/  
