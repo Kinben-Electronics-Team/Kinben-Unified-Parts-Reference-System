@@ -6,9 +6,9 @@ This system is deployed and accessible at multiple locations:
 
 ### Firebase Hosting (Primary Production)
 - **URL**: https://kinbenpartssystem.web.app/
-- **Status**: ✅ Active (Auto-deployed from GitHub)
-- **Features**: Full application with demo data
-- **Update Method**: Automatic deployment on push to master/main
+- **Status**: 🚨 **BROKEN** - Auto-deployment not working
+- **Features**: Outdated content (deployment automation failed)
+- **Update Method**: ❌ **ISSUE**: GitHub Actions workflow not triggering
 
 ### GitHub Pages (Secondary)
 - **URL**: https://manasdeore.github.io/Kinben-Unified-Parts-Reference-System/
@@ -23,16 +23,30 @@ This system is deployed and accessible at multiple locations:
 ## 📦 Automatic Deployment Options
 
 ### 🔥 Firebase (Recommended for Production)
-**Automatic deployment configured via GitHub Actions**
+**🚨 CURRENTLY BROKEN - Automatic deployment not working**
 
-> 🔑 **First-time setup required**: Follow the [Firebase Service Account Setup Guide](FIREBASE_SERVICE_ACCOUNT_SETUP.md) to configure automated deployment.
+> ⚠️ **ISSUE**: GitHub Actions workflow exists but not triggering on push events. See Issue #6 for Copilot resolution.
+> 
+> 🔑 **Setup Complete**: Firebase Service Account is configured, but workflow triggering mechanism is broken.
 
 ```bash
-# After setup, deployment happens automatically on push to master/main
+# BROKEN: This should work but doesn't trigger deployment
 git add .
-git commit -m "Deploy updates"
-git push origin main
+git commit -m "Deploy updates"  
+git push origin main  # ❌ Does not trigger GitHub Actions workflow
 ```
+
+## 🚨 **CURRENT DEPLOYMENT PROBLEMS**
+
+### Issue #6: GitHub Actions Workflow Not Triggering
+- **Problem**: Deploy KPN System Workbook workflow exists but never runs
+- **Evidence**: No workflow executions despite successful pushes to master
+- **Impact**: Firebase site shows outdated content
+- **Status**: Assigned to @copilot for resolution
+- **Created**: 2025-07-24
+
+### Workaround (Manual)
+Currently no reliable workaround available. Waiting for workflow triggering fix.
 
 **GitHub Actions Workflow:**
 - Validates HTML and JavaScript
