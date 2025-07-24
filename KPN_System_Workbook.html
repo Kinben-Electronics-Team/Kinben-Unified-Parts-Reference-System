@@ -3751,10 +3751,24 @@
             items.forEach((item, itemIndex) => {
                 const itemDiv = document.createElement('div');
                 itemDiv.style.cssText = 'padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 5px; background: #f9f9f9;';
-                itemDiv.innerHTML = `
-                    <span><strong>Type:</strong> ${item.type} | <strong>Item:</strong> ${item.name} | <strong>Qty:</strong> ${item.quantity}</span>
-                    <button style="margin-left: 10px; background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer;" onclick="removeSystemItem(${itemIndex})">Remove</button>
-                `;
+                const span = document.createElement('span');
+                span.innerHTML = `<strong>Type:</strong> `;
+                const typeText = document.createTextNode(item.type + ' | ');
+                span.appendChild(typeText);
+                span.innerHTML += `<strong>Item:</strong> `;
+                const nameText = document.createTextNode(item.name + ' | ');
+                span.appendChild(nameText);
+                span.innerHTML += `<strong>Qty:</strong> `;
+                const quantityText = document.createTextNode(item.quantity);
+                span.appendChild(quantityText);
+                
+                const removeButton = document.createElement('button');
+                removeButton.style.cssText = 'margin-left: 10px; background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer;';
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => removeSystemItem(itemIndex);
+                
+                itemDiv.appendChild(span);
+                itemDiv.appendChild(removeButton);
                 itemsDiv.appendChild(itemDiv);
             });
             
