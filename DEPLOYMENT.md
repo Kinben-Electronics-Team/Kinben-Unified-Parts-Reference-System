@@ -1,5 +1,9 @@
 # Kinben Unified Parts Reference System - Deployment Guide
 
+**🚨 CRITICAL: ONLINE-ONLY FIREBASE DEPLOYMENT SYSTEM!**  
+**❌ NO LOCAL DEPLOYMENT ALLOWED! This fork is designed for complete Firebase online deployment only!**  
+**✅ FIREBASE-ONLY: All authentication, database operations, and hosting must be online via Firebase!**
+
 ## 🚀 Live Deployment
 
 This system is deployed and accessible at multiple locations:
