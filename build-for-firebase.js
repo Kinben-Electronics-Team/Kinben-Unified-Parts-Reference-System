@@ -19,7 +19,7 @@ if (!fs.existsSync(distDir)) {
 // Files to copy
 const filesToCopy = [
     'index.html',
-    { src: 'src/index.html', dest: 'KPN_System_Workbook.html' }  // Copy Firebase version as main app
+    { src: 'KPN_System_Workbook.html', dest: 'KPN_System_Workbook.html' }  // Copy local auth version as main app
 ];
 
 // Get build timestamp for version tracking
@@ -43,14 +43,9 @@ filesToCopy.forEach(file => {
     if (fs.existsSync(srcPath)) {
         let content = fs.readFileSync(srcPath, 'utf8');
         
-        // For Firebase version, update script references
+        // For local auth version, no Firebase-specific processing needed
         if (filename === 'KPN_System_Workbook.html') {
-            // Replace relative script paths with CDN Firebase SDK (already done in src/index.html)
-            // Add main.js from src/
-            content = content.replace(
-                '<script src="main.js"></script>',
-                '<script src="main.js"></script>'
-            );
+            // Local authentication version - no changes needed
         }
         
         // Remove KPS/ prefixes from paths since we're now at root level
@@ -65,7 +60,7 @@ filesToCopy.forEach(file => {
             '<head>',
             `<head>
     <!-- Build: ${buildTimestamp} -->
-    <!-- Firebase Integration: v3.1.0 -->`
+    <!-- Local Authentication: v3.1.0 -->`
         );
         
         fs.writeFileSync(destPath, content);
@@ -73,17 +68,7 @@ filesToCopy.forEach(file => {
     }
 });
 
-// Copy JavaScript files
-const jsFiles = ['src/main.js'];
-jsFiles.forEach(jsFile => {
-    const srcPath = path.join(__dirname, jsFile);
-    const destPath = path.join(distDir, path.basename(jsFile));
-    
-    if (fs.existsSync(srcPath)) {
-        fs.copyFileSync(srcPath, destPath);
-        console.log(`✅ Copied ${jsFile}`);
-    }
-});
+// Local auth version is self-contained - no separate JS files needed
 
 // Copy directories that contain assets
 const dirsToCopy = [
