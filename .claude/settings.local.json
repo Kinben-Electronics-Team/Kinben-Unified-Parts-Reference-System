@@ -40,7 +40,9 @@
       "Bash(gh repo edit:*)",
       "Bash(firebase projects:list:*)",
       "Bash(gh repo view:*)",
-      "Bash(git remote get-url:*)"
+      "Bash(git remote get-url:*)",
+      "Bash(firebase:*)",
+      "Bash(npx http-server:*)"
     ],
     "deny": []
   }
