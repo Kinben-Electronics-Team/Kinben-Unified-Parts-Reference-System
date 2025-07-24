@@ -4,16 +4,7 @@
     <meta charset="UTF-8">
     <title>Kinben KPN System - Simplified</title>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" 
-            integrity="sha384-<HASH_FOR_APP>" 
-            crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js" 
-            integrity="sha384-<HASH_FOR_AUTH>" 
-            crossorigin="anonymous"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" 
-            integrity="sha384-<HASH_FOR_FIRESTORE>" 
-            crossorigin="anonymous"></script>
+    <!-- Removed Firebase SDK - using local authentication only -->
     
     <style>
         body { 
@@ -541,40 +532,22 @@
     <div id="login-modal" class="login-modal">
         <div class="login-container">
             <h2>🔐 Login to KPN System</h2>
-            <p id="login-description">Choose your login method</p>
+            <p id="login-description">Enter your credentials to access the system</p>
             <div class="login-form">
-                <!-- Google Sign-In (shown when Firebase is configured) -->
-                <button id="google-signin-btn" onclick="signInWithGoogle()" style="background: #4285f4; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 15px;">
-                    <span style="margin-right: 10px;">🔍</span>Sign in with Google
-                </button>
-                
-                <!-- Local Authentication Form (backup) -->
-                <div id="local-auth-form" style="display: none;">
+                <!-- Local Authentication Form -->
+                <div id="local-auth-form">
                     <input type="text" id="username" placeholder="Username" style="width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
                     <input type="password" id="password" placeholder="Password" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px;">
                     <button onclick="signInLocal()" style="background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-bottom: 10px;">
-                        🔑 Sign In Locally
+                        🔑 Sign In
                     </button>
                 </div>
                 
-                <!-- Toggle between authentication methods -->
-                <button id="toggle-auth-btn" onclick="toggleAuthMethod()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; width: 100%; margin-bottom: 15px;">
-                    Use Local Login
-                </button>
-                
                 <div id="login-status" style="text-align: center; color: #666; font-size: 14px;"></div>
-                
-                <!-- Local Login Credentials Info -->
-                <div id="local-credentials-info" style="display: none; margin-top: 15px; padding: 15px; background: #e9ecef; border-radius: 5px; font-size: 12px; color: #495057;">
-                    <strong>Local Login Credentials:</strong><br>
-                    <strong>Admin:</strong> admin / admin123<br>
-                    <strong>Team:</strong> team / team123<br>
-                    <em>These are backup accounts when Google auth is unavailable</em>
-                </div>
             </div>
             <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee; font-size: 12px; color: #666;">
                 <strong>Note:</strong><br>
-                <span id="auth-note">Firebase authentication is not configured. Using local authentication.</span>
+                <span id="auth-note">Contact your administrator for login credentials.</span>
             </div>
         </div>
     </div>
@@ -597,8 +570,8 @@
                 <div class="stat-label">Components</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" id="total-pcbs">0</div>
-                <div class="stat-label">PCBs</div>
+                <div class="stat-number" id="total-assemblies">0</div>
+                <div class="stat-label">Assemblies</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number" id="total-systems">0</div>
@@ -608,11 +581,10 @@
         
         <div class="tabs">
             <button class="tab active" onclick="showTab('components')">📋 Components</button>
-            <button class="tab" onclick="showTab('pcbs')">🔌 PCBs</button>
+            <button class="tab" onclick="showTab('assemblies')">🔧 Assemblies</button>
             <button class="tab" onclick="showTab('systems')">🏗️ Systems</button>
             <button class="tab" onclick="showTab('export')">📊 Export</button>
             <button class="tab" onclick="showTab('config')">⚙️ Config</button>
-            <button class="tab" id="user-mgmt-tab" onclick="showTab('user-management')" style="display: none;">👥 Users</button>
         </div>
         
         <div class="content" id="simplified-structure">
@@ -634,6 +606,10 @@
                             <option value="ics">Integrated Circuits</option>
                             <option value="connectors">Connectors</option>
                             <option value="switches">Switches</option>
+                            <option value="pcb">PCBs</option>
+                            <option value="mechanical">Mechanical Parts</option>
+                            <option value="printed3d">3D-Printed Parts</option>
+                            <option value="cable">Cable Assemblies</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -666,11 +642,11 @@
                     <!-- Bulk Actions -->
                     <div style="margin-top: 10px;">
                         <button class="btn" onclick="toggleBulkSelection()" style="background: #6c757d; color: white;" id="bulk-select-btn">Enable Bulk Select</button>
-                        <div id="bulk-actions" style="display: none; margin-top: 10px;">
+                        <div id="bulk-actions" style="display: none; margin-top: 10px; gap: 10px; flex-wrap: wrap;">
                             <button class="btn" onclick="selectAllComponents()" style="background: #17a2b8; color: white;">Select All</button>
                             <button class="btn" onclick="deselectAllComponents()" style="background: #6c757d; color: white;">Deselect All</button>
-                            <button class="btn archive-btn" onclick="bulkArchiveComponents()">Archive Selected</button>
-                            <button class="btn delete-btn" onclick="bulkDeleteComponents()" id="bulk-delete-btn" style="display: none;">Delete Selected</button>
+                            <button class="btn" onclick="bulkArchiveComponents()" style="background: #ffc107; color: #212529;">Archive Selected</button>
+                            <button class="btn" onclick="bulkDeleteComponents()" id="bulk-delete-btn" style="display: none; background: #dc3545; color: white;">Delete Selected</button>
                         </div>
                     </div>
                 </div>
@@ -699,22 +675,22 @@
             </div>
             
             <!-- PCBs Tab -->
-            <div id="pcbs" class="tab-panel">
-                <h2>PCB Management</h2>
-                <p>Simple PCB definitions with BOMs linking to KPN components</p>
+            <div id="assemblies" class="tab-panel">
+                <h2>Assembly Management</h2>
+                <p>Assembly definitions with multiple item types (PCBs, mechanical parts, 3D-printed parts, components)</p>
                 
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>PCB Name</label>
-                        <input type="text" id="pcb-name" placeholder="e.g., Main Controller Board">
+                        <label>Assembly Name</label>
+                        <input type="text" id="assembly-name" placeholder="e.g., Main Controller Assembly">
                     </div>
                     <div class="form-group">
                         <label>Version</label>
-                        <input type="text" id="pcb-version" placeholder="e.g., v1.0">
+                        <input type="text" id="assembly-version" placeholder="e.g., v1.0">
                     </div>
                     <div class="form-group">
                         <label>Status</label>
-                        <select id="pcb-status">
+                        <select id="assembly-status">
                             <option value="Active">Active</option>
                             <option value="Inactive">Inactive</option>
                         </select>
@@ -723,15 +699,26 @@
                 
                 <div class="form-group">
                     <label>Description</label>
-                    <input type="text" id="pcb-description" placeholder="PCB description and purpose">
+                    <input type="text" id="assembly-description" placeholder="Assembly description and purpose">
                 </div>
                 
-                <h3>Bill of Materials (BOM)</h3>
+                <h3>Assembly Items</h3>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Component KPN</label>
+                        <label>Item Type</label>
+                        <select id="bom-type" onchange="updateBOMItemOptions()">
+                            <option value="">Select Item Type</option>
+                            <option value="component">Electronic Component</option>
+                            <option value="pcb">PCB</option>
+                            <option value="mechanical">Mechanical Part</option>
+                            <option value="printed3d">3D-Printed Part</option>
+                            <option value="cable">Cable Assembly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Item KPN</label>
                         <select id="bom-kpn">
-                            <option value="">Select Component</option>
+                            <option value="">Select Item Type First</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -739,34 +726,39 @@
                         <input type="number" id="bom-quantity" min="1" value="1">
                     </div>
                     <div class="form-group">
+                        <label>Droppage (%)</label>
+                        <input type="number" id="bom-droppage" min="0" max="100" step="0.1" value="0" placeholder="e.g., 5 for 5%">
+                    </div>
+                    <div class="form-group">
                         <label>Reference Designator</label>
                         <input type="text" id="bom-refdes" placeholder="e.g., R1, C2, U3">
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-primary" onclick="addBOMItem()">Add to BOM</button>
+                        <button class="btn btn-primary" onclick="addBOMItem()">Add to Assembly</button>
                     </div>
                 </div>
                 
                 <div id="bom-items"></div>
                 
                 <div class="actions">
-                    <button class="btn btn-primary" onclick="addPCB()">Add PCB</button>
-                    <button class="btn btn-success" onclick="exportPCBs()">Export CSV</button>
+                    <button class="btn btn-primary" onclick="addAssembly()">Add Assembly</button>
+                    <button class="btn btn-success" onclick="exportAssemblies()">Export CSV</button>
                 </div>
                 
-                <input type="text" class="search-box" id="pcb-search" placeholder="Search PCBs..." onkeyup="filterPCBs()">
+                <input type="text" class="search-box" id="assembly-search" placeholder="Search Assemblies..." onkeyup="filterAssemblies()">
                 
-                <table class="table" id="pcbs-table">
+                <table class="table" id="assemblies-table">
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Version</th>
                             <th>Description</th>
-                            <th>BOM Items</th>
+                            <th>Assembly Items</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="pcbs-tbody">
+                    <tbody id="assemblies-tbody">
                     </tbody>
                 </table>
             </div>
@@ -774,7 +766,7 @@
             <!-- Systems Tab -->
             <div id="systems" class="tab-panel">
                 <h2>System Hierarchy</h2>
-                <p>Systems containing multiple PCBs with simple hierarchical structure</p>
+                <p>Systems containing assemblies, mechanical/3D-printed parts, cable assemblies, and other systems</p>
                 
                 <div class="form-grid">
                     <div class="form-group">
@@ -799,12 +791,23 @@
                     <input type="text" id="system-description" placeholder="System description and purpose">
                 </div>
                 
-                <h3>System PCBs</h3>
+                <h3>System Items</h3>
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>PCB</label>
+                        <label>Item Type</label>
+                        <select id="system-item-type" onchange="updateSystemItemOptions()">
+                            <option value="">Select Item Type</option>
+                            <option value="assembly">Assembly</option>
+                            <option value="mechanical">Mechanical Part</option>
+                            <option value="printed3d">3D-Printed Part</option>
+                            <option value="cable">Cable Assembly</option>
+                            <option value="system">Other System</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Item</label>
                         <select id="system-pcb">
-                            <option value="">Select PCB</option>
+                            <option value="">Select Item Type First</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -812,11 +815,11 @@
                         <input type="number" id="system-pcb-quantity" min="1" value="1">
                     </div>
                     <div class="form-group">
-                        <button class="btn btn-primary" onclick="addSystemPCB()">Add PCB</button>
+                        <button class="btn btn-primary" onclick="addSystemItem()">Add Item</button>
                     </div>
                 </div>
                 
-                <div id="system-pcbs"></div>
+                <div id="system-items"></div>
                 
                 <div class="actions">
                     <button class="btn btn-primary" onclick="addSystem()">Add System</button>
@@ -831,8 +834,9 @@
                             <th>Name</th>
                             <th>Version</th>
                             <th>Description</th>
-                            <th>PCB Count</th>
+                            <th>Item Count</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="systems-tbody">
@@ -842,29 +846,59 @@
             
             <!-- Export Tab -->
             <div id="export" class="tab-panel">
-                <h2>Data Export</h2>
-                <p>Export your data in CSV format for external tools</p>
+                <h2>Manufacturing Export</h2>
+                <p>Select assemblies and systems for manufacturing, specify quantities, and export BOMs</p>
                 
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-components">0</div>
-                        <div class="stat-label">Components to Export</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-pcbs">0</div>
-                        <div class="stat-label">PCBs to Export</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-systems">0</div>
-                        <div class="stat-label">Systems to Export</div>
+                <!-- Assembly Selection -->
+                <div style="margin-bottom: 30px;">
+                    <h3>📦 Select Assemblies for Manufacturing</h3>
+                    <div id="export-assemblies-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #f9f9f9;">
+                        <!-- Assembly checkboxes will be populated here -->
                     </div>
                 </div>
                 
-                <div class="actions">
-                    <button class="btn btn-primary" onclick="exportAll()">Export All Data</button>
-                    <button class="btn btn-success" onclick="exportComponents()">Export Components Only</button>
-                    <button class="btn btn-success" onclick="exportPCBs()">Export PCBs Only</button>
-                    <button class="btn btn-success" onclick="exportSystems()">Export Systems Only</button>
+                <!-- System Selection -->
+                <div style="margin-bottom: 30px;">
+                    <h3>🏗️ Select Systems for Manufacturing</h3>
+                    <div id="export-systems-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #f9f9f9;">
+                        <!-- System checkboxes will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Export Options -->
+                <div style="margin-bottom: 30px;">
+                    <h3>📊 Export Options</h3>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="exportIndividualBOMs()">Export Individual BOMs</button>
+                        <button class="btn btn-success" onclick="exportMergedBOM()">Export Merged BOM</button>
+                        <button class="btn" onclick="clearAllSelections()" style="background: #6c757d; color: white;">Clear All Selections</button>
+                    </div>
+                </div>
+                
+                <!-- Legacy Export Options -->
+                <div style="border-top: 1px solid #ddd; padding-top: 20px;">
+                    <h3>📋 Quick Export (All Data)</h3>
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-components">0</div>
+                            <div class="stat-label">Components to Export</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-assemblies">0</div>
+                            <div class="stat-label">Assemblies to Export</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-systems">0</div>
+                            <div class="stat-label">Systems to Export</div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn btn-primary" onclick="exportAll()">Export All Data</button>
+                        <button class="btn btn-success" onclick="exportComponents()">Export Components Only</button>
+                        <button class="btn btn-success" onclick="exportAssemblies()">Export Assemblies Only</button>
+                        <button class="btn btn-success" onclick="exportSystems()">Export Systems Only</button>
+                    </div>
                 </div>
             </div>
             
@@ -874,6 +908,98 @@
                 <p>Manage system settings and preferred vendors</p>
                 
                 <div style="max-width: 800px;">
+                    <!-- User Management Section (Admin Only) -->
+                    <div id="user-management-section" style="display: none;">
+                        <h3>👥 User Management</h3>
+                        <p>Manage user accounts and permissions (Admin only)</p>
+                        
+                        <!-- Current Users -->
+                        <div style="margin-bottom: 30px;">
+                            <h4>Current Users</h4>
+                            <div style="overflow-x: auto;">
+                                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                                    <thead>
+                                        <tr style="background: #f5f5f5;">
+                                            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Username</th>
+                                            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Display Name</th>
+                                            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Role</th>
+                                            <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table-body">
+                                        <!-- Users will be populated here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Add New User -->
+                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px;">
+                            <h4>Add New User</h4>
+                            <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+                                <div class="form-group">
+                                    <label>Username <span style="color: red;">*</span></label>
+                                    <input type="text" id="new-username" placeholder="e.g., john.doe">
+                                </div>
+                                <div class="form-group">
+                                    <label>Display Name <span style="color: red;">*</span></label>
+                                    <input type="text" id="new-displayname" placeholder="e.g., John Doe">
+                                </div>
+                                <div class="form-group">
+                                    <label>Password <span style="color: red;">*</span></label>
+                                    <input type="password" id="new-password" placeholder="Minimum 6 characters">
+                                </div>
+                                <div class="form-group">
+                                    <label>Role <span style="color: red;">*</span></label>
+                                    <select id="new-role">
+                                        <option value="team">Team</option>
+                                        <option value="admin">Admin</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-primary" onclick="addUser()">Add User</button>
+                                <button class="btn" onclick="clearUserForm()" style="background: #6c757d; color: white;">Clear</button>
+                            </div>
+                            <div style="margin-top: 15px; font-size: 12px; color: #666;">
+                                <strong>Note:</strong> Maximum 5 additional users (team + admin combined). One admin user is required.
+                            </div>
+                        </div>
+                        
+                        <!-- Role Descriptions -->
+                        <div style="padding: 15px; background: #e3f2fd; border-radius: 5px; margin-bottom: 20px;">
+                            <h4>Role Descriptions</h4>
+                            <ul style="margin: 10px 0;">
+                                <li><strong>Team:</strong> Can create and archive components, create PCBs and systems</li>
+                                <li><strong>Admin:</strong> All team permissions plus ability to delete components and manage users</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Team User Profile Section -->
+                    <div id="user-profile-section" style="display: none;">
+                        <h3>👤 My Profile</h3>
+                        <p>Update your personal information</p>
+                        
+                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px; margin-bottom: 20px; max-width: 400px;">
+                            <div class="form-group">
+                                <label>Display Name</label>
+                                <input type="text" id="profile-displayname" placeholder="Your display name">
+                            </div>
+                            <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" id="profile-current-password" placeholder="Enter current password">
+                            </div>
+                            <div class="form-group">
+                                <label>New Password (leave blank to keep current)</label>
+                                <input type="password" id="profile-new-password" placeholder="Enter new password">
+                            </div>
+                            <div class="actions">
+                                <button class="btn btn-primary" onclick="updateProfile()">Update Profile</button>
+                            </div>
+                        </div>
+                    </div>
+
                     <h3>Preferred Vendors</h3>
                     <p>Add and manage your preferred component vendors for dropdown selection</p>
                     
@@ -895,44 +1021,6 @@
                 </div>
             </div>
 
-            <!-- User Management Tab (Admin Only) -->
-            <div id="user-management" class="tab-panel">
-                <h2>User Management</h2>
-                <p>Manage user roles and permissions (Admin access required)</p>
-                
-                <div style="max-width: 800px;">
-                    <div id="users-list">
-                        <h3>System Users</h3>
-                        <p>All users who have signed in to the system</p>
-                        
-                        <div style="margin-bottom: 20px;">
-                            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                                <thead>
-                                    <tr style="background: #f5f5f5;">
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">User</th>
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Email</th>
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Current Role</th>
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Last Sign In</th>
-                                        <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="users-table-body">
-                                    <!-- Users will be populated here -->
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px;">
-                            <h4>Role Descriptions</h4>
-                            <ul style="margin: 10px 0;">
-                                <li><strong>Team:</strong> Can create and archive components, create PCBs and systems</li>
-                                <li><strong>Admin:</strong> All team permissions plus ability to delete components and manage users</li>
-                                <li><strong>None:</strong> User has no system access (can sign in but cannot use features)</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -956,133 +1044,46 @@
     </div>
 
     <script>
-        // Firebase Configuration
-        // NOTE: Replace these with actual Firebase project credentials
-        const firebaseConfig = {
-            apiKey: "your-api-key-here",
-            authDomain: "the-clever-studio-f3b16.firebaseapp.com",
-            projectId: "the-clever-studio-f3b16",
-            storageBucket: "the-clever-studio-f3b16.appspot.com",
-            messagingSenderId: "actual-sender-id", // Replace with your Firebase project's messaging sender ID
-            appId: "your-app-id"
-        };
-
-        // Check if Firebase config is valid (not placeholder values)
-        const isFirebaseConfigured = firebaseConfig.apiKey !== "your-api-key-here" && 
-                                    firebaseConfig.appId !== "your-app-id" &&
-                                    firebaseConfig.messagingSenderId !== "actual-sender-id";
-
-        // Initialize Firebase only if properly configured and Firebase SDK is available
-        let auth = null;
-        let db = null;
-        let googleProvider = null;
+        // Local user management system
+        // User data stored in localStorage
         
-        if (isFirebaseConfigured && typeof firebase !== 'undefined') {
-            try {
-                firebase.initializeApp(firebaseConfig);
-                auth = firebase.auth();
-                db = firebase.firestore();
-                // Configure Google Auth Provider
-                googleProvider = new firebase.auth.GoogleAuthProvider();
-                googleProvider.addScope('email');
-                googleProvider.addScope('profile');
-                console.log('Firebase initialized successfully');
-            } catch (error) {
-                console.warn('Firebase initialization failed:', error);
-            }
-        } else {
-            console.log('Firebase not configured or SDK not available, using local authentication');
-        }
-
-        // Local authentication mode flag
-        let useLocalAuth = !isFirebaseConfigured || typeof firebase === 'undefined';
-
         // Simplified data storage
         let data = {
             components: [],
-            pcbs: [],
+            assemblies: [],
             systems: [],
             vendors: ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics']
         };
 
-        // Current user object (compatible with both auth methods)
+        // Current user object
         let currentUser = { role: 'none', email: '', uid: '', displayName: '', username: null };
 
-        // Local user accounts (backup authentication)
-        const localUsers = {
-            'admin': { password: 'admin123', role: 'admin', email: 'admin@kinben.local', displayName: 'Local Admin' },
-            'team': { password: 'team123', role: 'team', email: 'team@kinben.local', displayName: 'Team User' }
-        };
-
-        // Firebase Authentication State Listener (only if Firebase is configured)
-        if (auth) {
-            auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    // User is signed in via Firebase
-                    await handleFirebaseUser(user);
-                } else {
-                    // User is signed out
-                    currentUser = { role: 'none', email: '', uid: '', displayName: '', username: null };
-                    showLogin();
-                }
-            });
-        }
-
-        // Handle Firebase user sign in
-        async function handleFirebaseUser(user) {
-            try {
-                // Get user role from Firestore
-                const userDoc = await db.collection('users').doc(user.uid).get();
-                let userRole = 'none'; // Default role
-                
-                if (userDoc.exists) {
-                    userRole = userDoc.data().role || 'none';
-                } else {
-                    // New user - create document with no role
-                    await db.collection('users').doc(user.uid).set({
-                        email: user.email,
-                        displayName: user.displayName,
-                        role: 'none',
-                        firstSignIn: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                }
-
-                // Update last sign in
-                await db.collection('users').doc(user.uid).update({
-                    lastSignIn: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // Set current user
-                currentUser = {
-                    uid: user.uid,
-                    username: user.displayName || user.email.split('@')[0],
-                    email: user.email,
-                    displayName: user.displayName || user.email,
-                    role: userRole
-                };
-
-                if (userRole === 'none') {
-                    // User has no role assigned
-                    showNoRoleMessage();
-                } else {
-                    // User has a role, allow access
-                    hideLogin();
-                    showUserInfo();
-                    loadData(); // Load app data
-                    
-                    // Show appropriate tabs based on role
-                    if (userRole === 'admin') {
-                        showUserManagementTab();
-                    } else {
-                        hideUserManagementTab();
+        // Load users from localStorage or initialize with default admin
+        function loadUsers() {
+            const saved = localStorage.getItem('kpn_users');
+            if (saved) {
+                return JSON.parse(saved);
+            } else {
+                // Initialize with default admin user
+                return {
+                    'admin': { 
+                        password: 'admin123', 
+                        role: 'admin', 
+                        email: 'admin@kinben.local', 
+                        displayName: 'Administrator',
+                        created: new Date().toISOString()
                     }
-                }
-            } catch (error) {
-                console.error('Error handling Firebase user:', error);
-                showLoginError('Authentication error. Please try again.');
+                };
             }
         }
+
+        // Save users to localStorage
+        function saveUsers() {
+            localStorage.setItem('kpn_users', JSON.stringify(localUsers));
+        }
+
+        // Local user accounts
+        let localUsers = loadUsers();
 
         // Handle local authentication
         function signInLocal() {
@@ -1109,12 +1110,8 @@
                 showUserInfo();
                 loadData(); // Load app data
                 
-                // Show appropriate tabs based on role
-                if (user.role === 'admin') {
-                    showUserManagementTab();
-                } else {
-                    hideUserManagementTab();
-                }
+                // Show appropriate features based on role
+                updateUIForRole(user.role);
                 
                 // Clear form
                 document.getElementById('username').value = '';
@@ -1126,99 +1123,219 @@
             }
         }
 
-        // Toggle between Google and local authentication
-        function toggleAuthMethod() {
-            const localForm = document.getElementById('local-auth-form');
-            const googleBtn = document.getElementById('google-signin-btn');
-            const toggleBtn = document.getElementById('toggle-auth-btn');
-            const credentialsInfo = document.getElementById('local-credentials-info');
-            const authNote = document.getElementById('auth-note');
+        // Update UI based on user role
+        function updateUIForRole(role) {
+            const userMgmtSection = document.getElementById('user-management-section');
+            const userProfileSection = document.getElementById('user-profile-section');
             
-            if (useLocalAuth) {
-                // Switch to Google auth (if available)
-                if (isFirebaseConfigured && typeof firebase !== 'undefined') {
-                    useLocalAuth = false;
-                    localForm.style.display = 'none';
-                    googleBtn.style.display = 'block';
-                    toggleBtn.textContent = 'Use Local Login';
-                    credentialsInfo.style.display = 'none';
-                    authNote.textContent = 'Using Google authentication via Firebase.';
-                    document.getElementById('login-description').textContent = 'Sign in with your Google account to access the system';
-                } else {
-                    showLoginError('Google authentication is not configured or available.');
-                }
+            if (role === 'admin') {
+                userMgmtSection.style.display = 'block';
+                userProfileSection.style.display = 'block';
+                loadUsersTable();
+            } else if (role === 'team') {
+                userMgmtSection.style.display = 'none';
+                userProfileSection.style.display = 'block';
+                loadUserProfile();
             } else {
-                // Switch to local auth
-                useLocalAuth = true;
-                localForm.style.display = 'block';
-                googleBtn.style.display = 'none';
-                toggleBtn.textContent = 'Use Google Login';
-                credentialsInfo.style.display = 'block';
-                authNote.textContent = 'Using local authentication. Google auth is not configured.';
-                document.getElementById('login-description').textContent = 'Enter your local credentials to access the system';
+                userMgmtSection.style.display = 'none';
+                userProfileSection.style.display = 'none';
             }
         }
 
-        // Handle user sign out (works for both Firebase and local auth)
+        // Load users table for admin
+        function loadUsersTable() {
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = '';
+            
+            Object.keys(localUsers).forEach(username => {
+                const user = localUsers[username];
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td style="padding: 10px; border: 1px solid #ddd;">${username}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">${user.displayName}</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">
+                        <span style="background: ${user.role === 'admin' ? '#dc3545' : '#28a745'}; color: white; padding: 3px 8px; border-radius: 3px; font-size: 12px;">
+                            ${user.role.toUpperCase()}
+                        </span>
+                    </td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">
+                        ${username === 'admin' ? 
+                            '<span style="color: #666; font-style: italic;">Protected</span>' : 
+                            `<button class="btn" onclick="editUser('${username}')" style="background: #ffc107; color: black; padding: 4px 8px; font-size: 12px; margin-right: 5px;">Edit</button>
+                             <button class="btn" onclick="deleteUser('${username}')" style="background: #dc3545; color: white; padding: 4px 8px; font-size: 12px;">Delete</button>`
+                        }
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load user profile for team users
+        function loadUserProfile() {
+            const user = localUsers[currentUser.username];
+            if (user) {
+                document.getElementById('profile-displayname').value = user.displayName;
+            }
+        }
+
+        // Add new user (admin only)
+        function addUser() {
+            if (currentUser.role !== 'admin') {
+                alert('Only administrators can add users.');
+                return;
+            }
+            
+            const username = document.getElementById('new-username').value.trim();
+            const displayName = document.getElementById('new-displayname').value.trim();
+            const password = document.getElementById('new-password').value;
+            const role = document.getElementById('new-role').value;
+            
+            // Validation
+            if (!username || !displayName || !password || !role) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (password.length < 6) {
+                alert('Password must be at least 6 characters long.');
+                return;
+            }
+            
+            const normalizedUsername = username.toLowerCase();
+            const isUsernameTaken = Object.keys(localUsers).some(
+                existingUsername => existingUsername.toLowerCase() === normalizedUsername
+            );
+            if (isUsernameTaken) {
+                alert('Username already exists. Please choose a different username.');
+                return;
+            }
+            
+            // Check user limit (max 6 total: 1 admin + 5 others)
+            const userCount = Object.keys(localUsers).length;
+            if (userCount >= 6) {
+                alert('Maximum number of users (6) reached. Please delete a user before adding a new one.');
+                return;
+            }
+            
+            // Add user
+            localUsers[username] = {
+                password: password,
+                role: role,
+                email: `${username}@kinben.local`,
+                displayName: displayName,
+                created: new Date().toISOString()
+            };
+            
+            saveUsers();
+            loadUsersTable();
+            clearUserForm();
+            alert(`User "${username}" added successfully.`);
+        }
+
+        // Clear user form
+        function clearUserForm() {
+            document.getElementById('new-username').value = '';
+            document.getElementById('new-displayname').value = '';
+            document.getElementById('new-password').value = '';
+            document.getElementById('new-role').value = 'team';
+        }
+
+        // Edit user (admin only)
+        function editUser(username) {
+            if (currentUser.role !== 'admin') {
+                alert('Only administrators can edit users.');
+                return;
+            }
+            
+            const user = localUsers[username];
+            if (!user) return;
+            
+            const newDisplayName = prompt('Enter new display name:', user.displayName);
+            if (newDisplayName && newDisplayName.trim() !== user.displayName) {
+                user.displayName = newDisplayName.trim();
+                saveUsers();
+                loadUsersTable();
+                alert('Display name updated successfully.');
+            }
+        }
+
+        // Delete user (admin only)
+        function deleteUser(username) {
+            if (currentUser.role !== 'admin') {
+                alert('Only administrators can delete users.');
+                return;
+            }
+            
+            if (username === 'admin') {
+                alert('Cannot delete the admin user.');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete user "${username}"? This action cannot be undone.`)) {
+                delete localUsers[username];
+                saveUsers();
+                loadUsersTable();
+                alert('User deleted successfully.');
+            }
+        }
+
+        // Update user profile (team users can update their own info)
+        function updateProfile() {
+            const user = localUsers[currentUser.username];
+            if (!user) {
+                alert('User not found.');
+                return;
+            }
+            
+            const newDisplayName = document.getElementById('profile-displayname').value.trim();
+            const currentPassword = document.getElementById('profile-current-password').value;
+            const newPassword = document.getElementById('profile-new-password').value;
+            
+            // Verify current password
+            if (user.password !== currentPassword) {
+                alert('Current password is incorrect.');
+                return;
+            }
+            
+            // Update display name
+            if (newDisplayName && newDisplayName !== user.displayName) {
+                user.displayName = newDisplayName;
+            }
+            
+            // Update password if provided
+            if (newPassword) {
+                if (newPassword.length < 6) {
+                    alert('New password must be at least 6 characters long.');
+                    return;
+                }
+                user.password = newPassword;
+            }
+            
+            saveUsers();
+            
+            // Update current user object
+            currentUser.displayName = user.displayName;
+            showUserInfo();
+            
+            // Clear password fields
+            document.getElementById('profile-current-password').value = '';
+            document.getElementById('profile-new-password').value = '';
+            
+            alert('Profile updated successfully.');
+        }
+
+        // Handle user sign out
         function handleUserSignOut() {
             currentUser = { username: null, role: null, uid: null, email: null, displayName: null };
             showLogin();
             hideUserInfo();
-            document.getElementById('user-mgmt-tab').style.display = 'none';
         }
 
-        // Show no role message
-        function showNoRoleMessage() {
-            hideLogin();
-            hideUserInfo();
-            document.getElementById('login-status').innerHTML = `
-                <div style="padding: 20px; background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; margin-top: 15px;">
-                    <h4 style="margin: 0 0 10px 0; color: #856404;">⏳ Access Pending</h4>
-                    <p style="margin: 0; color: #856404;">
-                        You have successfully signed in as <strong>${currentUser.email}</strong>, 
-                        but you haven't been assigned a role yet.
-                        <br><br>
-                        Please contact your system administrator to request access.
-                    </p>
-                    <div style="margin-top: 15px;">
-                        <button onclick="signOutUser()" style="background: #6c757d; color: white; border: none; padding: 8px 16px; border-radius: 3px; cursor: pointer;">
-                            Sign Out
-                        </button>
-                    </div>
-                </div>
-            `;
-            showLogin(); // Keep login modal visible with status message
-        }
-
-        // Sign in with Google (only if Firebase is configured)
-        async function signInWithGoogle() {
-            if (!isFirebaseConfigured || !auth || !googleProvider || typeof firebase === 'undefined') {
-                showLoginError('Google authentication is not configured or available.');
-                return;
-            }
-            
-            try {
-                document.getElementById('login-status').innerHTML = 'Signing in...';
-                await auth.signInWithPopup(googleProvider);
-            } catch (error) {
-                console.error('Error signing in with Google:', error);
-                showLoginError('Sign in failed. Please try again later.');
-            }
-        }
-
-        // Sign out user (works for both auth methods)
-        async function signOutUser() {
-            try {
-                if (auth && currentUser.uid && !currentUser.uid.startsWith('local_')) {
-                    await auth.signOut();
-                } else {
-                    // Local authentication sign out
-                    handleUserSignOut();
-                }
-            } catch (error) {
-                console.error('Error signing out:', error);
-                handleUserSignOut(); // Fallback to local sign out
-            }
+        // Sign out user
+        function signOutUser() {
+            handleUserSignOut();
         }
 
         // Show login error
@@ -1230,19 +1347,12 @@
             `;
         }
 
-        // Check authentication status (legacy function - now handled by auth state listener)
+        // Check authentication status
         function checkAuth() {
-            // This is now handled by Firebase Auth state listener
             return currentUser.role && currentUser.role !== 'none';
         }
 
-        // Legacy login function - replaced with Google Sign-In
-        function attemptLogin() {
-            // This function is no longer used but kept for compatibility
-            signInWithGoogle();
-        }
-
-        // Logout function - updated for Firebase
+        // Logout function
         function logout() {
             signOutUser();
         }
@@ -1262,124 +1372,22 @@
             const currentUserSpan = document.getElementById('current-user');
             currentUserSpan.textContent = `${currentUser.username.charAt(0).toUpperCase() + currentUser.username.slice(1)} User (${currentUser.role === 'admin' ? 'Admin' : 'Team'})`;
             userInfo.style.display = 'block';
+            updateUIForRole(currentUser.role);
         }
 
         function hideUserInfo() {
             document.getElementById('user-info').style.display = 'none';
         }
 
-        // User Management Functions
-        async function loadUsersForManagement() {
-            if (currentUser.role !== 'admin') {
-                return;
-            }
-
-            try {
-                const usersSnapshot = await db.collection('users').orderBy('email').get();
-                const usersTableBody = document.getElementById('users-table-body');
-                usersTableBody.innerHTML = '';
-
-                usersSnapshot.forEach(doc => {
-                    const userData = doc.data();
-                    const row = document.createElement('tr');
-                    
-                    const lastSignIn = userData.lastSignIn ? 
-                        userData.lastSignIn.toDate().toLocaleDateString() : 'Never';
-                    
-                    row.innerHTML = `
-                        <td style="padding: 10px; border: 1px solid #ddd;">${userData.displayName || 'N/A'}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">${userData.email}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">
-                            <span style="padding: 3px 8px; border-radius: 3px; font-size: 12px; background: ${getRoleColor(userData.role)}; color: white;">
-                                ${userData.role.toUpperCase()}
-                            </span>
-                        </td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">${lastSignIn}</td>
-                        <td style="padding: 10px; border: 1px solid #ddd;">
-                            <select onchange="updateUserRole('${doc.id}', this.value)" style="padding: 5px; border: 1px solid #ddd; border-radius: 3px;">
-                                <option value="none" ${userData.role === 'none' ? 'selected' : ''}>None</option>
-                                <option value="team" ${userData.role === 'team' ? 'selected' : ''}>Team</option>
-                                <option value="admin" ${userData.role === 'admin' ? 'selected' : ''}>Admin</option>
-                            </select>
-                        </td>
-                    `;
-                    
-                    usersTableBody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading users:', error);
-                alert('Unable to load users. Please try again or contact support.');
-            }
-        }
-
-        // Get role color for display
-        function getRoleColor(role) {
-            switch (role) {
-                case 'admin': return '#dc3545';
-                case 'team': return '#28a745';
-                case 'none': return '#6c757d';
-                default: return '#6c757d';
-            }
-        }
-
-        // Update user role
-        async function updateUserRole(userId, newRole) {
-            if (currentUser.role !== 'admin') {
-                alert('Only admins can update user roles.');
-                return;
-            }
-
-            try {
-                await db.collection('users').doc(userId).update({
-                    role: newRole,
-                    updatedBy: currentUser.email,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // Refresh the users list
-                await loadUsersForManagement();
-                
-                alert(`User role updated to ${newRole.toUpperCase()}`);
-            } catch (error) {
-                console.error('Error updating user role:', error);
-                alert('An error occurred while updating the user role. Please try again later.');
-            }
-        }
-
         // Initialize authentication on page load
         window.addEventListener('load', function() {
-            // Set up initial authentication mode based on Firebase configuration
-            if (!isFirebaseConfigured || typeof firebase === 'undefined') {
-                // Default to local auth when Firebase is not configured or not available
-                useLocalAuth = true;
-                document.getElementById('local-auth-form').style.display = 'block';
-                document.getElementById('google-signin-btn').style.display = 'none';
-                document.getElementById('toggle-auth-btn').textContent = 'Use Google Login';
-                document.getElementById('local-credentials-info').style.display = 'block';
-                document.getElementById('auth-note').textContent = 'Firebase authentication is not configured. Using local authentication.';
-                document.getElementById('login-description').textContent = 'Enter your local credentials to access the system';
-            } else {
-                // Firebase is configured, start with Google auth
-                useLocalAuth = false;
-                document.getElementById('local-auth-form').style.display = 'none';
-                document.getElementById('google-signin-btn').style.display = 'block';
-                document.getElementById('toggle-auth-btn').textContent = 'Use Local Login';
-                document.getElementById('local-credentials-info').style.display = 'none';
-                document.getElementById('auth-note').textContent = 'Using Google authentication via Firebase.';
-                document.getElementById('login-description').textContent = 'Sign in with your Google account to access the system';
-            }
-            
             showLogin();
         });
 
         // Add keyboard support for login modal
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' && document.getElementById('login-modal').style.display !== 'none') {
-                if (useLocalAuth && document.getElementById('local-auth-form').style.display !== 'none') {
-                    signInLocal();
-                } else if (isFirebaseConfigured && typeof firebase !== 'undefined') {
-                    signInWithGoogle();
-                }
+                signInLocal();
             }
         });
 
@@ -1391,6 +1399,33 @@
                 // Ensure vendors array exists for backward compatibility
                 if (!data.vendors) {
                     data.vendors = ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics'];
+                    saveData();
+                }
+                // Migrate pcbs to assemblies for backward compatibility
+                if (data.pcbs && !data.assemblies) {
+                    data.assemblies = data.pcbs;
+                    delete data.pcbs;
+                    saveData();
+                }
+                // Ensure assemblies array exists
+                if (!data.assemblies) {
+                    data.assemblies = [];
+                    saveData();
+                }
+                // Migrate system pcbs to items for backward compatibility
+                if (data.systems) {
+                    data.systems.forEach(system => {
+                        if (system.pcbs && !system.items) {
+                            system.items = system.pcbs.map(pcb => ({
+                                type: 'assembly',
+                                value: pcb.name,
+                                name: pcb.name,
+                                version: pcb.version,
+                                quantity: pcb.quantity
+                            }));
+                            delete system.pcbs;
+                        }
+                    });
                     saveData();
                 }
             }
@@ -1506,6 +1541,59 @@
                     { id: 'actuation-force', label: 'Actuation Force', type: 'text', required: false, placeholder: 'e.g., 160gf, 260gf' },
                     { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
+            },
+            pcb: { 
+                code: 'PCB', 
+                subcategories: ['STD', 'FLX', 'RIG', 'MLB'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., JLCPCB, PCBWay' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., PCB-MAIN-V1.0' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Main Controller PCB 2-layer' },
+                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., 50x30mm, 100x80mm' },
+                    { id: 'layers', label: 'Layers', type: 'text', required: false, placeholder: 'e.g., 2, 4, 6' },
+                    { id: 'thickness', label: 'Thickness', type: 'text', required: false, placeholder: 'e.g., 1.6mm, 0.8mm' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            mechanical: { 
+                code: 'MEC', 
+                subcategories: ['SCR', 'NUT', 'WSH', 'BRK', 'SPR'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., McMaster-Carr, Fastenal' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., 91292A110' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., M3x10mm Phillips Head Screw' },
+                    { id: 'material', label: 'Material', type: 'text', required: false, placeholder: 'e.g., Stainless Steel, Aluminum' },
+                    { id: 'finish', label: 'Finish', type: 'text', required: false, placeholder: 'e.g., Black Oxide, Zinc Plated' },
+                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., M3x10mm, 6.35x12.7mm' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            printed3d: { 
+                code: 'P3D', 
+                subcategories: ['CAS', 'BRK', 'SPA', 'MNT'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Internal, Shapeways' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., CASE-001-V1.2' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Sensor Housing Top Cover' },
+                    { id: 'material', label: 'Material', type: 'text', required: false, placeholder: 'e.g., PLA, ABS, PETG' },
+                    { id: 'color', label: 'Color', type: 'text', required: false, placeholder: 'e.g., Black, White, Clear' },
+                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., 80x60x25mm' },
+                    { id: 'file-link', label: 'CAD File Link', type: 'url', required: false, placeholder: 'https://...' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            cable: { 
+                code: 'CAB', 
+                subcategories: ['PWR', 'DATA', 'SIG', 'CUS'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Amphenol, TE Connectivity' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., USB-A-TO-C-1M' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., USB-A to USB-C Cable 1m' },
+                    { id: 'length', label: 'Length', type: 'text', required: false, placeholder: 'e.g., 1m, 500mm, 6ft' },
+                    { id: 'connectors', label: 'Connectors', type: 'text', required: false, placeholder: 'e.g., USB-A to USB-C, JST-XH 2pin' },
+                    { id: 'wire-gauge', label: 'Wire Gauge', type: 'text', required: false, placeholder: 'e.g., 24AWG, 20AWG' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
             }
         };
 
@@ -1528,25 +1616,6 @@
             // Update component dropdowns when switching tabs
             if (tabName === 'pcbs' || tabName === 'systems') {
                 updateDropdowns();
-            }
-        }
-
-        // Show/hide user management tab functions
-        function showUserManagementTab() {
-            const userMgmtTab = document.getElementById('user-mgmt-tab');
-            if (userMgmtTab) {
-                userMgmtTab.style.display = 'block';
-                // Load users if Firebase is available
-                if (db) {
-                    loadUsersForManagement();
-                }
-            }
-        }
-
-        function hideUserManagementTab() {
-            const userMgmtTab = document.getElementById('user-mgmt-tab');
-            if (userMgmtTab) {
-                userMgmtTab.style.display = 'none';
             }
         }
 
@@ -2581,6 +2650,7 @@
         function addBOMItem() {
             const kpn = document.getElementById('bom-kpn').value;
             const quantity = parseInt(document.getElementById('bom-quantity').value);
+            const droppage = parseFloat(document.getElementById('bom-droppage').value) || 0;
             const refdes = document.getElementById('bom-refdes').value;
             
             if (!kpn || !quantity || !refdes) {
@@ -2594,10 +2664,17 @@
                 return;
             }
             
+            // Calculate total quantity including droppage
+            const droppageAmount = Math.ceil(quantity * (droppage / 100));
+            const totalQuantity = quantity + droppageAmount;
+            
             const bomItem = {
                 kpn,
                 componentName: `${component.manufacturer} ${component.partNumber}`,
                 quantity,
+                droppage,
+                droppageQuantity: droppageAmount,
+                totalQuantity,
                 refdes
             };
             
@@ -2607,6 +2684,7 @@
             // Clear form
             document.getElementById('bom-kpn').value = '';
             document.getElementById('bom-quantity').value = '1';
+            document.getElementById('bom-droppage').value = '0';
             document.getElementById('bom-refdes').value = '';
         }
 
@@ -2624,29 +2702,33 @@
             currentBOM.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'bom-row';
+                div.style.cssText = 'padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 5px; background: #f9f9f9; display: flex; justify-content: space-between; align-items: center;';
+                
+                const droppageInfo = item.droppage > 0 
+                    ? ` (Base: ${item.quantity}, Droppage: ${item.droppageQuantity}, Total: ${item.totalQuantity})` 
+                    : ` (Qty: ${item.quantity})`;
+                
                 div.innerHTML = `
-                    <span>${item.componentName}</span>
-                    <span>Qty: ${item.quantity}</span>
-                    <span>RefDes: ${item.refdes}</span>
-                    <button class="remove-btn" onclick="removeBOMItem(${index})">Remove</button>
+                    <span><strong>${item.componentName}</strong>${droppageInfo} | RefDes: ${item.refdes}</span>
+                    <button style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer;" onclick="removeBOMItem(${index})">Remove</button>
                 `;
                 container.appendChild(div);
             });
         }
 
-        // Add PCB
-        function addPCB() {
-            const name = document.getElementById('pcb-name').value;
-            const version = document.getElementById('pcb-version').value;
-            const status = document.getElementById('pcb-status').value;
-            const description = document.getElementById('pcb-description').value;
+        // Add Assembly
+        function addAssembly() {
+            const name = document.getElementById('assembly-name').value;
+            const version = document.getElementById('assembly-version').value;
+            const status = document.getElementById('assembly-status').value;
+            const description = document.getElementById('assembly-description').value;
             
             if (!name || !version || currentBOM.length === 0) {
-                alert('Please fill in PCB details and add at least one BOM item');
+                alert('Please fill in assembly details and add at least one item');
                 return;
             }
             
-            const pcb = {
+            const assembly = {
                 name,
                 version,
                 status,
@@ -2655,70 +2737,116 @@
                 dateAdded: new Date().toISOString().split('T')[0]
             };
             
-            data.pcbs.push(pcb);
+            data.assemblies.push(assembly);
             saveData();
-            renderPCBs();
+            renderAssemblies();
             
             // Clear form
-            document.getElementById('pcb-name').value = '';
-            document.getElementById('pcb-version').value = '';
-            document.getElementById('pcb-description').value = '';
+            document.getElementById('assembly-name').value = '';
+            document.getElementById('assembly-version').value = '';
+            document.getElementById('assembly-description').value = '';
             currentBOM = [];
             renderBOMItems();
         }
 
-        // Current system PCBs
-        let currentSystemPCBs = [];
+        // Current system items
+        let currentSystemItems = [];
 
-        // Add system PCB
-        function addSystemPCB() {
-            const pcbName = document.getElementById('system-pcb').value;
+        // Add system item
+        function addSystemItem() {
+            const itemType = document.getElementById('system-item-type').value;
+            const itemValue = document.getElementById('system-pcb').value;
             const quantity = parseInt(document.getElementById('system-pcb-quantity').value);
             
-            if (!pcbName || !quantity) {
-                alert('Please select PCB and quantity');
+            if (!itemType || !itemValue || !quantity) {
+                alert('Please select item type, item, and quantity');
                 return;
             }
             
-            const pcb = data.pcbs.find(p => p.name === pcbName);
-            if (!pcb) {
-                alert('PCB not found');
-                return;
+            let itemName = '';
+            let itemVersion = '';
+            
+            if (itemType === 'assembly') {
+                const assembly = data.assemblies.find(a => a.name === itemValue);
+                if (!assembly) {
+                    alert('Assembly not found');
+                    return;
+                }
+                itemName = assembly.name;
+                itemVersion = assembly.version;
+            } else if (['mechanical', 'printed3d', 'cable'].includes(itemType)) {
+                const component = data.components.find(c => c.kpn === itemValue);
+                if (!component) {
+                    alert('Component not found');
+                    return;
+                }
+                itemName = component.kpn;
+                itemVersion = component.description || component.manufacturer_pn || 'Unknown';
+            } else if (itemType === 'system') {
+                const system = data.systems.find(s => s.name === itemValue);
+                if (!system) {
+                    alert('System not found');
+                    return;
+                }
+                itemName = system.name;
+                itemVersion = system.version;
             }
             
-            const systemPCB = {
-                name: pcbName,
-                version: pcb.version,
+            const systemItem = {
+                type: itemType,
+                value: itemValue,
+                name: itemName,
+                version: itemVersion,
                 quantity
             };
             
-            currentSystemPCBs.push(systemPCB);
-            renderSystemPCBs();
+            currentSystemItems.push(systemItem);
+            renderSystemItems();
             
             // Clear form
+            document.getElementById('system-item-type').value = '';
             document.getElementById('system-pcb').value = '';
             document.getElementById('system-pcb-quantity').value = '1';
+            updateSystemItemOptions();
         }
 
-        // Remove system PCB
-        function removeSystemPCB(index) {
-            currentSystemPCBs.splice(index, 1);
-            renderSystemPCBs();
+        // Remove system item
+        function removeSystemItem(index) {
+            currentSystemItems.splice(index, 1);
+            renderSystemItems();
         }
 
-        // Render system PCBs
-        function renderSystemPCBs() {
-            const container = document.getElementById('system-pcbs');
+        // Render system items
+        function renderSystemItems() {
+            const container = document.getElementById('system-items');
             container.innerHTML = '';
             
-            currentSystemPCBs.forEach((item, index) => {
+            currentSystemItems.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'bom-row';
+                let displayText = '';
+                switch(item.type) {
+                    case 'assembly':
+                        displayText = `Assembly: ${item.name} (${item.version})`;
+                        break;
+                    case 'mechanical':
+                        displayText = `Mechanical: ${item.name} - ${item.version}`;
+                        break;
+                    case 'printed3d':
+                        displayText = `3D-Printed: ${item.name} - ${item.version}`;
+                        break;
+                    case 'cable':
+                        displayText = `Cable: ${item.name} - ${item.version}`;
+                        break;
+                    case 'system':
+                        displayText = `System: ${item.name} (${item.version})`;
+                        break;
+                }
                 div.innerHTML = `
-                    <span>${item.name} (${item.version})</span>
+                    <span>${displayText}</span>
                     <span>Qty: ${item.quantity}</span>
                     <span></span>
-                    <button class="remove-btn" onclick="removeSystemPCB(${index})">Remove</button>
+                    <button class="remove-btn" onclick="removeSystemItem(${index})">Remove</button>
                 `;
                 container.appendChild(div);
             });
@@ -2731,8 +2859,8 @@
             const status = document.getElementById('system-status').value;
             const description = document.getElementById('system-description').value;
             
-            if (!name || !version || currentSystemPCBs.length === 0) {
-                alert('Please fill in system details and add at least one PCB');
+            if (!name || !version || currentSystemItems.length === 0) {
+                alert('Please fill in system details and add at least one item');
                 return;
             }
             
@@ -2741,7 +2869,7 @@
                 version,
                 status,
                 description,
-                pcbs: [...currentSystemPCBs],
+                items: [...currentSystemItems],
                 dateAdded: new Date().toISOString().split('T')[0]
             };
             
@@ -2753,35 +2881,85 @@
             document.getElementById('system-name').value = '';
             document.getElementById('system-version').value = '';
             document.getElementById('system-description').value = '';
-            currentSystemPCBs = [];
-            renderSystemPCBs();
+            currentSystemItems = [];
+            renderSystemItems();
         }
 
         // Update dropdowns
-        function updateDropdowns() {
-            // Update BOM KPN dropdown - exclude archived components
-            const bomSelect = document.getElementById('bom-kpn');
-            bomSelect.innerHTML = '<option value="">Select Component</option>';
-            data.components.forEach(comp => {
-                if (comp.status === 'Active') {  // Only show active components, not archived
-                    const option = document.createElement('option');
-                    option.value = comp.kpn;
-                    option.textContent = `${comp.kpn} - ${comp.manufacturer || comp.manufacturer_pn || 'Unknown'} ${comp.partNumber || comp.value || ''}`;
-                    bomSelect.appendChild(option);
-                }
-            });
+        // Update system item options based on selected type
+        function updateSystemItemOptions() {
+            const type = document.getElementById('system-item-type').value;
+            const itemSelect = document.getElementById('system-pcb');
+            itemSelect.innerHTML = '<option value="">Select Item</option>';
             
-            // Update system PCB dropdown
-            const systemPCBSelect = document.getElementById('system-pcb');
-            systemPCBSelect.innerHTML = '<option value="">Select PCB</option>';
-            data.pcbs.forEach(pcb => {
-                if (pcb.status === 'Active') {
-                    const option = document.createElement('option');
-                    option.value = pcb.name;
-                    option.textContent = `${pcb.name} (${pcb.version})`;
-                    systemPCBSelect.appendChild(option);
-                }
-            });
+            if (type === 'assembly') {
+                // Show assemblies
+                data.assemblies.forEach(assembly => {
+                    if (assembly.status === 'Active') {
+                        const option = document.createElement('option');
+                        option.value = assembly.name;
+                        option.textContent = `${assembly.name} (${assembly.version})`;
+                        itemSelect.appendChild(option);
+                    }
+                });
+            } else if (['mechanical', 'printed3d', 'cable'].includes(type)) {
+                // Show components of the selected type
+                data.components.forEach(comp => {
+                    if (comp.status === 'Active' && comp.category === type) {
+                        const option = document.createElement('option');
+                        option.value = comp.kpn;
+                        option.textContent = `${comp.kpn} - ${comp.description || comp.manufacturer_pn || 'Unknown'}`;
+                        itemSelect.appendChild(option);
+                    }
+                });
+            } else if (type === 'system') {
+                // Show other systems (excluding current one being edited if applicable)
+                data.systems.forEach(system => {
+                    if (system.status === 'Active') {
+                        const option = document.createElement('option');
+                        option.value = system.name;
+                        option.textContent = `${system.name} (${system.version})`;
+                        itemSelect.appendChild(option);
+                    }
+                });
+            }
+        }
+
+        // Update BOM item options based on selected type
+        function updateBOMItemOptions() {
+            const type = document.getElementById('bom-type').value;
+            const bomSelect = document.getElementById('bom-kpn');
+            bomSelect.innerHTML = '<option value="">Select Item</option>';
+            
+            if (type === 'component') {
+                // Show electronic components (excluding PCB, mechanical, 3D-printed, cable categories)
+                data.components.forEach(comp => {
+                    if (comp.status === 'Active' && !['pcb', 'mechanical', 'printed3d', 'cable'].includes(comp.category)) {
+                        const option = document.createElement('option');
+                        option.value = comp.kpn;
+                        option.textContent = `${comp.kpn} - ${comp.manufacturer || comp.manufacturer_pn || 'Unknown'} ${comp.partNumber || comp.value || ''}`;
+                        bomSelect.appendChild(option);
+                    }
+                });
+            } else if (['pcb', 'mechanical', 'printed3d', 'cable'].includes(type)) {
+                // Show components of the selected type
+                data.components.forEach(comp => {
+                    if (comp.status === 'Active' && comp.category === type) {
+                        const option = document.createElement('option');
+                        option.value = comp.kpn;
+                        option.textContent = `${comp.kpn} - ${comp.description || comp.manufacturer_pn || 'Unknown'}`;
+                        bomSelect.appendChild(option);
+                    }
+                });
+            }
+        }
+
+        function updateDropdowns() {
+            // Update BOM KPN dropdown - now handled by updateBOMItemOptions
+            updateBOMItemOptions();
+            
+            // Update system item dropdown
+            updateSystemItemOptions();
         }
 
         // Render functions
@@ -2863,18 +3041,33 @@
             });
         }
 
-        function renderPCBs() {
-            const tbody = document.getElementById('pcbs-tbody');
+        function renderAssemblies() {
+            const tbody = document.getElementById('assemblies-tbody');
             tbody.innerHTML = '';
             
-            data.pcbs.forEach(pcb => {
+            data.assemblies.forEach((assembly, index) => {
                 const row = document.createElement('tr');
+                
+                // Build action buttons based on user role
+                let actionButtons = '';
+                if (currentUser.role === 'admin') {
+                    actionButtons = `
+                        <button class="btn" onclick="editAssembly(${index})" style="background: #0078d4; color: white; margin-right: 5px;">Edit</button>
+                        <button class="delete-btn" onclick="deleteAssembly(${index})">Delete</button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button class="btn" onclick="editAssembly(${index})" style="background: #0078d4; color: white;">Edit</button>
+                    `;
+                }
+                
                 row.innerHTML = `
-                    <td>${pcb.name}</td>
-                    <td>${pcb.version}</td>
-                    <td>${pcb.description}</td>
-                    <td>${pcb.bom.length} items</td>
-                    <td><span class="status-${pcb.status.toLowerCase()}">${pcb.status}</span></td>
+                    <td>${assembly.name}</td>
+                    <td>${assembly.version}</td>
+                    <td>${assembly.description}</td>
+                    <td>${assembly.bom.length} items</td>
+                    <td><span class="status-${assembly.status.toLowerCase()}">${assembly.status}</span></td>
+                    <td>${actionButtons}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -2884,14 +3077,31 @@
             const tbody = document.getElementById('systems-tbody');
             tbody.innerHTML = '';
             
-            data.systems.forEach(system => {
+            data.systems.forEach((system, index) => {
                 const row = document.createElement('tr');
+                // Handle backward compatibility - migrate pcbs to items if needed
+                const itemCount = system.items ? system.items.length : (system.pcbs ? system.pcbs.length : 0);
+                
+                // Build action buttons based on user role
+                let actionButtons = '';
+                if (currentUser.role === 'admin') {
+                    actionButtons = `
+                        <button class="btn" onclick="editSystem(${index})" style="background: #0078d4; color: white; margin-right: 5px;">Edit</button>
+                        <button class="delete-btn" onclick="deleteSystem(${index})">Delete</button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button class="btn" onclick="editSystem(${index})" style="background: #0078d4; color: white;">Edit</button>
+                    `;
+                }
+                
                 row.innerHTML = `
                     <td>${system.name}</td>
                     <td>${system.version}</td>
                     <td>${system.description}</td>
-                    <td>${system.pcbs.length} PCBs</td>
+                    <td>${itemCount} items</td>
                     <td><span class="status-${system.status.toLowerCase()}">${system.status}</span></td>
+                    <td>${actionButtons}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -2899,10 +3109,11 @@
 
         function renderAll() {
             renderComponents();
-            renderPCBs();
+            renderAssemblies();
             renderSystems();
             renderVendors();
             updateDropdowns();
+            renderExportSelections();
         }
 
         // Filter functions
@@ -2916,9 +3127,9 @@
             });
         }
 
-        function filterPCBs() {
-            const search = document.getElementById('pcb-search').value.toLowerCase();
-            const rows = document.querySelectorAll('#pcbs-tbody tr');
+        function filterAssemblies() {
+            const search = document.getElementById('assembly-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#assemblies-tbody tr');
             
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
@@ -2939,11 +3150,11 @@
         // Update statistics
         function updateStats() {
             document.getElementById('total-components').textContent = data.components.length;
-            document.getElementById('total-pcbs').textContent = data.pcbs.length;
+            document.getElementById('total-assemblies').textContent = data.assemblies.length;
             document.getElementById('total-systems').textContent = data.systems.length;
             
             document.getElementById('export-components').textContent = data.components.length;
-            document.getElementById('export-pcbs').textContent = data.pcbs.length;
+            document.getElementById('export-assemblies').textContent = data.assemblies.length;
             document.getElementById('export-systems').textContent = data.systems.length;
         }
 
@@ -2988,6 +3199,17 @@
                         case 'Pitch': value = c.pitch || ''; break;
                         case 'Pins': value = c.pins || ''; break;
                         case 'Actuation Force': value = c.actuation_force || ''; break;
+                        case 'Dimensions': value = c.dimensions || ''; break;
+                        case 'Layers': value = c.layers || ''; break;
+                        case 'Thickness': value = c.thickness || ''; break;
+                        case 'Material': value = c.material || ''; break;
+                        case 'Finish': value = c.finish || ''; break;
+                        case 'Color': value = c.color || ''; break;
+                        case 'CAD File Link': value = c.file_link || ''; break;
+                        case 'Length': value = c.length || ''; break;
+                        case 'Connectors': value = c.connectors || ''; break;
+                        case 'Wire Gauge': value = c.wire_gauge || ''; break;
+                        case 'Manufacturer': value = c.manufacturer || ''; break;
                         default: value = '';
                     }
                     return `"${value}"`;
@@ -2997,18 +3219,18 @@
             downloadCSV(csv, 'kinben-components.csv');
         }
 
-        function exportPCBs() {
-            if (data.pcbs.length === 0) {
-                alert('No PCBs to export');
+        function exportAssemblies() {
+            if (data.assemblies.length === 0) {
+                alert('No assemblies to export');
                 return;
             }
             
-            const csv = 'PCB Name,Version,Status,Description,BOM Items,Date Added\n' +
-                data.pcbs.map(p => 
-                    `"${p.name}",${p.version},${p.status},"${p.description}",${p.bom.length},${p.dateAdded}`
+            const csv = 'Assembly Name,Version,Status,Description,Assembly Items,Date Added\n' +
+                data.assemblies.map(a => 
+                    `"${a.name}",${a.version},${a.status},"${a.description}",${a.bom.length},${a.dateAdded}`
                 ).join('\n');
             
-            downloadCSV(csv, 'kinben-pcbs.csv');
+            downloadCSV(csv, 'kinben-assemblies.csv');
         }
 
         function exportSystems() {
@@ -3017,17 +3239,18 @@
                 return;
             }
             
-            const csv = 'System Name,Version,Status,Description,PCB Count,Date Added\n' +
-                data.systems.map(s => 
-                    `"${s.name}",${s.version},${s.status},"${s.description}",${s.pcbs.length},${s.dateAdded}`
-                ).join('\n');
+            const csv = 'System Name,Version,Status,Description,Item Count,Date Added\n' +
+                data.systems.map(s => {
+                    const itemCount = s.items ? s.items.length : (s.pcbs ? s.pcbs.length : 0);
+                    return `"${s.name}",${s.version},${s.status},"${s.description}",${itemCount},${s.dateAdded}`;
+                }).join('\n');
             
             downloadCSV(csv, 'kinben-systems.csv');
         }
 
         function exportAll() {
             exportComponents();
-            exportPCBs();
+            exportAssemblies();
             exportSystems();
         }
 
@@ -3384,6 +3607,556 @@
                     alert(`Component ${kpn} has been permanently deleted. The KPN can now be reused.`);
                 }
             }
+        }
+
+        // Assembly edit and delete functions
+        function editAssembly(index) {
+            const assembly = data.assemblies[index];
+            if (!assembly) {
+                alert('Assembly not found');
+                return;
+            }
+            
+            // Switch to assemblies tab
+            showTab('assemblies');
+            
+            // Populate form fields
+            document.getElementById('assembly-name').value = assembly.name;
+            document.getElementById('assembly-version').value = assembly.version;
+            document.getElementById('assembly-status').value = assembly.status;
+            document.getElementById('assembly-description').value = assembly.description;
+            
+            // Clear existing BOM items display
+            const bomDiv = document.getElementById('assembly-bom');
+            bomDiv.innerHTML = '';
+            
+            // Display existing BOM items
+            assembly.bom.forEach((item, bomIndex) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.style.cssText = 'padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 5px; background: #f9f9f9;';
+                itemDiv.innerHTML = `
+                    <span><strong>Type:</strong> ${escapeHTML(item.type)} | <strong>Item:</strong> ${escapeHTML(item.name)} | <strong>Qty:</strong> ${escapeHTML(item.quantity)} | <strong>Ref:</strong> ${escapeHTML(item.reference || 'N/A')}</span>
+                    <button style="margin-left: 10px; background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer;" onclick="removeAssemblyBOMItem(${bomIndex})">Remove</button>
+                `;
+                bomDiv.appendChild(itemDiv);
+            });
+            
+            // Store current editing index
+            window.currentEditingAssembly = index;
+            
+            // Change the "Add Assembly" button to "Update Assembly"
+            const addBtn = document.querySelector('button[onclick="addAssembly()"]');
+            addBtn.textContent = 'Update Assembly';
+            addBtn.setAttribute('onclick', 'updateAssembly()');
+            
+            // Add cancel button if not exists
+            if (!document.getElementById('cancel-assembly-edit')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.id = 'cancel-assembly-edit';
+                cancelBtn.className = 'btn';
+                cancelBtn.style.cssText = 'background: #6c757d; color: white; margin-left: 10px;';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.onclick = cancelAssemblyEdit;
+                addBtn.parentNode.insertBefore(cancelBtn, addBtn.nextSibling);
+            }
+        }
+
+        function updateAssembly() {
+            if (window.currentEditingAssembly === undefined) {
+                alert('No assembly being edited');
+                return;
+            }
+            
+            const index = window.currentEditingAssembly;
+            const assembly = data.assemblies[index];
+            
+            // Update assembly data
+            assembly.name = document.getElementById('assembly-name').value;
+            assembly.version = document.getElementById('assembly-version').value;
+            assembly.status = document.getElementById('assembly-status').value;
+            assembly.description = document.getElementById('assembly-description').value;
+            
+            saveData();
+            renderAssemblies();
+            updateDropdowns();
+            cancelAssemblyEdit();
+            alert('Assembly updated successfully!');
+        }
+
+        function cancelAssemblyEdit() {
+            // Clear form
+            document.getElementById('assembly-name').value = '';
+            document.getElementById('assembly-version').value = '';
+            document.getElementById('assembly-status').value = 'Active';
+            document.getElementById('assembly-description').value = '';
+            
+            // Clear BOM display
+            const bomDiv = document.getElementById('assembly-bom');
+            bomDiv.innerHTML = '';
+            
+            // Reset button
+            const addBtn = document.querySelector('button[onclick="updateAssembly()"]') || document.querySelector('button[onclick="addAssembly()"]');
+            addBtn.textContent = 'Add Assembly';
+            addBtn.setAttribute('onclick', 'addAssembly()');
+            
+            // Remove cancel button
+            const cancelBtn = document.getElementById('cancel-assembly-edit');
+            if (cancelBtn) {
+                cancelBtn.remove();
+            }
+            
+            // Clear editing state
+            window.currentEditingAssembly = undefined;
+        }
+
+        function deleteAssembly(index) {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin users can delete assemblies.');
+                return;
+            }
+            
+            const assembly = data.assemblies[index];
+            if (confirm(`Are you sure you want to PERMANENTLY DELETE assembly "${assembly.name} ${assembly.version}"?`)) {
+                data.assemblies.splice(index, 1);
+                saveData();
+                renderAssemblies();
+                updateDropdowns();
+                alert(`Assembly "${assembly.name} ${assembly.version}" has been permanently deleted.`);
+            }
+        }
+
+        // System edit and delete functions
+        function editSystem(index) {
+            const system = data.systems[index];
+            if (!system) {
+                alert('System not found');
+                return;
+            }
+            
+            // Switch to systems tab
+            showTab('systems');
+            
+            // Populate form fields
+            document.getElementById('system-name').value = system.name;
+            document.getElementById('system-version').value = system.version;
+            document.getElementById('system-status').value = system.status;
+            document.getElementById('system-description').value = system.description;
+            
+            // Clear existing items display
+            const itemsDiv = document.getElementById('system-items');
+            itemsDiv.innerHTML = '';
+            
+            // Display existing items (handle backward compatibility)
+            const items = system.items || system.pcbs || [];
+            items.forEach((item, itemIndex) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.style.cssText = 'padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 5px; background: #f9f9f9;';
+                const span = document.createElement('span');
+                span.innerHTML = `<strong>Type:</strong> `;
+                const typeText = document.createTextNode(item.type + ' | ');
+                span.appendChild(typeText);
+                span.innerHTML += `<strong>Item:</strong> `;
+                const nameText = document.createTextNode(item.name + ' | ');
+                span.appendChild(nameText);
+                span.innerHTML += `<strong>Qty:</strong> `;
+                const quantityText = document.createTextNode(item.quantity);
+                span.appendChild(quantityText);
+                
+                const removeButton = document.createElement('button');
+                removeButton.style.cssText = 'margin-left: 10px; background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer;';
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => removeSystemItem(itemIndex);
+                
+                itemDiv.appendChild(span);
+                itemDiv.appendChild(removeButton);
+                itemsDiv.appendChild(itemDiv);
+            });
+            
+            // Store current editing index
+            window.currentEditingSystem = index;
+            
+            // Change the "Add System" button to "Update System"
+            const addBtn = document.querySelector('button[onclick="addSystem()"]');
+            addBtn.textContent = 'Update System';
+            addBtn.setAttribute('onclick', 'updateSystem()');
+            
+            // Add cancel button if not exists
+            if (!document.getElementById('cancel-system-edit')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.id = 'cancel-system-edit';
+                cancelBtn.className = 'btn';
+                cancelBtn.style.cssText = 'background: #6c757d; color: white; margin-left: 10px;';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.onclick = cancelSystemEdit;
+                addBtn.parentNode.insertBefore(cancelBtn, addBtn.nextSibling);
+            }
+        }
+
+        function updateSystem() {
+            if (window.currentEditingSystem === undefined) {
+                alert('No system being edited');
+                return;
+            }
+            
+            const index = window.currentEditingSystem;
+            const system = data.systems[index];
+            
+            // Update system data
+            system.name = document.getElementById('system-name').value;
+            system.version = document.getElementById('system-version').value;
+            system.status = document.getElementById('system-status').value;
+            system.description = document.getElementById('system-description').value;
+            
+            saveData();
+            renderSystems();
+            updateDropdowns();
+            cancelSystemEdit();
+            alert('System updated successfully!');
+        }
+
+        function cancelSystemEdit() {
+            // Clear form
+            document.getElementById('system-name').value = '';
+            document.getElementById('system-version').value = '';
+            document.getElementById('system-status').value = 'Active';
+            document.getElementById('system-description').value = '';
+            
+            // Clear items display
+            const itemsDiv = document.getElementById('system-items');
+            itemsDiv.innerHTML = '';
+            
+            // Reset button
+            const addBtn = document.querySelector('button[onclick="updateSystem()"]') || document.querySelector('button[onclick="addSystem()"]');
+            addBtn.textContent = 'Add System';
+            addBtn.setAttribute('onclick', 'addSystem()');
+            
+            // Remove cancel button
+            const cancelBtn = document.getElementById('cancel-system-edit');
+            if (cancelBtn) {
+                cancelBtn.remove();
+            }
+            
+            // Clear editing state
+            window.currentEditingSystem = undefined;
+        }
+
+        function deleteSystem(index) {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin users can delete systems.');
+                return;
+            }
+            
+            const system = data.systems[index];
+            if (confirm(`Are you sure you want to PERMANENTLY DELETE system "${system.name} ${system.version}"?`)) {
+                data.systems.splice(index, 1);
+                saveData();
+                renderSystems();
+                updateDropdowns();
+                alert(`System "${system.name} ${system.version}" has been permanently deleted.`);
+            }
+        }
+
+        // Export enhancement functions
+        function renderExportSelections() {
+            renderExportAssemblies();
+            renderExportSystems();
+        }
+
+        function renderExportAssemblies() {
+            const container = document.getElementById('export-assemblies-list');
+            container.innerHTML = '';
+            
+            if (data.assemblies.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; margin: 20px 0;">No assemblies available for export</p>';
+                return;
+            }
+            
+            data.assemblies.forEach((assembly, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #e0e0e0; margin: 5px 0; border-radius: 3px; background: white;';
+                
+                div.innerHTML = `
+                    <label style="display: flex; align-items: center; flex: 1; cursor: pointer;">
+                        <input type="checkbox" value="${index}" onchange="toggleAssemblySelection(${index})" style="margin-right: 10px;">
+                        <span><strong>${assembly.name} ${assembly.version}</strong> - ${assembly.description}</span>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 12px;">Qty:</label>
+                        <input type="number" id="assembly-qty-${index}" min="1" value="1" style="width: 60px; padding: 2px 5px;" disabled>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderExportSystems() {
+            const container = document.getElementById('export-systems-list');
+            container.innerHTML = '';
+            
+            if (data.systems.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; margin: 20px 0;">No systems available for export</p>';
+                return;
+            }
+            
+            data.systems.forEach((system, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #e0e0e0; margin: 5px 0; border-radius: 3px; background: white;';
+                
+                div.innerHTML = `
+                    <label style="display: flex; align-items: center; flex: 1; cursor: pointer;">
+                        <input type="checkbox" value="${index}" onchange="toggleSystemSelection(${index})" style="margin-right: 10px;">
+                        <span><strong>${system.name} ${system.version}</strong> - ${system.description}</span>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 12px;">Qty:</label>
+                        <input type="number" id="system-qty-${index}" min="1" value="1" style="width: 60px; padding: 2px 5px;" disabled>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleAssemblySelection(index) {
+            const checkbox = document.querySelector(`#export-assemblies-list input[value="${index}"]`);
+            const qtyInput = document.getElementById(`assembly-qty-${index}`);
+            
+            if (checkbox.checked) {
+                qtyInput.disabled = false;
+                qtyInput.style.background = 'white';
+            } else {
+                qtyInput.disabled = true;
+                qtyInput.style.background = '#f5f5f5';
+            }
+        }
+
+        function toggleSystemSelection(index) {
+            const checkbox = document.querySelector(`#export-systems-list input[value="${index}"]`);
+            const qtyInput = document.getElementById(`system-qty-${index}`);
+            
+            if (checkbox.checked) {
+                qtyInput.disabled = false;
+                qtyInput.style.background = 'white';
+            } else {
+                qtyInput.disabled = true;
+                qtyInput.style.background = '#f5f5f5';
+            }
+        }
+
+        function getSelectedAssemblies() {
+            const selected = [];
+            const checkboxes = document.querySelectorAll('#export-assemblies-list input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const index = parseInt(checkbox.value);
+                const quantity = parseInt(document.getElementById(`assembly-qty-${index}`).value) || 1;
+                selected.push({
+                    assembly: data.assemblies[index],
+                    index,
+                    quantity
+                });
+            });
+            
+            return selected;
+        }
+
+        function getSelectedSystems() {
+            const selected = [];
+            const checkboxes = document.querySelectorAll('#export-systems-list input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const index = parseInt(checkbox.value);
+                const quantity = parseInt(document.getElementById(`system-qty-${index}`).value) || 1;
+                selected.push({
+                    system: data.systems[index],
+                    index,
+                    quantity
+                });
+            });
+            
+            return selected;
+        }
+
+        function exportIndividualBOMs() {
+            const selectedAssemblies = getSelectedAssemblies();
+            const selectedSystems = getSelectedSystems();
+            
+            if (selectedAssemblies.length === 0 && selectedSystems.length === 0) {
+                alert('Please select at least one assembly or system to export.');
+                return;
+            }
+            
+            // Export individual BOMs for each selected assembly
+            selectedAssemblies.forEach(({ assembly, quantity }) => {
+                const csv = generateAssemblyBOM(assembly, quantity);
+                const filename = `BOM_${assembly.name}_${assembly.version}_qty${quantity}.csv`;
+                downloadCSV(csv, filename);
+            });
+            
+            // Export individual BOMs for each selected system
+            selectedSystems.forEach(({ system, quantity }) => {
+                const csv = generateSystemBOM(system, quantity);
+                const filename = `BOM_${system.name}_${system.version}_qty${quantity}.csv`;
+                downloadCSV(csv, filename);
+            });
+            
+            alert(`Exported ${selectedAssemblies.length + selectedSystems.length} individual BOM files.`);
+        }
+
+        function exportMergedBOM() {
+            const selectedAssemblies = getSelectedAssemblies();
+            const selectedSystems = getSelectedSystems();
+            
+            if (selectedAssemblies.length === 0 && selectedSystems.length === 0) {
+                alert('Please select at least one assembly or system to export.');
+                return;
+            }
+            
+            const mergedBOM = {};
+            
+            // Process selected assemblies
+            selectedAssemblies.forEach(({ assembly, quantity }) => {
+                assembly.bom.forEach(item => {
+                    const key = item.kpn;
+                    const totalQty = (item.totalQuantity || item.quantity) * quantity;
+                    
+                    if (mergedBOM[key]) {
+                        mergedBOM[key].quantity += totalQty;
+                    } else {
+                        mergedBOM[key] = {
+                            kpn: item.kpn,
+                            componentName: item.componentName,
+                            quantity: totalQty,
+                            refdes: item.refdes,
+                            sources: [`${assembly.name} ${assembly.version} (${quantity}x)`]
+                        };
+                    }
+                    
+                    if (!mergedBOM[key].sources.includes(`${assembly.name} ${assembly.version} (${quantity}x)`)) {
+                        mergedBOM[key].sources.push(`${assembly.name} ${assembly.version} (${quantity}x)`);
+                    }
+                });
+            });
+            
+            // Process selected systems with recursive BOM expansion
+            selectedSystems.forEach(({ system, quantity }) => {
+                system.bom.forEach(({ assembly, assemblyQuantity }) => {
+                    const effectiveQuantity = assemblyQuantity * quantity;
+                    
+                    assembly.bom.forEach(item => {
+                        const key = item.kpn;
+                        const totalQty = (item.totalQuantity || item.quantity) * effectiveQuantity;
+                        
+                        if (mergedBOM[key]) {
+                            mergedBOM[key].quantity += totalQty;
+                        } else {
+                            mergedBOM[key] = {
+                                kpn: item.kpn,
+                                componentName: item.componentName,
+                                quantity: totalQty,
+                                refdes: item.refdes,
+                                sources: [`${system.name} ${system.version} (${quantity}x systems)`]
+                            };
+                        }
+                        
+                        if (!mergedBOM[key].sources.includes(`${system.name} ${system.version} (${quantity}x systems)`)) {
+                            mergedBOM[key].sources.push(`${system.name} ${system.version} (${quantity}x systems)`);
+                        }
+                    });
+                });
+            });
+            
+            // Generate merged CSV
+            const csvRows = ['KPN,Component,Total Quantity,Reference Designators,Used In'];
+            
+            Object.values(mergedBOM).forEach(item => {
+                const row = [
+                    item.kpn,
+                    `"${item.componentName}"`,
+                    item.quantity,
+                    `"${item.refdes}"`,
+                    `"${item.sources.join('; ')}"`
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            const csv = csvRows.join('\n');
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(csv, `Merged_BOM_${timestamp}.csv`);
+            
+            alert('Merged BOM exported successfully!');
+        }
+
+        function generateAssemblyBOM(assembly, quantity) {
+            const csvRows = [`BOM for ${assembly.name} ${assembly.version} (Quantity: ${quantity})`];
+            csvRows.push('KPN,Component,Base Qty,Droppage %,Droppage Qty,Total Per Unit,Total Required,Reference Designator');
+            
+            assembly.bom.forEach(item => {
+                const baseQty = item.quantity || 0;
+                const droppage = item.droppage || 0;
+                const droppageQty = item.droppageQuantity || 0;
+                const totalPerUnit = item.totalQuantity || baseQty;
+                const totalRequired = totalPerUnit * quantity;
+                
+                const row = [
+                    item.kpn,
+                    `"${item.componentName}"`,
+                    baseQty,
+                    droppage,
+                    droppageQty,
+                    totalPerUnit,
+                    totalRequired,
+                    `"${item.refdes}"`
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        function generateSystemBOM(system, quantity) {
+            const csvRows = [`BOM for ${system.name} ${system.version} (Quantity: ${quantity})`];
+            csvRows.push('Type,Name,Version,Quantity Per System,Total Required');
+            
+            const items = system.items || system.pcbs || [];
+            items.forEach(item => {
+                const totalRequired = item.quantity * quantity;
+                const row = [
+                    item.type,
+                    `"${item.name}"`,
+                    item.version || 'N/A',
+                    item.quantity,
+                    totalRequired
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        function clearAllSelections() {
+            // Clear assembly selections
+            document.querySelectorAll('#export-assemblies-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                const index = checkbox.value;
+                const qtyInput = document.getElementById(`assembly-qty-${index}`);
+                if (qtyInput) {
+                    qtyInput.disabled = true;
+                    qtyInput.style.background = '#f5f5f5';
+                    qtyInput.value = 1;
+                }
+            });
+            
+            // Clear system selections
+            document.querySelectorAll('#export-systems-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                const index = checkbox.value;
+                const qtyInput = document.getElementById(`system-qty-${index}`);
+                if (qtyInput) {
+                    qtyInput.disabled = true;
+                    qtyInput.style.background = '#f5f5f5';
+                    qtyInput.value = 1;
+                }
+            });
         }
 
         function downloadCSV(csv, filename) {

@@ -19,7 +19,7 @@ if (!fs.existsSync(distDir)) {
 // Files to copy
 const filesToCopy = [
     'index.html',
-    'KPN_System_Workbook.html'
+    { src: 'src/index.html', dest: 'KPN_System_Workbook.html' }  // Copy Firebase version as main app
 ];
 
 // Get build timestamp for version tracking
@@ -28,11 +28,30 @@ console.log(`🕒 Build timestamp: ${buildTimestamp}`);
 
 // Copy main files to root of dist
 filesToCopy.forEach(file => {
-    const srcPath = path.join(__dirname, file);
-    const destPath = path.join(distDir, file);
+    let srcPath, destPath, filename;
+    
+    if (typeof file === 'string') {
+        srcPath = path.join(__dirname, file);
+        destPath = path.join(distDir, file);
+        filename = file;
+    } else {
+        srcPath = path.join(__dirname, file.src);
+        destPath = path.join(distDir, file.dest);
+        filename = file.dest;
+    }
     
     if (fs.existsSync(srcPath)) {
         let content = fs.readFileSync(srcPath, 'utf8');
+        
+        // For Firebase version, update script references
+        if (filename === 'KPN_System_Workbook.html') {
+            // Replace relative script paths with CDN Firebase SDK (already done in src/index.html)
+            // Add main.js from src/
+            content = content.replace(
+                '<script src="main.js"></script>',
+                '<script src="main.js"></script>'
+            );
+        }
         
         // Remove KPS/ prefixes from paths since we're now at root level
         if (content.includes('KPS/')) {
@@ -46,11 +65,23 @@ filesToCopy.forEach(file => {
             '<head>',
             `<head>
     <!-- Build: ${buildTimestamp} -->
-    <!-- Root-level deployment: v3.0.0 -->`
+    <!-- Firebase Integration: v3.1.0 -->`
         );
         
         fs.writeFileSync(destPath, content);
-        console.log(`✅ Processed ${file} (timestamp: ${buildTimestamp})`);
+        console.log(`✅ Processed ${filename} (Firebase version, timestamp: ${buildTimestamp})`);
+    }
+});
+
+// Copy JavaScript files
+const jsFiles = ['src/main.js'];
+jsFiles.forEach(jsFile => {
+    const srcPath = path.join(__dirname, jsFile);
+    const destPath = path.join(distDir, path.basename(jsFile));
+    
+    if (fs.existsSync(srcPath)) {
+        fs.copyFileSync(srcPath, destPath);
+        console.log(`✅ Copied ${jsFile}`);
     }
 });
 

@@ -64,7 +64,7 @@ jobs:
       with:
         repoToken: '${{ secrets.GITHUB_TOKEN }}'
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-        projectId: 'the-clever-studio-f3b16'
+        projectId: 'kinbenpartssystem'
         channelId: live
     - name: Create deployment summary
       run: |
