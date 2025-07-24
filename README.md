@@ -14,8 +14,10 @@
 
 **Deployment Flow**: 
 - ✅ **Source**: This GitHub repository  
-- ✅ **Auto-Deploy**: Every push to `master` → Firebase  
+- ✅ **Auto-Deploy**: Every push to `main` → Firebase  
 - ✅ **Live Site**: https://kinbenpartssystem.web.app/
+
+> 🔧 **Setup Required**: To enable automated deployment, follow the [Firebase Service Account Setup Guide](FIREBASE_SERVICE_ACCOUNT_SETUP.md) - one-time configuration needed.
 
 ## 🎯 Simplified System Overview
 
