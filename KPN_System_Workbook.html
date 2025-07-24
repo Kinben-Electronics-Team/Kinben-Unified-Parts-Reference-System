@@ -1167,7 +1167,11 @@
                 return;
             }
             
-            if (localUsers[username]) {
+            const normalizedUsername = username.toLowerCase();
+            const isUsernameTaken = Object.keys(localUsers).some(
+                existingUsername => existingUsername.toLowerCase() === normalizedUsername
+            );
+            if (isUsernameTaken) {
                 alert('Username already exists. Please choose a different username.');
                 return;
             }
