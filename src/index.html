@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Kinben KPN System - Firebase Edition</title>
+    
+    <style>
+        body { 
+            font-family: Calibri, Arial, sans-serif; 
+            margin: 0; 
+            background: #f5f5f5;
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+        }
+        
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .user-info {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-email {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        /* Login Modal Styles */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .login-container h2 {
+            margin: 0 0 20px 0;
+            text-align: center;
+            color: #333;
+        }
+        
+        .login-container p {
+            margin: 0 0 30px 0;
+            text-align: center;
+            color: #666;
+        }
+        
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .login-form input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .login-form input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .login-form button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+        
+        .login-form button:hover {
+            opacity: 0.9;
+        }
+        
+        .login-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-btn:hover {
+            background: #f8f9fa;
+        }
+        
+        .tab-btn.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div id="login-container" class="login-modal">
+        <div class="login-container">
+            <h2>🔐 KPN System Login</h2>
+            <p>Sign in with your Firebase account</p>
+            
+            <div style="background: #e8f4fd; border: 1px solid #2196f3; border-radius: 5px; padding: 15px; margin-bottom: 20px; font-size: 14px;">
+                <strong>🧪 Demo Accounts:</strong><br>
+                • test@kinben.com / test123<br>
+                • admin@kinben.com / admin123
+            </div>
+            
+            <form id="login-form" class="login-form">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <button type="submit">Sign In</button>
+            </form>
+            
+            <div id="login-error" class="login-error"></div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" style="display: none;">
+        <div class="container">
+            <div class="header">
+                <h1>🔥 Kinben KPN System - Firebase Edition</h1>
+                <p>Cloud-synchronized parts management with real-time collaboration</p>
+                
+                <div class="user-info">
+                    <span id="user-email" class="user-email"></span>
+                    <button id="logout-btn" class="logout-btn">Sign Out</button>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats">
+                <div class="stat-card">
+                    <div id="components-count" class="stat-number">0</div>
+                    <div class="stat-label">Components</div>
+                </div>
+                <div class="stat-card">
+                    <div id="assemblies-count" class="stat-number">0</div>
+                    <div class="stat-label">Assemblies</div>
+                </div>
+                <div class="stat-card">
+                    <div id="systems-count" class="stat-number">0</div>
+                    <div class="stat-label">Systems</div>
+                </div>
+            </div>
+
+            <!-- Navigation Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="components">📋 Components</button>
+                <button class="tab-btn" data-tab="assemblies">🔌 Assemblies</button>
+                <button class="tab-btn" data-tab="systems">🏗️ Systems</button>
+            </div>
+
+            <!-- Components Tab -->
+            <div id="components-tab" class="tab-content active">
+                <h2>KPN Components</h2>
+                
+                <form id="component-form">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div class="form-group">
+                            <label for="category">Category *</label>
+                            <select name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="resistors">Resistors</option>
+                                <option value="capacitors">Capacitors</option>
+                                <option value="inductors">Inductors</option>
+                                <option value="ics">ICs</option>
+                                <option value="diodes">Diodes</option>
+                                <option value="transistors">Transistors</option>
+                                <option value="connectors">Connectors</option>
+                                <option value="switches">Switches</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subcategory">Subcategory</label>
+                            <input type="text" name="subcategory" placeholder="e.g., STD, PRE, CER">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="value">Value/Part Number *</label>
+                            <input type="text" name="value" placeholder="e.g., 10k, ATMEGA328P" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="package">Package</label>
+                            <input type="text" name="package" placeholder="e.g., 0805, TQFP-32">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="manufacturer-pn">Manufacturer PN</label>
+                            <input type="text" name="manufacturer-pn" placeholder="e.g., RC0805FR-0710KL">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="preferred-vendor">Preferred Vendor</label>
+                            <select name="preferred-vendor">
+                                <option value="">Select Vendor</option>
+                                <option value="Mouser">Mouser</option>
+                                <option value="Digi-Key">Digi-Key</option>
+                                <option value="Arrow">Arrow</option>
+                                <option value="Newark">Newark</option>
+                                <option value="Farnell">Farnell</option>
+                                <option value="RS Components">RS Components</option>
+                                <option value="Avnet">Avnet</option>
+                                <option value="Future Electronics">Future Electronics</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success" style="margin-top: 20px;">Add Component</button>
+                </form>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>KPN</th>
+                            <th>Category</th>
+                            <th>Subcategory</th>
+                            <th>Value/PN</th>
+                            <th>Package</th>
+                            <th>Vendor</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="components-tbody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Assemblies Tab -->
+            <div id="assemblies-tab" class="tab-content">
+                <h2>PCB Assemblies</h2>
+                
+                <form id="assembly-form">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div class="form-group">
+                            <label for="name">Assembly Name *</label>
+                            <input type="text" name="name" placeholder="e.g., Main Controller Board" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="version">Version</label>
+                            <input type="text" name="version" placeholder="e.g., v1.0, Rev A">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input type="text" name="description" placeholder="Brief description">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success" style="margin-top: 20px;">Add Assembly</button>
+                </form>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>KPN</th>
+                            <th>Name</th>
+                            <th>Version</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assemblies-tbody">
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Systems Tab -->
+            <div id="systems-tab" class="tab-content">
+                <h2>System Hierarchy</h2>
+                
+                <form id="system-form">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                        <div class="form-group">
+                            <label for="name">System Name *</label>
+                            <input type="text" name="name" placeholder="e.g., Complete Product System" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="version">Version</label>
+                            <input type="text" name="version" placeholder="e.g., v1.0, Release 1">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <input type="text" name="description" placeholder="System description">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success" style="margin-top: 20px;">Add System</button>
+                </form>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>KPN</th>
+                            <th>Name</th>
+                            <th>Version</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="systems-tbody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mock Firebase and Application Scripts -->
+    <script src="mock-firebase.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
