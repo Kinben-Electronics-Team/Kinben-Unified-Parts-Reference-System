@@ -1614,7 +1614,10 @@
             
             try {
                 // Check if user already has data in Firestore
-                const componentsSnapshot = await db.collection('components').limit(1).get();
+                const componentsSnapshot = await db.collection('components')
+                    .where('createdBy', '==', currentUser.uid)
+                    .limit(1)
+                    .get();
                 if (!componentsSnapshot.empty) {
                     console.log('User already has Firestore data, skipping migration');
                     return true;
