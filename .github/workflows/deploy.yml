@@ -64,7 +64,7 @@ jobs:
       with:
         repoToken: '${{ secrets.GITHUB_TOKEN }}'
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-        projectId: 'the-clever-studio-f3b16'
+        projectId: 'kinbenpartssystem'
         channelId: live
     - name: Create deployment summary
       run: |
@@ -76,8 +76,8 @@ jobs:
         echo "- \`DEPLOYMENT.md\` - Deployment documentation" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### 🌐 Access URLs:" >> $GITHUB_STEP_SUMMARY
-        echo "- **Firebase Live**: https://the-clever-studio-f3b16.web.app/" >> $GITHUB_STEP_SUMMARY
-        echo "- **Direct App**: https://the-clever-studio-f3b16.web.app/KPN_System_Workbook.html" >> $GITHUB_STEP_SUMMARY
+        echo "- **Firebase Live**: https://kinbenpartssystem.web.app/" >> $GITHUB_STEP_SUMMARY
+        echo "- **Direct App**: https://kinbenpartssystem.web.app/KPN_System_Workbook.html" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### ✅ Features Deployed:" >> $GITHUB_STEP_SUMMARY
         echo "- 🏗️ Multi-level system hierarchy" >> $GITHUB_STEP_SUMMARY
@@ -95,4 +95,4 @@ jobs:
         echo "- 8 cable assemblies (power, data, RF)" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "🎉 **Deployment completed successfully!**" >> $GITHUB_STEP_SUMMARY
-        echo "🔥 **Firebase:** https://the-clever-studio-f3b16.web.app/" >> $GITHUB_STEP_SUMMARY
+        echo "🔥 **Firebase:** https://kinbenpartssystem.web.app/" >> $GITHUB_STEP_SUMMARY

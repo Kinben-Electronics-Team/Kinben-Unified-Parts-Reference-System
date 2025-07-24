@@ -1,6 +1,6 @@
 {
   "name": "kinben-unified-parts-reference-system",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Simplified KPN management system - Three core data types only: Components, PCBs, and Systems",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System.git"
+    "url": "https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System.git"
   },
   "keywords": [
     "electronics",
@@ -24,9 +24,9 @@
   ],
   "author": "Kinben Electronics Team",
   "license": "MIT",
-  "homepage": "https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/",
+  "homepage": "https://kinbenpartssystem.web.app/",
   "bugs": {
-    "url": "https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/issues"
+    "url": "https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System/issues"
   },
   "engines": {
     "node": ">=18.0.0"

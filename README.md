@@ -1,21 +1,21 @@
 # 🪒 Kinben Parts Reference System - Simplified
 
-[![Deploy Status](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/workflows/Deploy%20KPN%20System%20Workbook/badge.svg)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/actions)
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://the-clever-studio-f3b16.web.app/)
-[![Version](https://img.shields.io/badge/Version-3.0.0-blue)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/releases)
+[![Deploy Status](https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System/workflows/Deploy%20KPN%20System%20Workbook/badge.svg)](https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System/actions)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://kinbenpartssystem.web.app/)
+[![Version](https://img.shields.io/badge/Version-3.1.0-blue)](https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System/releases)
 
-## 🚀 [**LAUNCH APPLICATION**](https://the-clever-studio-f3b16.web.app/)
+## 🚀 [**LAUNCH APPLICATION**](https://kinbenpartssystem.web.app/)
 
 **🎯 Occam's Razor Applied**: Simple. Fast. Essential. - Three Core Data Types Only
 
 ## 🌟 Live Production System
 
-**Production URL**: [https://the-clever-studio-f3b16.web.app/](https://the-clever-studio-f3b16.web.app/)
+**Production URL**: [https://kinbenpartssystem.web.app/](https://kinbenpartssystem.web.app/)
 
 **Deployment Flow**: 
 - ✅ **Source**: This GitHub repository  
 - ✅ **Auto-Deploy**: Every push to `master` → Firebase  
-- ✅ **Live Site**: https://the-clever-studio-f3b16.web.app/
+- ✅ **Live Site**: https://kinbenpartssystem.web.app/
 
 ## 🎯 Simplified System Overview
 
@@ -171,5 +171,5 @@ python3 serve.py
 ---
 
 **Last Updated**: July 2025  
-**System Version**: v3.0 (Simplified Application)  
+**System Version**: v3.1.0 (Updated - URL Migration Complete)  
 **Status**: Production Ready - Occam's Razor Applied

@@ -2,8 +2,8 @@
 
 ## Project Overview
 **Project Name**: Kinben Unified Parts Reference System  
-**Repository**: https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System  
-**Live Production Site**: https://the-clever-studio-f3b16.web.app/  
+**Repository**: https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System  
+**Live Production Site**: https://kinbenpartssystem.web.app/  
 **Main Objective**: Production-ready KPN management system with GitHub as single source of truth
 
 ## 🚀 CURRENT STATUS: FIREBASE CLOUD MIGRATION READY
@@ -97,7 +97,7 @@ Kinben-Unified-Parts-Reference-System/
 
 ### ✅ When Complete
 - Every GitHub push automatically deploys to Firebase
-- https://the-clever-studio-f3b16.web.app/KPS shows latest code
+- https://kinbenpartssystem.web.app/ shows latest code
 - All functionality works on live production site
 - No manual deployment steps required
 - Clean development experience without terminal spam
@@ -188,7 +188,7 @@ Kinben-Unified-Parts-Reference-System/
 ## 🔄 RESUMPTION PROTOCOL
 **When resuming development:**
 1. **Check Issue #20 progress** - Are tests fixed and passing?
-2. **Verify live site** - https://the-clever-studio-f3b16.web.app/ (confirmed working)
+2. **Verify live site** - https://kinbenpartssystem.web.app/ (confirmed working)
 3. **Review any new issues** - Check GitHub issue queue
 4. **Maintain clean structure** - No redundant files or documentation
 
@@ -258,10 +258,10 @@ Kinben-Unified-Parts-Reference-System/
 4. **Conflicting Claims** - Removed contradictory deployment status information
 
 ### ✅ **Current Status:**
-- **Live Site**: https://the-clever-studio-f3b16.web.app/ (✅ Working)
+- **Live Site**: https://kinbenpartssystem.web.app/ (✅ Working - New Firebase Project)
 - **System**: Fully operational KPN management system
 - **Documentation**: All files now have consistent, correct information
-- **Version**: 2.1.2 (standardized across all docs)
+- **Version**: 3.1.0 (URL migration complete)
 
 ### 📝 **Files Updated:**
 - `README.md` - Fixed URLs, updated features description
