@@ -1069,6 +1069,13 @@
                     // User has a role, allow access
                     hideLogin();
                     showUserInfo();
+                    
+                    // Attempt data migration from localStorage for new Firebase users
+                    const migrationSuccess = await migrateLocalStorageToFirestore();
+                    if (migrationSuccess) {
+                        console.log('Data migration completed or not needed');
+                    }
+                    
                     loadData(); // Load app data
                     
                     // Show appropriate tabs based on role
@@ -1597,6 +1604,118 @@
                 return true;
             } catch (error) {
                 console.error('Error saving PCB to Firestore:', error);
+                return false;
+            }
+        }
+        
+        // Data migration utility for localStorage to Firestore
+        async function migrateLocalStorageToFirestore() {
+            if (!auth || !db || !currentUser.uid) return false;
+            
+            try {
+                // Check if user already has data in Firestore
+                const componentsSnapshot = await db.collection('components').limit(1).get();
+                if (!componentsSnapshot.empty) {
+                    console.log('User already has Firestore data, skipping migration');
+                    return true;
+                }
+                
+                // Get localStorage data
+                const localData = localStorage.getItem('kinben-simple-data');
+                if (!localData) {
+                    console.log('No localStorage data to migrate');
+                    return true;
+                }
+                
+                const parsedData = JSON.parse(localData);
+                console.log('Starting data migration from localStorage to Firestore...');
+                
+                const batch = db.batch();
+                let batchCount = 0;
+                
+                // Migrate components
+                if (parsedData.components && parsedData.components.length > 0) {
+                    for (const component of parsedData.components) {
+                        const componentRef = db.collection('components').doc();
+                        batch.set(componentRef, {
+                            ...component,
+                            migratedFrom: 'localStorage',
+                            createdBy: currentUser.uid,
+                            dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastModifiedBy: currentUser.uid
+                        });
+                        batchCount++;
+                        
+                        // Firestore batch limit is 500
+                        if (batchCount >= 400) {
+                            await batch.commit();
+                            batchCount = 0;
+                        }
+                    }
+                }
+                
+                // Migrate PCBs
+                if (parsedData.pcbs && parsedData.pcbs.length > 0) {
+                    for (const pcb of parsedData.pcbs) {
+                        const pcbRef = db.collection('pcbs').doc();
+                        batch.set(pcbRef, {
+                            ...pcb,
+                            migratedFrom: 'localStorage',
+                            createdBy: currentUser.uid,
+                            dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastModifiedBy: currentUser.uid
+                        });
+                        batchCount++;
+                        
+                        if (batchCount >= 400) {
+                            await batch.commit();
+                            batchCount = 0;
+                        }
+                    }
+                }
+                
+                // Migrate systems
+                if (parsedData.systems && parsedData.systems.length > 0) {
+                    for (const system of parsedData.systems) {
+                        const systemRef = db.collection('systems').doc();
+                        batch.set(systemRef, {
+                            ...system,
+                            migratedFrom: 'localStorage',
+                            createdBy: currentUser.uid,
+                            dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                            lastModifiedBy: currentUser.uid
+                        });
+                        batchCount++;
+                        
+                        if (batchCount >= 400) {
+                            await batch.commit();
+                            batchCount = 0;
+                        }
+                    }
+                }
+                
+                // Commit remaining items
+                if (batchCount > 0) {
+                    await batch.commit();
+                }
+                
+                // Migrate vendors if admin
+                if (currentUser.role === 'admin' && parsedData.vendors && parsedData.vendors.length > 0) {
+                    await saveVendorsToFirestore();
+                }
+                
+                console.log('Data migration completed successfully');
+                
+                // Optionally backup localStorage data with timestamp
+                const backupKey = `kinben-simple-data-backup-${Date.now()}`;
+                localStorage.setItem(backupKey, localData);
+                
+                return true;
+            } catch (error) {
+                console.error('Error migrating data to Firestore:', error);
                 return false;
             }
         }
