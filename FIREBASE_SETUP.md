@@ -66,9 +66,11 @@ const firebaseConfig = {
     authDomain: "kinbenpartssystem.firebaseapp.com",
     projectId: "kinbenpartssystem",
     storageBucket: "kinbenpartssystem.firebasestorage.app",
-    messagingSenderId: "896608745742",
-    appId: "1:896608745742:web:2c84cda1dafbc2519fff5f"
+    messagingSenderId: "<YOUR_MESSAGING_SENDER_ID>",
+    appId: "<YOUR_APP_ID>"
 };
+// Note: Replace <YOUR_MESSAGING_SENDER_ID> and <YOUR_APP_ID> with the actual values
+// from your Firebase Console under Project Settings -> Your apps -> Web app.
 ```
 
 ## 👥 Initial Admin Setup
