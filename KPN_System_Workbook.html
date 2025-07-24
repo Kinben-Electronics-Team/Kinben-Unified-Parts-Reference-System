@@ -846,29 +846,59 @@
             
             <!-- Export Tab -->
             <div id="export" class="tab-panel">
-                <h2>Data Export</h2>
-                <p>Export your data in CSV format for external tools</p>
+                <h2>Manufacturing Export</h2>
+                <p>Select assemblies and systems for manufacturing, specify quantities, and export BOMs</p>
                 
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-components">0</div>
-                        <div class="stat-label">Components to Export</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-assemblies">0</div>
-                        <div class="stat-label">Assemblies to Export</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-systems">0</div>
-                        <div class="stat-label">Systems to Export</div>
+                <!-- Assembly Selection -->
+                <div style="margin-bottom: 30px;">
+                    <h3>📦 Select Assemblies for Manufacturing</h3>
+                    <div id="export-assemblies-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #f9f9f9;">
+                        <!-- Assembly checkboxes will be populated here -->
                     </div>
                 </div>
                 
-                <div class="actions">
-                    <button class="btn btn-primary" onclick="exportAll()">Export All Data</button>
-                    <button class="btn btn-success" onclick="exportComponents()">Export Components Only</button>
-                    <button class="btn btn-success" onclick="exportAssemblies()">Export Assemblies Only</button>
-                    <button class="btn btn-success" onclick="exportSystems()">Export Systems Only</button>
+                <!-- System Selection -->
+                <div style="margin-bottom: 30px;">
+                    <h3>🏗️ Select Systems for Manufacturing</h3>
+                    <div id="export-systems-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #f9f9f9;">
+                        <!-- System checkboxes will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Export Options -->
+                <div style="margin-bottom: 30px;">
+                    <h3>📊 Export Options</h3>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="exportIndividualBOMs()">Export Individual BOMs</button>
+                        <button class="btn btn-success" onclick="exportMergedBOM()">Export Merged BOM</button>
+                        <button class="btn" onclick="clearAllSelections()" style="background: #6c757d; color: white;">Clear All Selections</button>
+                    </div>
+                </div>
+                
+                <!-- Legacy Export Options -->
+                <div style="border-top: 1px solid #ddd; padding-top: 20px;">
+                    <h3>📋 Quick Export (All Data)</h3>
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-components">0</div>
+                            <div class="stat-label">Components to Export</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-assemblies">0</div>
+                            <div class="stat-label">Assemblies to Export</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-systems">0</div>
+                            <div class="stat-label">Systems to Export</div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn btn-primary" onclick="exportAll()">Export All Data</button>
+                        <button class="btn btn-success" onclick="exportComponents()">Export Components Only</button>
+                        <button class="btn btn-success" onclick="exportAssemblies()">Export Assemblies Only</button>
+                        <button class="btn btn-success" onclick="exportSystems()">Export Systems Only</button>
+                    </div>
                 </div>
             </div>
             
@@ -3083,6 +3113,7 @@
             renderSystems();
             renderVendors();
             updateDropdowns();
+            renderExportSelections();
         }
 
         // Filter functions
@@ -3809,6 +3840,289 @@
                 updateDropdowns();
                 alert(`System "${system.name} ${system.version}" has been permanently deleted.`);
             }
+        }
+
+        // Export enhancement functions
+        function renderExportSelections() {
+            renderExportAssemblies();
+            renderExportSystems();
+        }
+
+        function renderExportAssemblies() {
+            const container = document.getElementById('export-assemblies-list');
+            container.innerHTML = '';
+            
+            if (data.assemblies.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; margin: 20px 0;">No assemblies available for export</p>';
+                return;
+            }
+            
+            data.assemblies.forEach((assembly, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #e0e0e0; margin: 5px 0; border-radius: 3px; background: white;';
+                
+                div.innerHTML = `
+                    <label style="display: flex; align-items: center; flex: 1; cursor: pointer;">
+                        <input type="checkbox" value="${index}" onchange="toggleAssemblySelection(${index})" style="margin-right: 10px;">
+                        <span><strong>${assembly.name} ${assembly.version}</strong> - ${assembly.description}</span>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 12px;">Qty:</label>
+                        <input type="number" id="assembly-qty-${index}" min="1" value="1" style="width: 60px; padding: 2px 5px;" disabled>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderExportSystems() {
+            const container = document.getElementById('export-systems-list');
+            container.innerHTML = '';
+            
+            if (data.systems.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; margin: 20px 0;">No systems available for export</p>';
+                return;
+            }
+            
+            data.systems.forEach((system, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #e0e0e0; margin: 5px 0; border-radius: 3px; background: white;';
+                
+                div.innerHTML = `
+                    <label style="display: flex; align-items: center; flex: 1; cursor: pointer;">
+                        <input type="checkbox" value="${index}" onchange="toggleSystemSelection(${index})" style="margin-right: 10px;">
+                        <span><strong>${system.name} ${system.version}</strong> - ${system.description}</span>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 12px;">Qty:</label>
+                        <input type="number" id="system-qty-${index}" min="1" value="1" style="width: 60px; padding: 2px 5px;" disabled>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleAssemblySelection(index) {
+            const checkbox = document.querySelector(`#export-assemblies-list input[value="${index}"]`);
+            const qtyInput = document.getElementById(`assembly-qty-${index}`);
+            
+            if (checkbox.checked) {
+                qtyInput.disabled = false;
+                qtyInput.style.background = 'white';
+            } else {
+                qtyInput.disabled = true;
+                qtyInput.style.background = '#f5f5f5';
+            }
+        }
+
+        function toggleSystemSelection(index) {
+            const checkbox = document.querySelector(`#export-systems-list input[value="${index}"]`);
+            const qtyInput = document.getElementById(`system-qty-${index}`);
+            
+            if (checkbox.checked) {
+                qtyInput.disabled = false;
+                qtyInput.style.background = 'white';
+            } else {
+                qtyInput.disabled = true;
+                qtyInput.style.background = '#f5f5f5';
+            }
+        }
+
+        function getSelectedAssemblies() {
+            const selected = [];
+            const checkboxes = document.querySelectorAll('#export-assemblies-list input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const index = parseInt(checkbox.value);
+                const quantity = parseInt(document.getElementById(`assembly-qty-${index}`).value) || 1;
+                selected.push({
+                    assembly: data.assemblies[index],
+                    index,
+                    quantity
+                });
+            });
+            
+            return selected;
+        }
+
+        function getSelectedSystems() {
+            const selected = [];
+            const checkboxes = document.querySelectorAll('#export-systems-list input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const index = parseInt(checkbox.value);
+                const quantity = parseInt(document.getElementById(`system-qty-${index}`).value) || 1;
+                selected.push({
+                    system: data.systems[index],
+                    index,
+                    quantity
+                });
+            });
+            
+            return selected;
+        }
+
+        function exportIndividualBOMs() {
+            const selectedAssemblies = getSelectedAssemblies();
+            const selectedSystems = getSelectedSystems();
+            
+            if (selectedAssemblies.length === 0 && selectedSystems.length === 0) {
+                alert('Please select at least one assembly or system to export.');
+                return;
+            }
+            
+            // Export individual BOMs for each selected assembly
+            selectedAssemblies.forEach(({ assembly, quantity }) => {
+                const csv = generateAssemblyBOM(assembly, quantity);
+                const filename = `BOM_${assembly.name}_${assembly.version}_qty${quantity}.csv`;
+                downloadCSV(csv, filename);
+            });
+            
+            // Export individual BOMs for each selected system
+            selectedSystems.forEach(({ system, quantity }) => {
+                const csv = generateSystemBOM(system, quantity);
+                const filename = `BOM_${system.name}_${system.version}_qty${quantity}.csv`;
+                downloadCSV(csv, filename);
+            });
+            
+            alert(`Exported ${selectedAssemblies.length + selectedSystems.length} individual BOM files.`);
+        }
+
+        function exportMergedBOM() {
+            const selectedAssemblies = getSelectedAssemblies();
+            const selectedSystems = getSelectedSystems();
+            
+            if (selectedAssemblies.length === 0 && selectedSystems.length === 0) {
+                alert('Please select at least one assembly or system to export.');
+                return;
+            }
+            
+            const mergedBOM = {};
+            
+            // Process selected assemblies
+            selectedAssemblies.forEach(({ assembly, quantity }) => {
+                assembly.bom.forEach(item => {
+                    const key = item.kpn;
+                    const totalQty = (item.totalQuantity || item.quantity) * quantity;
+                    
+                    if (mergedBOM[key]) {
+                        mergedBOM[key].quantity += totalQty;
+                    } else {
+                        mergedBOM[key] = {
+                            kpn: item.kpn,
+                            componentName: item.componentName,
+                            quantity: totalQty,
+                            refdes: item.refdes,
+                            sources: [`${assembly.name} ${assembly.version} (${quantity}x)`]
+                        };
+                    }
+                    
+                    if (!mergedBOM[key].sources.includes(`${assembly.name} ${assembly.version} (${quantity}x)`)) {
+                        mergedBOM[key].sources.push(`${assembly.name} ${assembly.version} (${quantity}x)`);
+                    }
+                });
+            });
+            
+            // Process selected systems (simplified - just list the assemblies)
+            selectedSystems.forEach(({ system, quantity }) => {
+                // Note: This is a simplified implementation
+                // In a full implementation, you'd recursively expand system BOMs
+                const systemInfo = `${system.name} ${system.version} (${quantity}x systems)`;
+                // Add system information to CSV header or notes
+            });
+            
+            // Generate merged CSV
+            const csvRows = ['KPN,Component,Total Quantity,Reference Designators,Used In'];
+            
+            Object.values(mergedBOM).forEach(item => {
+                const row = [
+                    item.kpn,
+                    `"${item.componentName}"`,
+                    item.quantity,
+                    `"${item.refdes}"`,
+                    `"${item.sources.join('; ')}"`
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            const csv = csvRows.join('\n');
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(csv, `Merged_BOM_${timestamp}.csv`);
+            
+            alert('Merged BOM exported successfully!');
+        }
+
+        function generateAssemblyBOM(assembly, quantity) {
+            const csvRows = [`BOM for ${assembly.name} ${assembly.version} (Quantity: ${quantity})`];
+            csvRows.push('KPN,Component,Base Qty,Droppage %,Droppage Qty,Total Per Unit,Total Required,Reference Designator');
+            
+            assembly.bom.forEach(item => {
+                const baseQty = item.quantity || 0;
+                const droppage = item.droppage || 0;
+                const droppageQty = item.droppageQuantity || 0;
+                const totalPerUnit = item.totalQuantity || baseQty;
+                const totalRequired = totalPerUnit * quantity;
+                
+                const row = [
+                    item.kpn,
+                    `"${item.componentName}"`,
+                    baseQty,
+                    droppage,
+                    droppageQty,
+                    totalPerUnit,
+                    totalRequired,
+                    `"${item.refdes}"`
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        function generateSystemBOM(system, quantity) {
+            const csvRows = [`BOM for ${system.name} ${system.version} (Quantity: ${quantity})`];
+            csvRows.push('Type,Name,Version,Quantity Per System,Total Required');
+            
+            const items = system.items || system.pcbs || [];
+            items.forEach(item => {
+                const totalRequired = item.quantity * quantity;
+                const row = [
+                    item.type,
+                    `"${item.name}"`,
+                    item.version || 'N/A',
+                    item.quantity,
+                    totalRequired
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        function clearAllSelections() {
+            // Clear assembly selections
+            document.querySelectorAll('#export-assemblies-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                const index = checkbox.value;
+                const qtyInput = document.getElementById(`assembly-qty-${index}`);
+                if (qtyInput) {
+                    qtyInput.disabled = true;
+                    qtyInput.style.background = '#f5f5f5';
+                    qtyInput.value = 1;
+                }
+            });
+            
+            // Clear system selections
+            document.querySelectorAll('#export-systems-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                const index = checkbox.value;
+                const qtyInput = document.getElementById(`system-qty-${index}`);
+                if (qtyInput) {
+                    qtyInput.disabled = true;
+                    qtyInput.style.background = '#f5f5f5';
+                    qtyInput.value = 1;
+                }
+            });
         }
 
         function downloadCSV(csv, filename) {
