@@ -1,13 +1,10 @@
 name: Deploy KPN System Workbook
 
-# Workflow fixed to trigger on push events
-
 on:
   push:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch:
 
 jobs:
   deploy:
@@ -56,15 +53,6 @@ jobs:
           echo "❌ ERROR: FIREBASE_SERVICE_ACCOUNT secret is not set!"
           echo "📋 Please follow the setup instructions in FIREBASE_SERVICE_ACCOUNT_SETUP.md"
           echo "🔗 Setup guide: https://github.com/${{ github.repository }}/blob/main/FIREBASE_SERVICE_ACCOUNT_SETUP.md"
-          echo ""
-          echo "🎯 Quick Setup Steps:"
-          echo "1. Go to Firebase Console → Project Settings → Service Accounts"
-          echo "2. Generate new private key (downloads JSON file)"
-          echo "3. Copy the entire JSON content"
-          echo "4. Add as repository secret: Settings → Secrets → Actions → New secret"
-          echo "   Name: FIREBASE_SERVICE_ACCOUNT"
-          echo "   Value: [paste the JSON content]"
-          echo ""
           exit 1
         else
           echo "✅ Firebase service account secret is configured"
@@ -78,15 +66,6 @@ jobs:
         firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
         projectId: 'kinbenpartssystem'
         channelId: live
-        entryPoint: '.'
-        
-    - name: Deployment Success Notification
-      if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-      run: |
-        echo "🎉 Deployment completed successfully!"
-        echo "📱 Live site: https://kinbenpartssystem.web.app/"
-        echo "📱 Direct app: https://kinbenpartssystem.web.app/KPN_System_Workbook.html"
-        echo "⏰ Deployed at: ${{ github.run_started_at }}"
     - name: Create deployment summary
       run: |
         echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
