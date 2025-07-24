@@ -1,5 +1,10 @@
 # Claude Project Context & Progress
 
+**🚨 CRITICAL: COMPLETE ONLINE FIREBASE SYSTEM MANDATE!**  
+**❌ ABSOLUTELY NO LOCAL STORAGE, LOCAL DEPLOYMENT, LOCAL API/SDK USAGE ALLOWED!**  
+**✅ FIREBASE-ONLY IMPLEMENTATION: All authentication, database, and hosting must be online via Firebase!**  
+**🎯 GOAL: Take the system completely online with Firebase - no local dependencies whatsoever!**
+
 ## Project Overview
 **Project Name**: Kinben Unified Parts Reference System  
 **Repository**: https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System  
