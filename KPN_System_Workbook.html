@@ -1176,6 +1176,7 @@
                 alert('Error loading user data. Please try again.');
             }
         }
+                    if (currentUser.role === 'admin') {
                         showUserManagementTab();
                     } else {
                         hideUserManagementTab();
