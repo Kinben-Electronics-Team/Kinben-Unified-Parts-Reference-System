@@ -1,0 +1,36 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "components",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "dateAdded", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "components", 
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "kpn", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "pcbs",
+      "queryScope": "COLLECTION", 
+      "fields": [
+        { "fieldPath": "name", "order": "ASCENDING" },
+        { "fieldPath": "version", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "systems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "name", "order": "ASCENDING" },
+        { "fieldPath": "dateAdded", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
