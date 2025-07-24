@@ -17,22 +17,29 @@ let editingAssembly = null;
 let editingSystem = null;
 
 // Initialize the application
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // Wait for mock Firebase to load
-    if (window.mockFirebase) {
-        initializeFirebase();
-        setupAuthListener();
-        setupEventListeners();
-    } else {
-        // Wait a moment for mock Firebase to load
-        setTimeout(() => {
-            initializeFirebase();
-            setupAuthListener();
-            setupEventListeners();
-        }, 100);
-    }
+    await waitForMockFirebase();
+    initializeFirebase();
+    setupAuthListener();
+    setupEventListeners();
 });
 
+// Utility function to wait for mock Firebase to load
+function waitForMockFirebase() {
+    return new Promise((resolve) => {
+        if (window.mockFirebase) {
+            resolve();
+        } else {
+            const interval = setInterval(() => {
+                if (window.mockFirebase) {
+                    clearInterval(interval);
+                    resolve();
+                }
+            }, 50); // Check every 50ms
+        }
+    });
+}
 // Setup authentication state listener
 function setupAuthListener() {
     authMethods.onAuthStateChanged((user) => {
