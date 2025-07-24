@@ -461,33 +461,37 @@ function updateStats() {
     }
 }
 
-// Edit functions (global scope for onclick handlers)
-window.editComponent = async function(id) {
-    const component = data.components.find(c => c.id === id);
-    if (component) {
-        editingComponent = component;
-        // Populate form with component data
-        const form = document.getElementById('component-form');
-        for (const [key, value] of Object.entries(component)) {
-            const input = form.querySelector(`[name="${key}"]`);
-            if (input) {
-                input.value = value;
+// Event delegation for edit and delete actions
+document.addEventListener('click', async (event) => {
+    const target = event.target;
+    
+    if (target.matches('.edit-component-btn')) {
+        const id = target.dataset.id;
+        const component = data.components.find(c => c.id === id);
+        if (component) {
+            editingComponent = component;
+            // Populate form with component data
+            const form = document.getElementById('component-form');
+            for (const [key, value] of Object.entries(component)) {
+                const input = form.querySelector(`[name="${key}"]`);
+                if (input) {
+                    input.value = value;
+                }
+            }
+            switchTab('components');
+        }
+    } else if (target.matches('.delete-component-btn')) {
+        const id = target.dataset.id;
+        if (confirm('Are you sure you want to delete this component?')) {
+            const result = await dbMethods.deleteComponent(currentUser.uid, id);
+            if (result.success) {
+                loadUserData();
+            } else {
+                alert('Error deleting component: ' + result.error);
             }
         }
-        switchTab('components');
     }
-};
-
-window.deleteComponent = async function(id) {
-    if (confirm('Are you sure you want to delete this component?')) {
-        const result = await dbMethods.deleteComponent(currentUser.uid, id);
-        if (result.success) {
-            loadUserData();
-        } else {
-            alert('Error deleting component: ' + result.error);
-        }
-    }
-};
+});
 
 window.editAssembly = async function(id) {
     const assembly = data.assemblies.find(a => a.id === id);
