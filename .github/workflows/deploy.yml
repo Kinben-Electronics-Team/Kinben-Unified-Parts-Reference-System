@@ -82,7 +82,7 @@ jobs:
         echo "🎉 Deployment completed successfully!"
         echo "📱 Live site: https://kinbenpartssystem.web.app/"
         echo "📱 Direct app: https://kinbenpartssystem.web.app/KPN_System_Workbook.html"
-        echo "⏰ Deployed at: $(date -u)"
+        echo "⏰ Deployed at: ${{ github.run_started_at }}"
     - name: Create deployment summary
       run: |
         echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
