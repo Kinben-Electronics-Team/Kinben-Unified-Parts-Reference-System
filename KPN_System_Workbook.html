@@ -1648,7 +1648,7 @@
                         batchCount++;
                         
                         // Firestore batch limit is 500
-                        if (batchCount >= 400) {
+                        if (batchCount >= FIRESTORE_BATCH_LIMIT) {
                             await batch.commit();
                             batchCount = 0;
                         }
