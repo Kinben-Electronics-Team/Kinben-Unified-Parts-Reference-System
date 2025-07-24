@@ -1093,8 +1093,8 @@
         let db = null;
         let currentUser = { role: 'none', email: '', uid: '', displayName: '' };
         
-        // Wait for Firebase SDK to load, then initialize
-        window.addEventListener('load', async () => {
+        // Wait for the DOM to load, then initialize Firebase
+        document.addEventListener('DOMContentLoaded', async () => {
             if (window.firebase) {
                 try {
                     // Initialize Firebase app
