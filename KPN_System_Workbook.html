@@ -4023,12 +4023,32 @@
                 });
             });
             
-            // Process selected systems (simplified - just list the assemblies)
+            // Process selected systems with recursive BOM expansion
             selectedSystems.forEach(({ system, quantity }) => {
-                // Note: This is a simplified implementation
-                // In a full implementation, you'd recursively expand system BOMs
-                const systemInfo = `${system.name} ${system.version} (${quantity}x systems)`;
-                // Add system information to CSV header or notes
+                system.bom.forEach(({ assembly, assemblyQuantity }) => {
+                    const effectiveQuantity = assemblyQuantity * quantity;
+                    
+                    assembly.bom.forEach(item => {
+                        const key = item.kpn;
+                        const totalQty = (item.totalQuantity || item.quantity) * effectiveQuantity;
+                        
+                        if (mergedBOM[key]) {
+                            mergedBOM[key].quantity += totalQty;
+                        } else {
+                            mergedBOM[key] = {
+                                kpn: item.kpn,
+                                componentName: item.componentName,
+                                quantity: totalQty,
+                                refdes: item.refdes,
+                                sources: [`${system.name} ${system.version} (${quantity}x systems)`]
+                            };
+                        }
+                        
+                        if (!mergedBOM[key].sources.includes(`${system.name} ${system.version} (${quantity}x systems)`)) {
+                            mergedBOM[key].sources.push(`${system.name} ${system.version} (${quantity}x systems)`);
+                        }
+                    });
+                });
             });
             
             // Generate merged CSV
