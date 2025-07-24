@@ -65,6 +65,93 @@ test.describe('Firebase Integration - End-to-End Tests', () => {
     expect(statusText).toContain('password');
   });
 
+  test('CRITICAL: Authentication buttons must be functional', async ({ page }) => {
+    await page.goto('/KPN_System_Workbook.html');
+    
+    // Wait for page to fully load and Firebase to initialize
+    await page.waitForTimeout(3000);
+    
+    // Check that Sign In button exists and is clickable
+    const signInButton = page.locator('button:has-text("Sign In with Firebase")');
+    await expect(signInButton).toBeVisible();
+    await expect(signInButton).toBeEnabled();
+    
+    // Check that Create Account button exists and is clickable  
+    const createAccountButton = page.locator('button:has-text("Create New Account")');
+    await expect(createAccountButton).toBeVisible();
+    await expect(createAccountButton).toBeEnabled();
+    
+    // Test actual button functionality - should trigger JavaScript
+    await page.fill('#email', 'test@example.com');
+    await page.fill('#password', 'password123');
+    
+    // Track console messages to verify JavaScript execution
+    const consoleMessages: string[] = [];
+    page.on('console', (msg) => {
+      consoleMessages.push(msg.text());
+    });
+    
+    // Click Sign In button - should execute JavaScript function
+    await signInButton.click();
+    
+    // Wait for JavaScript to execute
+    await page.waitForTimeout(2000);
+    
+    // Verify that JavaScript was executed (should show some kind of response)
+    const statusElement = page.locator('#login-status');
+    const statusVisible = await statusElement.isVisible();
+    const statusText = await statusElement.textContent();
+    
+    // The button click should either:
+    // 1. Show validation error (if Firebase not ready)
+    // 2. Show authentication error (if Firebase ready but credentials invalid)  
+    // 3. Update the status element in some way
+    // If none of these happen, the button is not functional
+    
+    expect(statusVisible).toBeTruthy();
+    expect(statusText).toBeTruthy();
+    expect(statusText.length).toBeGreaterThan(0);
+    
+    console.log('Button click result:', statusText);
+    console.log('Console messages after click:', consoleMessages);
+  });
+
+  test('CRITICAL: Create Account button must trigger JavaScript execution', async ({ page }) => {
+    await page.goto('/KPN_System_Workbook.html');
+    
+    await page.waitForTimeout(3000);
+    
+    // Fill form fields
+    await page.fill('#email', 'newuser@example.com');
+    await page.fill('#password', 'newpassword123');
+    
+    // Track JavaScript errors
+    const jsErrors: string[] = [];
+    page.on('pageerror', (error) => {
+      jsErrors.push(error.message);
+    });
+    
+    // Click Create Account button
+    const createButton = page.locator('button:has-text("Create New Account")');
+    await createButton.click();
+    
+    await page.waitForTimeout(2000);
+    
+    // Verify no JavaScript errors occurred
+    expect(jsErrors.length).toBe(0);
+    
+    // Verify some response occurred (status update or Firebase interaction)  
+    const statusElement = page.locator('#login-status');
+    const statusVisible = await statusElement.isVisible();
+    const statusText = await statusElement.textContent();
+    
+    expect(statusVisible).toBeTruthy();
+    expect(statusText).toBeTruthy();
+    
+    console.log('Create account result:', statusText);
+    console.log('JavaScript errors:', jsErrors);
+  });
+
   test('should handle Firebase configuration correctly', async ({ page }) => {
     await page.goto('/KPN_System_Workbook.html');
     

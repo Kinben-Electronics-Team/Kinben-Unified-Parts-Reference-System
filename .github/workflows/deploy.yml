@@ -43,6 +43,25 @@ jobs:
         # Check for basic JavaScript syntax errors
         node -c <(grep -o 'function.*{' KPN_System_Workbook.html | head -1 | sed 's/function/function test/') || echo "JavaScript syntax check passed"
         
+    - name: Install Playwright browsers
+      run: |
+        echo "Installing Playwright browsers for Firebase testing..."
+        npx playwright install chromium --with-deps || echo "Browser installation failed, will use fallback tests"
+        
+    - name: Run Firebase Integration Tests
+      run: |
+        echo "Running Firebase integration and button functionality tests..."
+        # Run specific Firebase tests to catch button issues
+        npx playwright test tests/firebase-integration.spec.ts --timeout=30000 || {
+          echo "❌ Firebase integration tests failed - checking for common issues:"
+          echo "- Firebase SDK loading problems"
+          echo "- Button click handlers not working"
+          echo "- Authentication form issues"
+          echo "Running fallback validation..."
+          npm run validate || echo "Basic validation also failed"
+          exit 1
+        }
+        
     - name: Build for Firebase
       run: npm run build
       
