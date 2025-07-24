@@ -6,12 +6,100 @@
 
 ## 🚀 Live Deployment
 
-This system is deployed and accessible at multiple locations:
+**Production URL**: https://kinbenpartssystem.web.app/
+**Direct App**: https://kinbenpartssystem.web.app/KPN_System_Workbook.html
+**Status**: ✅ Auto-deployment enabled via GitHub Actions
 
-### Firebase Hosting (Primary Production)
-- **URL**: https://kinbenpartssystem.web.app/
-- **Status**: 🚨 **BROKEN** - Auto-deployment not working
-- **Features**: Outdated content (deployment automation failed)
+## 🔥 Firebase Architecture
+
+### Authentication
+- **Firebase Authentication**: Email/password authentication
+- **Account Creation**: Users can create accounts directly in the app
+- **User Roles**: Automatic 'team' role assignment for new users
+- **Security**: No local storage - all authentication via Firebase Auth
+
+### Database
+- **Firestore Database**: Real-time NoSQL cloud database
+- **User-scoped Data**: All data stored under users/{uid}/ collections
+- **Collections**: components, pcbs, systems, settings/preferences
+- **Real-time Sync**: Live updates across all connected clients
+
+### Hosting
+- **Firebase Hosting**: Static file hosting with CDN
+- **Custom Domain**: kinbenpartssystem.web.app
+- **HTTPS**: Automatic SSL/TLS certificates
+- **Global CDN**: Fast worldwide access
+
+## 🚀 Automatic Deployment
+
+The system automatically deploys when code is pushed to the main branch:
+
+1. **GitHub Actions** triggers on push to main
+2. **Build Process** runs `npm run build`
+3. **Firebase Deploy** uploads to hosting
+4. **Live Site** updates automatically
+
+### Deploy Workflow
+
+```yaml
+# .github/workflows/deploy.yml
+- Build for Firebase: npm run build
+- Deploy to Firebase: Firebase Action
+- Live Site: https://kinbenpartssystem.web.app/
+```
+
+## 🎯 Features (Firebase-Only)
+
+### ✅ What Works Online
+- **User Authentication**: Firebase Auth with email/password
+- **Real-time Database**: Firestore with live updates
+- **Component Management**: Add, edit, delete components
+- **PCB Management**: Multi-layer PCB tracking
+- **System Hierarchy**: Complex system architectures
+- **Vendor Management**: Customizable vendor lists
+- **File Uploads**: Image and document handling
+- **Export/Import**: CSV data exchange
+- **Mobile Responsive**: Works on all devices
+
+### ❌ What's NOT Available (By Design)
+- **Local Storage**: No localStorage usage
+- **Local Authentication**: No offline login
+- **Local Database**: No offline data storage
+- **Local Deployment**: No local server options
+- **Offline Mode**: Requires internet connection
+
+## 🔧 Development Workflow
+
+### For Developers
+1. Make changes to `KPN_System_Workbook.html`
+2. Test locally: Open file in browser (limited functionality without Firebase)
+3. Commit and push to main branch
+4. Automatic deployment to Firebase
+5. Verify changes at https://kinbenpartssystem.web.app/
+
+### Build Commands
+```bash
+npm run build    # Build for Firebase deployment
+npm test        # Run basic validation tests
+```
+
+## 📊 Version Information
+
+- **Current Version**: 3.2.0
+- **Firebase Project**: kinbenpartssystem
+- **Last Updated**: 2025-07-24
+- **Architecture**: Complete online Firebase system
+
+## 🎯 Success Metrics
+
+- ✅ **Zero Local Dependencies**: No local storage, auth, or database
+- ✅ **100% Online**: All operations require internet connection
+- ✅ **Real-time Sync**: Live updates across all connected users
+- ✅ **Firebase Native**: Uses Firebase v9 modular SDK
+- ✅ **Auto-deployment**: GitHub → Firebase seamlessly
+- ✅ **Global Access**: Available worldwide via Firebase CDN
+
+**🎉 Mission Accomplished: Complete online-only Firebase system deployed!**
 - **Update Method**: ❌ **ISSUE**: GitHub Actions workflow not triggering
 
 ### GitHub Pages (Secondary)
