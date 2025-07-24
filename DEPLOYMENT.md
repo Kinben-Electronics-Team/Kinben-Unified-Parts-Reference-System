@@ -5,13 +5,13 @@
 This system is deployed and accessible at multiple locations:
 
 ### Firebase Hosting (Primary Production)
-- **URL**: https://the-clever-studio-f3b16.web.app/
+- **URL**: https://kinbenpartssystem.web.app/
 - **Status**: ✅ Active (Auto-deployed from GitHub)
 - **Features**: Full application with demo data
 - **Update Method**: Automatic deployment on push to master/main
 
 ### GitHub Pages (Secondary)
-- **URL**: https://kinben-electronics-team.github.io/Kinben-Unified-Parts-Reference-System/
+- **URL**: https://manasdeore.github.io/Kinben-Unified-Parts-Reference-System/
 - **Status**: ✅ Active
 - **Features**: Full application with demo data
 
@@ -162,6 +162,6 @@ For issues or customization requests:
 
 ---
 
-**Version**: 2.1.2  
-**Last Updated**: July 23, 2025  
+**Version**: 3.1.0  
+**Last Updated**: July 24, 2025  
 **Status**: Production Ready ✅

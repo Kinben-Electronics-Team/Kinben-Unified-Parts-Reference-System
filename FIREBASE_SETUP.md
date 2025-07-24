@@ -7,7 +7,7 @@ This guide explains how to configure Firebase Authentication and Firestore for t
 ### 1. Create/Configure Firebase Project
 
 1. Go to [Firebase Console](https://console.firebase.google.com/)
-2. Select your existing project: `the-clever-studio-f3b16`
+2. Select your existing project: `kinbenpartssystem`
 3. Or create a new project if needed
 
 ### 2. Enable Authentication
@@ -16,7 +16,7 @@ This guide explains how to configure Firebase Authentication and Firestore for t
 2. Click **Google** provider
 3. Click **Enable**
 4. Add your authorized domains:
-   - `the-clever-studio-f3b16.web.app`
+   - `kinbenpartssystem.web.app`
    - `localhost` (for development)
 5. Save changes
 
@@ -62,12 +62,12 @@ Replace the placeholder config in `KPN_System_Workbook.html`:
 ```javascript
 // Replace this section (around line 892)
 const firebaseConfig = {
-    apiKey: "your-actual-api-key",
-    authDomain: "the-clever-studio-f3b16.firebaseapp.com",
-    projectId: "the-clever-studio-f3b16",
-    storageBucket: "the-clever-studio-f3b16.appspot.com",
-    messagingSenderId: "your-actual-sender-id",
-    appId: "your-actual-app-id"
+    apiKey: "AIzaSyDEb-vJyJthW4xZ042Ay_8EDm-RhGBhLxU",
+    authDomain: "kinbenpartssystem.firebaseapp.com",
+    projectId: "kinbenpartssystem",
+    storageBucket: "kinbenpartssystem.firebasestorage.app",
+    messagingSenderId: "896608745742",
+    appId: "1:896608745742:web:2c84cda1dafbc2519fff5f"
 };
 ```
 

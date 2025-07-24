@@ -3,7 +3,7 @@ Section,KINBEN UNIFIED PARTS REFERENCE SYSTEM
 Subsection,KPN Master Management Dashboard
 
 Field,Description
-Repository_URL,https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System
+Repository_URL,https://github.com/manasdeore/Kinben-Unified-Parts-Reference-System
 Purpose,Centralized component management and KPN assignment system
 Last_Updated,
 Version,1.0

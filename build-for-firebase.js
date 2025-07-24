@@ -46,7 +46,7 @@ filesToCopy.forEach(file => {
             '<head>',
             `<head>
     <!-- Build: ${buildTimestamp} -->
-    <!-- Root-level deployment: v3.0.0 -->`
+    <!-- Root-level deployment: v3.1.0 -->`
         );
         
         fs.writeFileSync(destPath, content);
@@ -73,7 +73,7 @@ dirsToCopy.forEach(dir => {
 
 console.log('🎉 Build completed! Ready for Firebase deployment.');
 console.log('📁 Files prepared in: ./dist/');
-console.log('🌐 Will be accessible at root level: https://the-clever-studio-f3b16.web.app/');
+console.log('🌐 Will be accessible at root level: https://kinbenpartssystem.web.app/');
 
 // Helper function to copy directories recursively
 function copyRecursiveSync(src, dest) {
