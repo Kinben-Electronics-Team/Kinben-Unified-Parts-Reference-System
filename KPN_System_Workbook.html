@@ -957,20 +957,20 @@
 
     <script>
         // Firebase Configuration
-        // NOTE: Replace these with actual Firebase project credentials
+        // Firebase project configuration for kinbenpartssystem
         const firebaseConfig = {
-            apiKey: "your-api-key-here",
-            authDomain: "the-clever-studio-f3b16.firebaseapp.com",
-            projectId: "the-clever-studio-f3b16",
-            storageBucket: "the-clever-studio-f3b16.appspot.com",
-            messagingSenderId: "actual-sender-id", // Replace with your Firebase project's messaging sender ID
-            appId: "your-app-id"
+            apiKey: "AIzaSyDEb-vJyJthW4xZ042Ay_8EDm-RhGBhLxU",
+            authDomain: "kinbenpartssystem.firebaseapp.com",
+            projectId: "kinbenpartssystem",
+            storageBucket: "kinbenpartssystem.firebasestorage.app",
+            messagingSenderId: "896608745742",
+            appId: "1:896608745742:web:2c84cda1dafbc2519fff5f"
         };
 
-        // Check if Firebase config is valid (not placeholder values)
-        const isFirebaseConfigured = firebaseConfig.apiKey !== "your-api-key-here" && 
-                                    firebaseConfig.appId !== "your-app-id" &&
-                                    firebaseConfig.messagingSenderId !== "actual-sender-id";
+        // Check if Firebase config is valid (should always be true now with real config)
+        const isFirebaseConfigured = firebaseConfig.apiKey && 
+                                    firebaseConfig.appId &&
+                                    firebaseConfig.projectId === "kinbenpartssystem";
 
         // Initialize Firebase only if properly configured and Firebase SDK is available
         let auth = null;
@@ -1383,8 +1383,89 @@
             }
         });
 
-        // Load data from localStorage
-        function loadData() {
+        // Load data from Firestore or localStorage fallback
+        async function loadData() {
+            if (auth && db && currentUser.uid) {
+                // Load from Firestore
+                try {
+                    await loadFromFirestore();
+                } catch (error) {
+                    console.error('Error loading from Firestore:', error);
+                    // Fallback to localStorage on error
+                    loadFromLocalStorage();
+                }
+            } else {
+                // Use localStorage when not authenticated or Firebase unavailable
+                loadFromLocalStorage();
+            }
+        }
+        
+        // Load data from Firestore
+        async function loadFromFirestore() {
+            console.log('Loading data from Firestore...');
+            
+            try {
+                // Load components with real-time listener
+                const componentsRef = db.collection('components');
+                const componentsUnsubscribe = componentsRef.onSnapshot((snapshot) => {
+                    data.components = [];
+                    snapshot.forEach(doc => {
+                        data.components.push({ id: doc.id, ...doc.data() });
+                    });
+                    updateComponentsTable();
+                    updateStats();
+                });
+                
+                // Load PCBs with real-time listener
+                const pcbsRef = db.collection('pcbs');
+                const pcbsUnsubscribe = pcbsRef.onSnapshot((snapshot) => {
+                    data.pcbs = [];
+                    snapshot.forEach(doc => {
+                        data.pcbs.push({ id: doc.id, ...doc.data() });
+                    });
+                    updatePCBsTable();
+                    updateStats();
+                });
+                
+                // Load systems with real-time listener
+                const systemsRef = db.collection('systems');
+                const systemsUnsubscribe = systemsRef.onSnapshot((snapshot) => {
+                    data.systems = [];
+                    snapshot.forEach(doc => {
+                        data.systems.push({ id: doc.id, ...doc.data() });
+                    });
+                    updateSystemsTable();
+                    updateStats();
+                });
+                
+                // Load vendors
+                const vendorsSnapshot = await db.collection('vendors').get();
+                if (!vendorsSnapshot.empty) {
+                    data.vendors = [];
+                    vendorsSnapshot.forEach(doc => {
+                        data.vendors.push(doc.data().name);
+                    });
+                } else {
+                    // Initialize default vendors if none exist
+                    data.vendors = ['Mouser', 'Digi-Key', 'Arrow', 'Newark', 'Farnell', 'RS Components', 'Avnet', 'Future Electronics'];
+                    await saveVendorsToFirestore();
+                }
+                
+                // Store unsubscribe functions for cleanup
+                window.firestoreUnsubscribers = [componentsUnsubscribe, pcbsUnsubscribe, systemsUnsubscribe];
+                
+                updateStats();
+                renderAll();
+                
+            } catch (error) {
+                console.error('Error loading from Firestore:', error);
+                throw error;
+            }
+        }
+        
+        // Load data from localStorage (fallback)
+        function loadFromLocalStorage() {
+            console.log('Loading data from localStorage...');
             const saved = localStorage.getItem('kinben-simple-data');
             if (saved) {
                 data = JSON.parse(saved);
@@ -1398,10 +1479,156 @@
             renderAll();
         }
 
-        // Save data to localStorage
-        function saveData() {
+        // Save data to Firestore or localStorage fallback
+        async function saveData() {
+            if (auth && db && currentUser.uid) {
+                // Save to Firestore
+                try {
+                    await saveToFirestore();
+                } catch (error) {
+                    console.error('Error saving to Firestore:', error);
+                    // Fallback to localStorage on error
+                    saveToLocalStorage();
+                }
+            } else {
+                // Use localStorage when not authenticated or Firebase unavailable
+                saveToLocalStorage();
+            }
+        }
+        
+        // Save data to Firestore
+        async function saveToFirestore() {
+            console.log('Saving data to Firestore...');
+            // Note: Individual saves are handled by specific functions
+            // This function exists for compatibility but most saves are done directly
+            updateStats();
+        }
+        
+        // Save data to localStorage (fallback)
+        function saveToLocalStorage() {
             localStorage.setItem('kinben-simple-data', JSON.stringify(data));
             updateStats();
+        }
+        
+        // Save individual component to Firestore
+        async function saveComponentToFirestore(component) {
+            if (!auth || !db || !currentUser.uid) return false;
+            
+            try {
+                if (component.id) {
+                    // Update existing component
+                    await db.collection('components').doc(component.id).update({
+                        ...component,
+                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastModifiedBy: currentUser.uid
+                    });
+                } else {
+                    // Add new component
+                    const docRef = await db.collection('components').add({
+                        ...component,
+                        dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdBy: currentUser.uid,
+                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastModifiedBy: currentUser.uid
+                    });
+                    component.id = docRef.id;
+                }
+                return true;
+            } catch (error) {
+                console.error('Error saving component to Firestore:', error);
+                return false;
+            }
+        }
+        
+        // Save vendors to Firestore
+        async function saveVendorsToFirestore() {
+            if (!auth || !db || !currentUser.uid) return false;
+            
+            try {
+                const batch = db.batch();
+                
+                // Clear existing vendors
+                const existingVendors = await db.collection('vendors').get();
+                existingVendors.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                
+                // Add current vendors
+                data.vendors.forEach(vendor => {
+                    const vendorRef = db.collection('vendors').doc();
+                    batch.set(vendorRef, { 
+                        name: vendor,
+                        createdBy: currentUser.uid,
+                        dateAdded: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+                
+                await batch.commit();
+                return true;
+            } catch (error) {
+                console.error('Error saving vendors to Firestore:', error);
+                return false;
+            }
+        }
+        
+        // Save individual PCB to Firestore
+        async function savePCBToFirestore(pcb) {
+            if (!auth || !db || !currentUser.uid) return false;
+            
+            try {
+                if (pcb.id) {
+                    // Update existing PCB
+                    await db.collection('pcbs').doc(pcb.id).update({
+                        ...pcb,
+                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastModifiedBy: currentUser.uid
+                    });
+                } else {
+                    // Add new PCB
+                    const docRef = await db.collection('pcbs').add({
+                        ...pcb,
+                        dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdBy: currentUser.uid,
+                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastModifiedBy: currentUser.uid
+                    });
+                    pcb.id = docRef.id;
+                }
+                return true;
+            } catch (error) {
+                console.error('Error saving PCB to Firestore:', error);
+                return false;
+            }
+        }
+        
+        // Save individual System to Firestore
+        async function saveSystemToFirestore(system) {
+            if (!auth || !db || !currentUser.uid) return false;
+            
+            try {
+                if (system.id) {
+                    // Update existing system
+                    await db.collection('systems').doc(system.id).update({
+                        ...system,
+                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastModifiedBy: currentUser.uid
+                    });
+                } else {
+                    // Add new system
+                    const docRef = await db.collection('systems').add({
+                        ...system,
+                        dateAdded: firebase.firestore.FieldValue.serverTimestamp(),
+                        createdBy: currentUser.uid,
+                        lastModified: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastModifiedBy: currentUser.uid
+                    });
+                    system.id = docRef.id;
+                }
+                return true;
+            } catch (error) {
+                console.error('Error saving system to Firestore:', error);
+                return false;
+            }
         }
 
         // Category configurations with component-specific fields
@@ -1772,7 +1999,7 @@
         }
 
         // Add component
-        function addComponent() {
+        async function addComponent() {
             const category = document.getElementById('comp-category').value;
             const subcategory = document.getElementById('comp-subcategory').value;
             
@@ -1819,8 +2046,19 @@
                 return;
             }
             
-            data.components.push(component);
-            saveData();
+            // Save to Firestore if available, otherwise localStorage
+            if (auth && db && currentUser.uid) {
+                const success = await saveComponentToFirestore(component);
+                if (!success) {
+                    // Fallback to localStorage
+                    data.components.push(component);
+                    saveToLocalStorage();
+                }
+            } else {
+                data.components.push(component);
+                saveToLocalStorage();
+            }
+            
             renderComponents();
             
             // Clear form
@@ -2635,7 +2873,7 @@
         }
 
         // Add PCB
-        function addPCB() {
+        async function addPCB() {
             const name = document.getElementById('pcb-name').value;
             const version = document.getElementById('pcb-version').value;
             const status = document.getElementById('pcb-status').value;
@@ -2655,8 +2893,19 @@
                 dateAdded: new Date().toISOString().split('T')[0]
             };
             
-            data.pcbs.push(pcb);
-            saveData();
+            // Save to Firestore if available, otherwise localStorage
+            if (auth && db && currentUser.uid) {
+                const success = await savePCBToFirestore(pcb);
+                if (!success) {
+                    // Fallback to localStorage
+                    data.pcbs.push(pcb);
+                    saveToLocalStorage();
+                }
+            } else {
+                data.pcbs.push(pcb);
+                saveToLocalStorage();
+            }
+            
             renderPCBs();
             
             // Clear form
@@ -2725,7 +2974,7 @@
         }
 
         // Add system
-        function addSystem() {
+        async function addSystem() {
             const name = document.getElementById('system-name').value;
             const version = document.getElementById('system-version').value;
             const status = document.getElementById('system-status').value;
@@ -2745,8 +2994,19 @@
                 dateAdded: new Date().toISOString().split('T')[0]
             };
             
-            data.systems.push(system);
-            saveData();
+            // Save to Firestore if available, otherwise localStorage
+            if (auth && db && currentUser.uid) {
+                const success = await saveSystemToFirestore(system);
+                if (!success) {
+                    // Fallback to localStorage
+                    data.systems.push(system);
+                    saveToLocalStorage();
+                }
+            } else {
+                data.systems.push(system);
+                saveToLocalStorage();
+            }
+            
             renderSystems();
             
             // Clear form
@@ -2904,6 +3164,19 @@
             renderVendors();
             updateDropdowns();
         }
+        
+        // Individual update functions for real-time Firestore listeners
+        function updateComponentsTable() {
+            renderComponents();
+        }
+        
+        function updatePCBsTable() {
+            renderPCBs();
+        }
+        
+        function updateSystemsTable() {
+            renderSystems();
+        }
 
         // Filter functions
         function filterComponents() {
@@ -3032,7 +3305,7 @@
         }
 
         // Vendor management functions
-        function addVendor() {
+        async function addVendor() {
             const vendorName = document.getElementById('new-vendor-name').value.trim();
             if (!vendorName) {
                 alert('Please enter a vendor name');
@@ -3046,7 +3319,17 @@
             
             data.vendors.push(vendorName);
             data.vendors.sort(); // Keep vendors sorted
-            saveData();
+            
+            // Save to Firestore if available
+            if (auth && db && currentUser.uid) {
+                const success = await saveVendorsToFirestore();
+                if (!success) {
+                    saveToLocalStorage();
+                }
+            } else {
+                saveToLocalStorage();
+            }
+            
             renderVendors();
             
             // Clear input
@@ -3055,10 +3338,20 @@
             alert(`Added vendor: ${vendorName}`);
         }
         
-        function removeVendor(vendorName) {
+        async function removeVendor(vendorName) {
             if (confirm(`Remove vendor "${vendorName}"?`)) {
                 data.vendors = data.vendors.filter(v => v !== vendorName);
-                saveData();
+                
+                // Save to Firestore if available
+                if (auth && db && currentUser.uid) {
+                    const success = await saveVendorsToFirestore();
+                    if (!success) {
+                        saveToLocalStorage();
+                    }
+                } else {
+                    saveToLocalStorage();
+                }
+                
                 renderVendors();
             }
         }
