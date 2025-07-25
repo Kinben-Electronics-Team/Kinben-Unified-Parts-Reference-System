@@ -14,25 +14,6 @@
         // Global authentication functions - defined immediately
 <!-- Placeholder definition of signInWithFirebase removed to avoid redundancy -->
 
-        window.createAccountWithFirebase = function() {
-            const email = document.getElementById('email')?.value?.trim();
-            const password = document.getElementById('password')?.value;
-            
-            if (!email || !password) {
-                alert('Please enter both email and password.');
-                return;
-            }
-            
-            if (password.length < 6) {
-                alert('Password must be at least 6 characters.');
-                return;
-            }
-            
-            // Simple validation - Firebase integration will be handled by main script
-            console.log('createAccountWithFirebase called with:', email);
-            alert('Create account function called successfully! (Firebase integration will be handled once script loads)');
-        };
-
         window.logout = function() {
             console.log('logout called');
             alert('Logout function called successfully!');
