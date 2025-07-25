@@ -2,7 +2,7 @@
 
 [![Deploy Status](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/workflows/Deploy%20KPN%20System%20Workbook/badge.svg)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/actions)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://kinbenpartssystem.web.app/)
-[![Version](https://img.shields.io/badge/Version-3.0.0-blue)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/releases)
+[![Version](https://img.shields.io/badge/Version-2.1.0-blue)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/releases)
 
 ## 🚀 [**LAUNCH APPLICATION**](https://kinbenpartssystem.web.app/)
 
