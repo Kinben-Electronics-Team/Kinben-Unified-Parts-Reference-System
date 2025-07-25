@@ -5,7 +5,7 @@
 This system is deployed and accessible at multiple locations:
 
 ### Firebase Hosting (Primary Production)
-- **URL**: https://the-clever-studio-f3b16.web.app/
+- **URL**: https://kinbenpartssystem.web.app/
 - **Status**: ✅ Active (Auto-deployed from GitHub)
 - **Features**: Full application with demo data
 - **Update Method**: Automatic deployment on push to master/main
