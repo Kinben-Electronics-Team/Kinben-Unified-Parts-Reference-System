@@ -12,19 +12,7 @@
     <!-- Authentication Functions - Loaded early to ensure global availability -->
     <script>
         // Global authentication functions - defined immediately
-        window.signInWithFirebase = function() {
-            const email = document.getElementById('email')?.value?.trim();
-            const password = document.getElementById('password')?.value;
-            
-            if (!email || !password) {
-                alert('Please enter both email and password.');
-                return;
-            }
-            
-            // Simple validation - Firebase integration will be handled by main script
-            console.log('signInWithFirebase called with:', email);
-            alert('Sign in function called successfully! (Firebase integration will be handled once script loads)');
-        };
+<!-- Placeholder definition of signInWithFirebase removed to avoid redundancy -->
 
         window.createAccountWithFirebase = function() {
             const email = document.getElementById('email')?.value?.trim();
