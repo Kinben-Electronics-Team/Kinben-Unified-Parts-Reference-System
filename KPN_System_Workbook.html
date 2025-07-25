@@ -139,6 +139,15 @@
             background: #218838;
         }
         
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
+        
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -216,6 +225,20 @@
             display: flex;
             gap: 10px;
             margin-top: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .actions .btn {
+            flex-shrink: 0;
+        }
+        
+        #bulk-actions {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #e9ecef;
         }
         
         .status-active {
@@ -367,33 +390,21 @@
         
         /* Role-based action buttons */
         .archive-btn {
-            background: #ffc107;
-            color: #212529;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-right: 5px;
+            background: #ffc107 !important;
+            color: #212529 !important;
         }
         
         .archive-btn:hover {
-            background: #e0a800;
+            background: #e0a800 !important;
         }
         
         .delete-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-right: 5px;
+            background: #dc3545 !important;
+            color: white !important;
         }
         
         .delete-btn:hover {
-            background: #c82333;
+            background: #c82333 !important;
         }
 
         /* Duplicate Modal Styles */
@@ -632,6 +643,7 @@
                 </div>
                 
                 <div class="actions">
+                    <!-- Main Action Buttons -->
                     <button class="btn btn-primary" onclick="addComponent()">Add Component</button>
                     <button class="btn" onclick="resetComponentForm()" style="background: #6c757d; color: white; display: none;" id="cancel-edit-btn">Cancel Edit</button>
                     <button class="btn btn-success" onclick="exportComponents()">Export CSV</button>
@@ -639,16 +651,16 @@
                     <button class="btn btn-info" onclick="document.getElementById('csv-import-input').click()">Import CSV</button>
                     <button class="btn" onclick="exportTemplate()" style="background: #6c757d; color: white;">Download Template</button>
                     
-                    <!-- Bulk Actions -->
-                    <div style="margin-top: 10px;">
-                        <button class="btn" onclick="toggleBulkSelection()" style="background: #6c757d; color: white;" id="bulk-select-btn">Enable Bulk Select</button>
-                        <div id="bulk-actions" style="display: none; margin-top: 10px;">
-                            <button class="btn" onclick="selectAllComponents()" style="background: #17a2b8; color: white;">Select All</button>
-                            <button class="btn" onclick="deselectAllComponents()" style="background: #6c757d; color: white;">Deselect All</button>
-                            <button class="btn archive-btn" onclick="bulkArchiveComponents()">Archive Selected</button>
-                            <button class="btn delete-btn" onclick="bulkDeleteComponents()" id="bulk-delete-btn" style="display: none;">Delete Selected</button>
-                        </div>
-                    </div>
+                    <!-- Bulk Select Button -->
+                    <button class="btn" onclick="toggleBulkSelection()" style="background: #6c757d; color: white;" id="bulk-select-btn">Enable Bulk Select</button>
+                </div>
+                
+                <!-- Bulk Actions Container -->
+                <div id="bulk-actions" class="actions" style="display: none;">
+                    <button class="btn btn-info" onclick="selectAllComponents()">Select All</button>
+                    <button class="btn" onclick="deselectAllComponents()" style="background: #6c757d; color: white;">Deselect All</button>
+                    <button class="btn archive-btn" onclick="bulkArchiveComponents()">Archive Selected</button>
+                    <button class="btn delete-btn" onclick="bulkDeleteComponents()" id="bulk-delete-btn" style="display: none;">Delete Selected</button>
                 </div>
                 
                 <input type="text" class="search-box" id="comp-search" placeholder="Search components..." onkeyup="filterComponents()">
