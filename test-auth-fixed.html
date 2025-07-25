@@ -39,6 +39,15 @@
         let currentUser = { role: 'none', email: '', uid: '', displayName: '' };
         
         // Wait for the DOM to load, then initialize Firebase
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        
         document.addEventListener('DOMContentLoaded', async () => {
             if (typeof firebase !== 'undefined') {
                 try {
@@ -51,7 +60,7 @@
                     
                 } catch (error) {
                     console.error('❌ Firebase initialization failed:', error);
-                    document.getElementById('status').innerHTML = 'Status: Firebase init failed ❌ ' + error.message;
+                    document.getElementById('status').innerHTML = 'Status: Firebase init failed ❌ ' + escapeHtml(error.message);
                 }
             } else {
                 console.error('❌ Firebase SDK not loaded');
@@ -81,7 +90,7 @@
                 status.innerHTML = 'Status: Account created successfully ✅ ' + userCredential.user.email;
                 console.log('Account created:', userCredential.user);
             } catch (error) {
-                status.innerHTML = 'Status: Account creation failed ❌ ' + error.message;
+                status.innerHTML = 'Status: Account creation failed ❌ ' + escapeHtml(error.message);
                 console.error('Create account error:', error);
             }
         };
