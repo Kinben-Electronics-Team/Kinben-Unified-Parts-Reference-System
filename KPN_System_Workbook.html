@@ -38,26 +38,6 @@
             alert('Logout function called successfully!');
         };
 
-        window.showTab = function(tabName) {
-            console.log('showTab called with:', tabName);
-            // Basic tab switching functionality
-            document.querySelectorAll('.tab-panel').forEach(panel => {
-                panel.classList.remove('active');
-            });
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
-            
-            const targetPanel = document.getElementById(tabName + '-panel') || document.getElementById(tabName);
-            if (targetPanel) {
-                targetPanel.classList.add('active');
-            }
-            
-            const targetTab = document.querySelector(`[onclick*="${tabName}"]`);
-            if (targetTab) {
-                targetTab.classList.add('active');
-            }
-        };
         
         // Log that functions are available
         console.log('✅ Authentication functions loaded and available globally');
