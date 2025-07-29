@@ -217,6 +217,45 @@ All references to the old Firebase URL have been corrected throughout CLAUDE.md 
 
 ---
 
+---
+
+## 🔄 **SESSION UPDATE (2025-07-29): LOCAL CSV IMPLEMENTATION**
+
+### 🎯 **NEW OBJECTIVE: Local CSV-Based Variant**
+**Problem**: Current system uses browser localStorage for data persistence  
+**Solution**: Create local variant that reads/writes directly to CSV files in repo  
+**Goal**: Offline-capable ERP that syncs with CSV files for data portability  
+
+### 📋 **Implementation Plan:**
+**Target**: `KPN_System_Local.html` - new local CSV variant alongside existing Firebase version
+
+#### 🔧 **Core Features:**
+1. **File System Access API**: Direct CSV file read/write operations
+2. **CSV Parser**: Handle existing 32-field component schema
+3. **Real-time Sync**: Changes immediately written to CSV files
+4. **Browser Fallback**: localStorage + manual export for unsupported browsers
+
+#### 🗂️ **CSV Integration:**
+- **Data Source**: `KPN Master Reference Sheet/CSV_Files/` directory
+- **Schema**: Unify inconsistent schemas (16 vs 32 fields) → 24 essential fields
+- **Categories**: 18 component types (RESISTORS.csv, CAPACITORS.csv, etc.)
+- **Workflow**: Startup → Load CSVs → Live sync → Auto-save
+
+#### ✅ **Success Criteria:**
+- Works offline without internet connection
+- Direct CSV file manipulation (no export/import needed)
+- Maintains all existing functionality from Firebase version
+- Zero setup - just open HTML file and grant folder permission
+
+### 📝 **Current Session Status:**
+**Date**: 2025-07-29  
+**Status**: 🚧 **IMPLEMENTATION IN PROGRESS**  
+**Current Task**: Local CSV variant development  
+**Next**: File System Access API integration  
+
+---
+
 ## claude.md# Guideline Memories
 - Always start with `claude.md#` when adding new memories or guidelines to this file
 - Live site URL is https://kinbenpartssystem.web.app/ (verified working July 28, 2025)
+- Current focus: Local CSV implementation for offline ERP functionality
