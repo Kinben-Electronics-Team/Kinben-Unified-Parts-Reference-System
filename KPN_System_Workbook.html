@@ -2197,9 +2197,9 @@
 
             // Patterns for different component types
             const patterns = {
-                resistors: /^(\d+(?:\.\d+)?)\s*([kKmMgG]?)([rRΩ]?)$/i,
-                capacitors: /^(\d+(?:\.\d+)?)\s*([pnµumk]?)([fF])$/i,
-                inductors: /^(\d+(?:\.\d+)?)\s*([nµumk]?)([hH])$/i
+                resistors: /^(\d+(?:\.\d+)?)\s*([kKmMgG]?[rRΩ])$/i,
+                capacitors: /^(\d+(?:\.\d+)?)\s*([pnµumk]+[fF])$/i,
+                inductors: /^(\d+(?:\.\d+)?)\s*([nµumk]+[hH])$/i
             };
 
             const pattern = patterns[category];
