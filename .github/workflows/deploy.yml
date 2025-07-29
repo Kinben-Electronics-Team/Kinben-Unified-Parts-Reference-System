@@ -65,12 +65,20 @@ jobs:
         
     - name: Deploy to Firebase
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-      uses: FirebaseExtended/action-hosting-deploy@v0
-      with:
-        repoToken: '${{ secrets.GITHUB_TOKEN }}'
-        firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
-        projectId: 'kinbenpartssystem'
-        channelId: live
+      env:
+        FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      run: |
+        echo "Creating service account file..."
+        echo "$FIREBASE_SERVICE_ACCOUNT" | base64 --decode > service-account.json
+        
+        echo "Setting up Firebase authentication..."
+        export GOOGLE_APPLICATION_CREDENTIALS="service-account.json"
+        
+        echo "Deploying to Firebase..."
+        npx firebase-tools@latest deploy --project kinbenpartssystem --only hosting
+        
+        echo "Cleanup..."
+        rm -f service-account.json
     - name: Create deployment summary
       run: |
         echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
