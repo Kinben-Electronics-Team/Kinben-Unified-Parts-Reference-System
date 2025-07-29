@@ -579,6 +579,9 @@
                 <button id="csv-access-btn" class="btn btn-primary" onclick="setupCSVAccess()" style="margin-right: 10px;">
                     📁 Select CSV Files Directory
                 </button>
+                <button id="csv-change-btn" class="btn btn-info" onclick="changeCSVDirectory()" style="margin-right: 10px; display: none;">
+                    🔄 Change Directory
+                </button>
                 <span id="csv-status" style="color: #666; font-size: 14px;">
                     Not connected to CSV files - Using localStorage
                 </span>
@@ -1445,6 +1448,8 @@
                 
                 // Look for CSV_Files subdirectory first
                 let csvDir = csvDirectoryHandle;
+                let foundCSVDir = false;
+                
                 try {
                     // Try to find CSV_Files subdirectory
                     for await (const [name, handle] of csvDirectoryHandle.entries()) {
@@ -1453,6 +1458,7 @@
                             for await (const [subName, subHandle] of masterDir.entries()) {
                                 if (subName === 'CSV_Files' && subHandle.kind === 'directory') {
                                     csvDir = subHandle;
+                                    foundCSVDir = true;
                                     console.log('Found CSV_Files directory');
                                     break;
                                 }
@@ -1462,6 +1468,53 @@
                     }
                 } catch (e) {
                     console.log('Using root directory for CSV files');
+                }
+                
+                // Check if directory has any CSV files
+                let foundAnyCSV = false;
+                let missingFiles = [];
+                
+                // First pass: check what exists
+                for (const [fileName, category] of Object.entries(csvFileMap)) {
+                    try {
+                        const fileHandle = await csvDir.getFileHandle(fileName);
+                        foundAnyCSV = true;
+                    } catch (error) {
+                        missingFiles.push(fileName);
+                    }
+                }
+                
+                // If no CSV files found, offer to create them
+                if (!foundAnyCSV) {
+                    const createFiles = confirm(
+                        `No CSV files found in the selected directory.\n\n` +
+                        `Would you like to create blank CSV files with proper headers?\n\n` +
+                        `This will create ${Object.keys(csvFileMap).length} files:\n` +
+                        Object.keys(csvFileMap).join(', ') + '\n\n' +
+                        `Click OK to create files, or Cancel to select a different directory.`
+                    );
+                    
+                    if (!createFiles) {
+                        // User chose not to create files, allow them to select different directory
+                        updateCSVStatus('No CSV files created - Please select a different directory', 'orange');
+                        await changeCSVDirectory();
+                        return;
+                    }
+                    
+                    // Create all CSV files with headers
+                    updateCSVStatus('Creating blank CSV files...', 'orange');
+                    for (const [fileName, category] of Object.entries(csvFileMap)) {
+                        try {
+                            const fileHandle = await csvDir.getFileHandle(fileName, { create: true });
+                            csvFileHandles[fileName] = fileHandle;
+                            await writeCSVHeader(fileHandle);
+                            console.log(`Created ${fileName}`);
+                        } catch (createError) {
+                            console.error(`Failed to create ${fileName}:`, createError);
+                        }
+                    }
+                    updateCSVStatus(`✅ Created ${Object.keys(csvFileMap).length} blank CSV files`, 'green');
+                    return;
                 }
                 
                 // Load each CSV file
@@ -1479,15 +1532,17 @@
                             console.log(`Loaded ${components.length} components from ${fileName}`);
                         }
                     } catch (error) {
-                        console.log(`File ${fileName} not found or empty:`, error.message);
-                        // Create empty file handle for future writes
-                        try {
-                            const fileHandle = await csvDir.getFileHandle(fileName, { create: true });
-                            csvFileHandles[fileName] = fileHandle;
-                            // Write header row for empty files
-                            await writeCSVHeader(fileHandle);
-                        } catch (createError) {
-                            console.error(`Failed to create ${fileName}:`, createError);
+                        console.log(`File ${fileName} not found:`, error.message);
+                        // Create missing file with header
+                        if (missingFiles.includes(fileName)) {
+                            try {
+                                const fileHandle = await csvDir.getFileHandle(fileName, { create: true });
+                                csvFileHandles[fileName] = fileHandle;
+                                await writeCSVHeader(fileHandle);
+                                console.log(`Created missing file: ${fileName}`);
+                            } catch (createError) {
+                                console.error(`Failed to create ${fileName}:`, createError);
+                            }
                         }
                     }
                 }
@@ -1624,8 +1679,35 @@
                 updateCSVStatus('✅ Connected to CSV files', 'green');
                 document.getElementById('csv-access-btn').textContent = '🔄 Reload CSV Files';
                 document.getElementById('csv-access-btn').onclick = reloadCSVFiles;
+                document.getElementById('csv-change-btn').style.display = 'inline-block';
             } else {
                 updateCSVStatus('❌ CSV access failed - Using localStorage', 'red');
+            }
+        }
+        
+        // Change CSV directory - allows user to select a different folder
+        async function changeCSVDirectory() {
+            if (confirm('Changing CSV directory will reload all data from the new location. Any unsaved changes will be lost. Continue?')) {
+                // Reset CSV handles
+                csvDirectoryHandle = null;
+                csvFileHandles = {};
+                
+                // Reset UI
+                document.getElementById('csv-access-btn').textContent = '📁 Select CSV Files Directory';
+                document.getElementById('csv-access-btn').onclick = setupCSVAccess;
+                document.getElementById('csv-change-btn').style.display = 'none';
+                updateCSVStatus('Requesting new directory access...', 'orange');
+                
+                // Request new directory
+                const success = await requestCSVDirectory();
+                if (success) {
+                    updateCSVStatus('✅ Connected to new CSV directory', 'green');
+                    document.getElementById('csv-access-btn').textContent = '🔄 Reload CSV Files';
+                    document.getElementById('csv-access-btn').onclick = reloadCSVFiles;
+                    document.getElementById('csv-change-btn').style.display = 'inline-block';
+                } else {
+                    updateCSVStatus('❌ Directory change failed - Using localStorage', 'red');
+                }
             }
         }
         
@@ -1719,10 +1801,121 @@
             renderAll();
         }
 
-        // Save data to localStorage
-        function saveData() {
+        // Save data to localStorage and CSV files (if connected)
+        async function saveData() {
+            // Always save to localStorage as backup
             localStorage.setItem('kinben-simple-data', JSON.stringify(data));
+            
+            // If CSV files are connected, sync to CSV files
+            if (csvDirectoryHandle && Object.keys(csvFileHandles).length > 0) {
+                try {
+                    await syncComponentsToCSV();
+                } catch (error) {
+                    console.error('Failed to sync to CSV files:', error);
+                    updateCSVStatus('⚠️ CSV sync failed - Data saved to localStorage only', 'orange');
+                }
+            }
+            
             updateStats();
+        }
+        
+        // Sync all components to their respective CSV files
+        async function syncComponentsToCSV() {
+            updateCSVStatus('🔄 Syncing to CSV files...', 'orange');
+            
+            // Group components by category for CSV file writing
+            const componentsByCategory = {};
+            
+            // Initialize empty arrays for all categories
+            Object.values(csvFileMap).forEach(category => {
+                componentsByCategory[category] = [];
+            });
+            
+            // Group components by their category
+            data.components.forEach(component => {
+                const category = component.category || getCategoryFromKPN(component.kpn);
+                if (category && componentsByCategory[category]) {
+                    componentsByCategory[category].push(component);
+                }
+            });
+            
+            let syncedCount = 0;
+            // Write each category to its CSV file
+            for (const [fileName, category] of Object.entries(csvFileMap)) {
+                if (csvFileHandles[fileName]) {
+                    try {
+                        await writeComponentsToCSV(csvFileHandles[fileName], componentsByCategory[category]);
+                        syncedCount++;
+                    } catch (error) {
+                        console.error(`Failed to write to ${fileName}:`, error);
+                        throw error;
+                    }
+                }
+            }
+            
+            updateCSVStatus(`✅ ${data.components.length} components synced to ${syncedCount} CSV files`, 'green');
+            console.log('CSV files synchronized successfully');
+        }
+        
+        // Write components to a specific CSV file
+        async function writeComponentsToCSV(fileHandle, components) {
+            // Create CSV content with headers
+            const headers = [
+                'Kinben_PN', 'Category', 'Subcategory', 'Value', 'Package', 'Manufacturer', 
+                'Manufacturer_PN', 'Description', 'Voltage_Rating', 'Current_Rating', 
+                'Tolerance', 'Mounting', 'Preferred_Supplier', 'Mouser_PN', 'DigiKey_PN',
+                'Unit_Cost', 'Stock_Level', 'Symbol_File', 'Footprint_File', '3D_Model_File',
+                'Datasheet_URL', 'Status', 'Created_Date', 'Notes'
+            ];
+            
+            let csvContent = headers.join(',') + '\n';
+            
+            // Add each component as a CSV row
+            components.forEach(component => {
+                const csvRow = headers.map(header => {
+                    let value = '';
+                    
+                    // Map internal fields to CSV headers
+                    switch (header) {
+                        case 'Kinben_PN': value = component.kpn || ''; break;
+                        case 'Category': value = component.category || ''; break;
+                        case 'Subcategory': value = component.subcategory || ''; break;
+                        case 'Value': value = component.value || component.resistance_value || component.capacitance_value || ''; break;
+                        case 'Package': value = component.package || ''; break;
+                        case 'Manufacturer': value = component.manufacturer || ''; break;
+                        case 'Manufacturer_PN': value = component.manufacturerPn || component.manufacturer_pn || ''; break;
+                        case 'Description': value = component.description || ''; break;
+                        case 'Preferred_Supplier': value = component.preferredVendor || component.preferred_vendor || ''; break;
+                        case 'Status': value = component.status || 'Active'; break;
+                        case 'Created_Date': value = component.dateAdded || component.created_date || ''; break;
+                        case 'Voltage_Rating': value = component.voltage_rating || component.voltage || ''; break;
+                        case 'Current_Rating': value = component.current_rating || component.current || ''; break;
+                        case 'Tolerance': value = component.tolerance || ''; break;
+                        case 'Mounting': value = component.mounting || ''; break;
+                        case 'Notes': value = component.notes || ''; break;
+                        default:
+                            // Check if the field exists in _csvData (original CSV data)
+                            if (component._csvData && component._csvData[header]) {
+                                value = component._csvData[header];
+                            }
+                            break;
+                    }
+                    
+                    // Escape and quote the value if it contains commas or quotes
+                    if (value.toString().includes(',') || value.toString().includes('"') || value.toString().includes('\n')) {
+                        value = '"' + value.toString().replace(/"/g, '""') + '"';
+                    }
+                    
+                    return value;
+                });
+                
+                csvContent += csvRow.join(',') + '\n';
+            });
+            
+            // Write to file
+            const writable = await fileHandle.createWritable();
+            await writable.write(csvContent);
+            await writable.close();
         }
 
         // Category configurations with component-specific fields
@@ -2127,7 +2320,7 @@
         }
 
         // Add component
-        function addComponent() {
+        async function addComponent() {
             const category = document.getElementById('comp-category').value;
             const subcategory = document.getElementById('comp-subcategory').value;
             
@@ -2175,7 +2368,7 @@
             }
             
             data.components.push(component);
-            saveData();
+            await saveData();
             renderComponents();
             
             // Clear form
