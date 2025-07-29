@@ -2457,16 +2457,13 @@
                     let unitType = '';
                     let unitList = [];
                     
-                    if (category === 'resistors') {
-                        unitType = 'resistance';
-                        unitList = unitOptions.resistance;
-                    } else if (category === 'capacitors') {
-                        unitType = 'capacitance';
-                        unitList = unitOptions.capacitance;
-                    } else if (category === 'inductors') {
-                        unitType = 'inductance';
-                        unitList = unitOptions.inductance;
-                    }
+                    const categoryUnitMap = {
+                        resistors: { unitType: 'resistance', unitList: unitOptions.resistance },
+                        capacitors: { unitType: 'capacitance', unitList: unitOptions.capacitance },
+                        inductors: { unitType: 'inductance', unitList: unitOptions.inductance }
+                    };
+                    
+                    const { unitType, unitList } = categoryUnitMap[category] || { unitType: '', unitList: [] };
                     
                     let unitOptionsHTML = unitList.map(unit => 
                         `<option value="${unit}">${unit}</option>`
