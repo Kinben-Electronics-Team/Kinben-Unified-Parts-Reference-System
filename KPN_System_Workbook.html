@@ -111,6 +111,55 @@
             border-radius: 4px;
             font-size: 14px;
         }
+
+        /* Validation styles */
+        .form-group input.valid,
+        .form-group select.valid {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.1rem rgba(40, 167, 69, 0.25);
+        }
+
+        .form-group input.invalid,
+        .form-group select.invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.1rem rgba(220, 53, 69, 0.25);
+        }
+
+        .validation-message {
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .validation-message.error {
+            color: #dc3545;
+            display: block;
+        }
+
+        .validation-message.success {
+            color: #28a745;
+            display: block;
+        }
+
+        /* Value with unit input styles */
+        .value-unit-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .value-unit-container input {
+            flex: 2;
+        }
+
+        .value-unit-container select {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .required-field {
+            color: #dc3545;
+            font-weight: bold;
+        }
         
         .btn {
             padding: 12px 24px;
@@ -1961,10 +2010,10 @@
                 subcategories: ['STD', 'PRE', 'VAR', 'NET'],
                 fields: [
                     { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Yageo, Vishay' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., RC0805FR-0710KL' },
-                    { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10k, 4.7k' },
-                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
-                    { id: 'tolerance', label: 'Tolerance', type: 'text', required: true, placeholder: 'e.g., 1%, 5%' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., RC0805FR-0710KL', validation: 'manufacturer-pn' },
+                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 4.7', units: 'resistance', autoFormat: true, validation: 'component-value' },
+                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: ['0201', '0402', '0603', '0805', '1206', '1210', '2010', '2512'], validation: 'package' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: true, options: ['1%', '5%', '10%', '20%'] },
                     { id: 'temp-rating', label: 'Temp Rating', type: 'text', required: false, placeholder: 'e.g., -55°C to +125°C' },
                     { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
@@ -1974,12 +2023,12 @@
                 subcategories: ['CER', 'ELE', 'TAN', 'FIL'],
                 fields: [
                     { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, TDK' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., GRM21BR71H104KA01L' },
-                    { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10uF, 100nF' },
-                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1206' },
-                    { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
-                    { id: 'voltage', label: 'Voltage', type: 'text', required: true, placeholder: 'e.g., 25V, 50V' },
-                    { id: 'rating', label: 'Rating', type: 'text', required: false, placeholder: 'e.g., X7R, X5R, Y5V' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., GRM21BR71H104KA01L', validation: 'manufacturer-pn' },
+                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 100', units: 'capacitance', autoFormat: true, validation: 'component-value' },
+                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: ['0201', '0402', '0603', '0805', '1206', '1210', '1812', '2220'], validation: 'package' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: false, options: ['5%', '10%', '20%', '±0.25pF', '±0.5pF'] },
+                    { id: 'voltage', label: 'Voltage Rating', type: 'value-with-unit', required: true, placeholder: 'e.g., 25, 50', units: 'voltage', validation: 'numeric' },
+                    { id: 'rating', label: 'Dielectric', type: 'dropdown', required: false, options: ['X7R', 'X5R', 'Y5V', 'C0G', 'NP0', 'Z5U'] },
                     { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
@@ -2001,11 +2050,11 @@
                 subcategories: ['PWR', 'CHK', 'FER'],
                 fields: [
                     { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, Coilcraft' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., LQM18FN1R0M00D' },
-                    { id: 'value', label: 'Value', type: 'text', required: true, placeholder: 'e.g., 10uH, 220nH' },
-                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 0805, 1210' },
-                    { id: 'tolerance', label: 'Tolerance', type: 'text', required: false, placeholder: 'e.g., 10%, 20%' },
-                    { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 1A, 500mA' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., LQM18FN1R0M00D', validation: 'manufacturer-pn' },
+                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 220', units: 'inductance', autoFormat: true, validation: 'component-value' },
+                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: ['0201', '0402', '0603', '0805', '1206', '1210', '1812', '2220'], validation: 'package' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: false, options: ['5%', '10%', '20%', '30%'] },
+                    { id: 'current-rating', label: 'Current Rating', type: 'value-with-unit', required: false, placeholder: 'e.g., 1, 500', units: 'current', validation: 'numeric' },
                     { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
                 ]
             },
@@ -2112,6 +2161,230 @@
             }
         };
 
+        // ============ VALIDATION FRAMEWORK ============
+        
+        // Unit definitions for different component types
+        const unitDefinitions = {
+            resistance: ['Ω', 'kΩ', 'MΩ', 'GΩ'],
+            capacitance: ['pF', 'nF', 'µF', 'mF'],
+            inductance: ['nH', 'µH', 'mH', 'H'],
+            voltage: ['mV', 'V', 'kV'],
+            current: ['µA', 'mA', 'A'],
+            frequency: ['Hz', 'kHz', 'MHz', 'GHz']
+        };
+
+        // Standard package sizes for different component types
+        const packageOptions = {
+            resistors: ['0201', '0402', '0603', '0805', '1206', '1210', '2010', '2512'],
+            capacitors: ['0201', '0402', '0603', '0805', '1206', '1210', '1812', '2220'],
+            inductors: ['0201', '0402', '0603', '0805', '1206', '1210', '1812', '2220'],
+            diodes: ['SOD-123', 'SOD-323', 'SOD-523', 'SOT-23', 'SMA', 'SMB', 'SMC'],
+            transistors: ['SOT-23', 'SOT-223', 'TO-220', 'DPAK', 'D2PAK', 'SO-8']
+        };
+
+        // Standard tolerance values
+        const toleranceOptions = {
+            resistors: ['1%', '5%', '10%', '20%'],
+            capacitors: ['5%', '10%', '20%', '±0.25pF', '±0.5pF'],
+            inductors: ['5%', '10%', '20%', '30%']
+        };
+
+        // Validation functions
+        function validateComponentValue(value, category) {
+            if (!value || value.trim() === '') {
+                return { valid: false, message: 'Value is required' };
+            }
+
+            // Patterns for different component types
+            const patterns = {
+                resistors: /^(\d+(?:\.\d+)?)\s*([kKmMgG]?)([rRΩ]?)$/i,
+                capacitors: /^(\d+(?:\.\d+)?)\s*([pnµumk]?)([fF])$/i,
+                inductors: /^(\d+(?:\.\d+)?)\s*([nµumk]?)([hH])$/i
+            };
+
+            const pattern = patterns[category];
+            if (!pattern) {
+                return { valid: true, message: '' }; // No specific validation for this category
+            }
+
+            if (pattern.test(value.trim())) {
+                return { valid: true, message: 'Valid format' };
+            } else {
+                const examples = {
+                    resistors: 'e.g., 10k, 4.7kΩ, 100R',
+                    capacitors: 'e.g., 10µF, 100nF, 22pF',
+                    inductors: 'e.g., 10µH, 1mH, 220nH'
+                };
+                return { 
+                    valid: false, 
+                    message: `Invalid format. ${examples[category] || ''}` 
+                };
+            }
+        }
+
+        function validatePackage(packageValue, category) {
+            if (!packageValue || packageValue.trim() === '') {
+                return { valid: false, message: 'Package is required' };
+            }
+
+            const validPackages = packageOptions[category] || [];
+            if (validPackages.length > 0 && !validPackages.includes(packageValue)) {
+                return { 
+                    valid: false, 
+                    message: `Invalid package. Valid options: ${validPackages.join(', ')}` 
+                };
+            }
+
+            return { valid: true, message: 'Valid package' };
+        }
+
+        function validateManufacturerPN(partNumber) {
+            if (!partNumber || partNumber.trim() === '') {
+                return { valid: true, message: '' }; // Optional field
+            }
+
+            // Basic pattern: alphanumeric with some special characters
+            const pattern = /^[A-Za-z0-9\-_\.\/]+$/;
+            if (pattern.test(partNumber.trim())) {
+                return { valid: true, message: 'Valid format' };
+            } else {
+                return { 
+                    valid: false, 
+                    message: 'Only letters, numbers, hyphens, underscores, dots, and slashes allowed' 
+                };
+            }
+        }
+
+        function validateNumericField(value, unit) {
+            if (!value || value.trim() === '') {
+                return { valid: true, message: '' }; // Allow empty for optional fields
+            }
+
+            const numericPattern = /^(\d+(?:\.\d+)?)\s*([a-zA-Zµ]*)\s*$/;
+            const match = value.trim().match(numericPattern);
+            
+            if (match) {
+                const number = parseFloat(match[1]);
+                if (number > 0) {
+                    return { valid: true, message: 'Valid numeric value' };
+                }
+            }
+
+            return { 
+                valid: false, 
+                message: 'Enter a positive number with optional unit' 
+            };
+        }
+
+        function standardizeValue(value, category) {
+            if (!value) return value;
+
+            const standardizations = {
+                resistors: value => {
+                    // Convert common patterns to standard format
+                    return value
+                        .replace(/r/gi, 'Ω')
+                        .replace(/k/gi, 'k')
+                        .replace(/m/gi, 'M')
+                        .replace(/(\d+)k(\d*)/gi, (match, p1, p2) => {
+                            if (p2) return `${p1}.${p2}kΩ`;
+                            return `${p1}kΩ`;
+                        });
+                },
+                capacitors: value => {
+                    return value
+                        .replace(/u/gi, 'µ')
+                        .replace(/(\d+)µ([fF])/gi, '$1µF')
+                        .replace(/(\d+)n([fF])/gi, '$1nF')
+                        .replace(/(\d+)p([fF])/gi, '$1pF');
+                },
+                inductors: value => {
+                    return value
+                        .replace(/u/gi, 'µ')
+                        .replace(/(\d+)µ([hH])/gi, '$1µH')
+                        .replace(/(\d+)n([hH])/gi, '$1nH')
+                        .replace(/(\d+)m([hH])/gi, '$1mH');
+                }
+            };
+
+            const standardize = standardizations[category];
+            return standardize ? standardize(value) : value;
+        }
+
+        function addValidationToField(field, category, fieldConfig) {
+            const validationContainer = document.createElement('div');
+            validationContainer.className = 'validation-message';
+            validationContainer.id = `${field.id}-validation`;
+            
+            field.addEventListener('input', function() {
+                validateField(field, category, fieldConfig);
+            });
+
+            field.addEventListener('blur', function() {
+                if (fieldConfig.autoFormat && fieldConfig.id === 'value') {
+                    field.value = standardizeValue(field.value, category);
+                }
+                validateField(field, category, fieldConfig);
+            });
+
+            field.parentNode.appendChild(validationContainer);
+        }
+
+        function validateField(field, category, fieldConfig) {
+            const value = field.value;
+            const validationMessage = document.getElementById(`${field.id}-validation`);
+            let result = { valid: true, message: '' };
+
+            // Apply validation based on field type
+            if (fieldConfig.id === 'value') {
+                result = validateComponentValue(value, category);
+            } else if (fieldConfig.id === 'package') {
+                result = validatePackage(value, category);
+            } else if (fieldConfig.id === 'manufacturer-pn') {
+                result = validateManufacturerPN(value);
+            } else if (fieldConfig.type === 'numeric') {
+                result = validateNumericField(value);
+            }
+
+            // Check required fields
+            if (fieldConfig.required && (!value || value.trim() === '')) {
+                result = { valid: false, message: 'This field is required' };
+            }
+
+            // Update field appearance and message
+            field.classList.remove('valid', 'invalid');
+            if (value) { // Only show validation state if field has content
+                field.classList.add(result.valid ? 'valid' : 'invalid');
+            }
+
+            validationMessage.className = `validation-message ${result.valid ? 'success' : 'error'}`;
+            validationMessage.textContent = result.message;
+
+            return result.valid;
+        }
+
+        function validateAllComponentFields() {
+            const category = document.getElementById('comp-category').value;
+            if (!category || !categoryConfigs[category]) {
+                return true;
+            }
+
+            let allValid = true;
+            const config = categoryConfigs[category];
+
+            config.fields.forEach(fieldConfig => {
+                const field = document.getElementById(`comp-${fieldConfig.id}`);
+                if (field) {
+                    const isValid = validateField(field, category, fieldConfig);
+                    if (!isValid) allValid = false;
+                }
+            });
+
+            return allValid;
+        }
+
+        // ============ END VALIDATION FRAMEWORK ============
+
         // Tab management
         function showTab(tabName) {
             // Hide all panels
@@ -2175,22 +2448,26 @@
             // Add KPN field (always present)
             fieldsHTML += `
                 <div class="form-group">
-                    <label>KPN <span style="color: red;">*</span></label>
+                    <label>KPN <span class="required-field">*</span></label>
                     <input type="text" id="comp-kpn" readonly style="background: #f5f5f5;">
                 </div>
                 <div class="form-group">
-                    <label>Category <span style="color: red;">*</span></label>
+                    <label>Category <span class="required-field">*</span></label>
                     <input type="text" id="comp-category-display" readonly style="background: #f5f5f5;">
                 </div>
                 <div class="form-group">
-                    <label>Subcategory <span style="color: red;">*</span></label>
+                    <label>Subcategory <span class="required-field">*</span></label>
                     <input type="text" id="comp-subcategory-display" readonly style="background: #f5f5f5;">
                 </div>
             `;
             
             // Add category-specific fields
             config.fields.forEach(field => {
-                const requiredMark = field.required ? '<span style="color: red;">*</span>' : '';
+                const requiredMark = field.required ? '<span class="required-field">*</span>' : '';
+                const fieldId = `comp-${field.id}`;
+                
+                fieldsHTML += `<div class="form-group">`;
+                fieldsHTML += `<label>${field.label} ${requiredMark}</label>`;
                 
                 if (field.type === 'vendor-select') {
                     // Create vendor dropdown
@@ -2200,29 +2477,68 @@
                     });
                     
                     fieldsHTML += `
-                        <div class="form-group">
-                            <label>${field.label} ${requiredMark}</label>
-                            <select id="comp-${field.id}" ${field.required ? 'required' : ''}>
-                                ${vendorOptions}
+                        <select id="${fieldId}" ${field.required ? 'required' : ''}>
+                            ${vendorOptions}
+                        </select>
+                    `;
+                } else if (field.type === 'dropdown') {
+                    // Create dropdown with predefined options
+                    let dropdownOptions = '<option value="">Select Option</option>';
+                    if (field.options) {
+                        field.options.forEach(option => {
+                            dropdownOptions += `<option value="${option}">${option}</option>`;
+                        });
+                    }
+                    
+                    fieldsHTML += `
+                        <select id="${fieldId}" ${field.required ? 'required' : ''}>
+                            ${dropdownOptions}
+                        </select>
+                    `;
+                } else if (field.type === 'value-with-unit') {
+                    // Create value input with unit dropdown
+                    let unitOptions = '';
+                    if (field.units && unitDefinitions[field.units]) {
+                        unitDefinitions[field.units].forEach(unit => {
+                            unitOptions += `<option value="${unit}">${unit}</option>`;
+                        });
+                    }
+                    
+                    fieldsHTML += `
+                        <div class="value-unit-container">
+                            <input type="text" 
+                                   id="${fieldId}" 
+                                   placeholder="${field.placeholder || ''}"
+                                   ${field.required ? 'required' : ''}>
+                            <select id="${fieldId}-unit">
+                                ${unitOptions}
                             </select>
                         </div>
                     `;
                 } else {
                     // Regular input field
+                    const inputType = field.type === 'url' ? 'url' : 'text';
                     fieldsHTML += `
-                        <div class="form-group">
-                            <label>${field.label} ${requiredMark}</label>
-                            <input type="${field.type}" 
-                                   id="comp-${field.id}" 
-                                   placeholder="${field.placeholder || ''}"
-                                   ${field.required ? 'required' : ''}>
-                        </div>
+                        <input type="${inputType}" 
+                               id="${fieldId}" 
+                               placeholder="${field.placeholder || ''}"
+                               ${field.required ? 'required' : ''}>
                     `;
                 }
+                
+                fieldsHTML += `</div>`; // Close form-group
             });
             
             fieldsHTML += '</div>';
             dynamicFieldsContainer.innerHTML = fieldsHTML;
+            
+            // Add validation to all fields
+            config.fields.forEach(field => {
+                const fieldElement = document.getElementById(`comp-${field.id}`);
+                if (fieldElement) {
+                    addValidationToField(fieldElement, category, field);
+                }
+            });
             
             // Update readonly fields if category/subcategory are already selected
             const categorySelect = document.getElementById('comp-category');
@@ -2364,6 +2680,12 @@
                 alert('Please select category and subcategory first');
                 return;
             }
+
+            // Validate all fields before proceeding
+            if (!validateAllComponentFields()) {
+                alert('Please fix validation errors before submitting');
+                return;
+            }
             
             const kpn = document.getElementById('comp-kpn').value || document.getElementById('comp-kpn-preview').textContent;
             
@@ -2383,10 +2705,34 @@
             config.fields.forEach(field => {
                 const fieldElement = document.getElementById(`comp-${field.id}`);
                 if (fieldElement) {
-                    const value = fieldElement.value.trim();
+                    let value;
+                    
+                    // Handle value-with-unit fields
+                    if (field.type === 'value-with-unit') {
+                        const unitElement = document.getElementById(`comp-${field.id}-unit`);
+                        const numValue = fieldElement.value.trim();
+                        const unit = unitElement ? unitElement.value : '';
+                        
+                        if (numValue && unit) {
+                            value = `${numValue}${unit}`;
+                        } else if (numValue) {
+                            value = numValue; // Store without unit if none selected
+                        } else {
+                            value = '';
+                        }
+                    } else {
+                        value = fieldElement.value.trim();
+                    }
+                    
                     if (field.required && !value) {
                         missingRequired.push(field.label);
                     }
+                    
+                    // Store with standardized formatting if it's a value field
+                    if (field.id === 'value' && value) {
+                        value = standardizeValue(value, category);
+                    }
+                    
                     component[field.id.replace('-', '_')] = value;
                 }
             });
@@ -2408,17 +2754,7 @@
             renderComponents();
             
             // Clear form
-            document.getElementById('comp-category').value = '';
-            document.getElementById('comp-subcategory').value = '';
-            document.getElementById('comp-kpn-preview').textContent = 'Select category and subcategory';
-            
-            // Clear dynamic fields
-            const dynamicFieldsContainer = document.getElementById('component-dynamic-fields');
-            dynamicFieldsContainer.innerHTML = `
-                <p style="color: #666; text-align: center; margin: 40px 0;">
-                    Select a category and subcategory to display component-specific fields
-                </p>
-            `;
+            resetComponentForm();
             
             // Show success message
             alert('Component added successfully!');
@@ -3959,8 +4295,27 @@
                     const fieldElement = document.getElementById(`comp-${field.id}`);
                     if (fieldElement) {
                         const value = component[field.id.replace('-', '_')] || '';
-                        if (field.type === 'vendor-select') {
-                            fieldElement.value = value;
+                        
+                        if (field.type === 'value-with-unit') {
+                            // Parse value and unit for value-with-unit fields
+                            const unitElement = document.getElementById(`comp-${field.id}-unit`);
+                            if (value && unitElement) {
+                                // Extract numeric part and unit
+                                const match = value.match(/^(\d+(?:\.\d+)?)\s*(.*)$/);
+                                if (match) {
+                                    fieldElement.value = match[1];
+                                    const unit = match[2];
+                                    // Try to select the correct unit
+                                    for (let option of unitElement.options) {
+                                        if (option.value === unit) {
+                                            unitElement.value = unit;
+                                            break;
+                                        }
+                                    }
+                                } else {
+                                    fieldElement.value = value;
+                                }
+                            }
                         } else {
                             fieldElement.value = value;
                         }
@@ -3970,8 +4325,10 @@
             
             // Change the add button to update mode
             const addButton = document.querySelector('button[onclick="addComponent()"]');
-            addButton.textContent = 'Update Component';
-            addButton.setAttribute('onclick', `updateComponent('${kpn}')`);
+            if (addButton) {
+                addButton.textContent = 'Update Component';
+                addButton.setAttribute('onclick', `updateComponent('${kpn}')`);
+            }
             
             // Show cancel edit button
             document.getElementById('cancel-edit-btn').style.display = 'inline-block';
@@ -3986,6 +4343,12 @@
             
             if (!category || !subcategory) {
                 alert('Please select category and subcategory first');
+                return;
+            }
+
+            // Validate all fields before proceeding
+            if (!validateAllComponentFields()) {
+                alert('Please fix validation errors before submitting');
                 return;
             }
             
@@ -4016,10 +4379,34 @@
             config.fields.forEach(field => {
                 const fieldElement = document.getElementById(`comp-${field.id}`);
                 if (fieldElement) {
-                    const value = fieldElement.value.trim();
+                    let value;
+                    
+                    // Handle value-with-unit fields
+                    if (field.type === 'value-with-unit') {
+                        const unitElement = document.getElementById(`comp-${field.id}-unit`);
+                        const numValue = fieldElement.value.trim();
+                        const unit = unitElement ? unitElement.value : '';
+                        
+                        if (numValue && unit) {
+                            value = `${numValue}${unit}`;
+                        } else if (numValue) {
+                            value = numValue; // Store without unit if none selected
+                        } else {
+                            value = '';
+                        }
+                    } else {
+                        value = fieldElement.value.trim();
+                    }
+                    
                     if (field.required && !value) {
                         missingRequired.push(field.label);
                     }
+                    
+                    // Store with standardized formatting if it's a value field
+                    if (field.id === 'value' && value) {
+                        value = standardizeValue(value, category);
+                    }
+                    
                     component[field.id.replace('-', '_')] = value;
                 }
             });
@@ -4031,6 +4418,14 @@
             
             // Update component
             data.components[componentIndex] = component;
+            saveData();
+            renderComponents();
+            
+            // Reset form
+            resetComponentForm();
+            
+            alert('Component updated successfully!');
+        }
             saveData();
             renderComponents();
             
@@ -4055,8 +4450,10 @@
             
             // Reset button
             const addButton = document.querySelector('button[onclick^="updateComponent"], button[onclick="addComponent()"]');
-            addButton.textContent = 'Add Component';
-            addButton.setAttribute('onclick', 'addComponent()');
+            if (addButton) {
+                addButton.textContent = 'Add Component';
+                addButton.setAttribute('onclick', 'addComponent()');
+            }
             
             // Hide cancel edit button
             document.getElementById('cancel-edit-btn').style.display = 'none';
