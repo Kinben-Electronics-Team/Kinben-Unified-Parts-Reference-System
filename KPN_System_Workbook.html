@@ -2263,7 +2263,12 @@
                         .replace(/k/gi, 'k')
                         .replace(/m/gi, 'M')
                         .replace(/(\d+)k(\d*)/gi, (match, p1, p2) => {
-                            return p2 ? `${p1}.${p2}kΩ` : `${p1}kΩ`;
+                            // Handle resistor values like '10k5' (convert to '10.5kΩ') and '10k' (convert to '10kΩ')
+                            if (p2 && p2.trim() !== '') {
+                                return `${p1}.${p2}kΩ`;
+                            } else {
+                                return `${p1}kΩ`;
+                            }
                         });
                 },
                 capacitors: value => {
