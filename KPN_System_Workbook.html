@@ -2483,7 +2483,7 @@
                                        placeholder="Enter numeric value"
                                        ${field.required ? 'required' : ''}>
                                 <select id="comp-${field.id}-unit">
-                                    <option value="">Unit</option>
+                                    <option value="${unitList[0]}" selected>${unitList[0]}</option>
                                     ${unitOptionsHTML}
                                 </select>
                             </div>
