@@ -1,6 +1,20 @@
 # KPN System Workbook - Test Suite Documentation
 
-This directory contains the comprehensive test suite for the KPN System Workbook application with multiple testing approaches.
+This directory contains the comprehensive test suite for the KPN System Workbook application. The tests validate both the primary CSV-integrated application and fallback functionality.
+
+## 🎯 Application Testing Scope
+
+### Primary Application (`KPN_System_Workbook.html`)
+- **CSV Integration**: File System Access API functionality
+- **Directory Management**: CSV folder selection and management
+- **Real-time Sync**: Changes written to CSV files
+- **Browser Compatibility**: Fallback to localStorage for unsupported browsers
+- **Table Sorting**: Enhanced sorting functionality
+
+### Legacy Application (`KPN_System_Workbook_Legacy.html`)  
+- **LocalStorage Persistence**: Browser-based data storage
+- **CSV Import/Export**: Manual file operations
+- **Universal Compatibility**: All browser support
 
 ## 🎯 Test Types Available
 
@@ -15,6 +29,9 @@ This directory contains the comprehensive test suite for the KPN System Workbook
   - Modal dialogs
   - Component categories
   - Data persistence
+  - CSV file integration (primary app)
+  - File System Access API compatibility
+  - Browser fallback mechanisms
 
 ### 2. Fallback Tests (`npm run test:fallback`)
 - **What it tests**: Basic application structure and functionality without browsers
