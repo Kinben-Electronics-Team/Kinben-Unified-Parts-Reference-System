@@ -6,7 +6,12 @@
   "scripts": {
     "start": "python3 serve.py",
     "build": "node build-for-firebase.js",
-    "test": "./test-fallback.sh"
+    "test": "./test-fallback.sh",
+    "precommit": "node scripts/check-secrets.js",
+    "security-check": "node scripts/check-secrets.js",
+    "security-validate": "./scripts/validate-security.sh",
+    "setup": "npm install && ./scripts/install-hooks.sh",
+    "postinstall": "echo '🔧 Run: npm run setup (to install security hooks)'"
   },
   "repository": {
     "type": "git",
@@ -32,6 +37,7 @@
     "node": ">=18.0.0"
   },
   "devDependencies": {
-    "firebase-tools": "^14.11.0"
+    "firebase-tools": "^14.11.0",
+    "dotenv": "^16.0.0"
   }
 }

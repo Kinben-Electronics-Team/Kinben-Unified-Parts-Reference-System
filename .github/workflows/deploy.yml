@@ -23,6 +23,11 @@ jobs:
     - name: Install dependencies
       run: npm install
       
+    - name: Security Check - Scan for Secrets
+      run: |
+        echo "🔍 Scanning repository for leaked secrets..."
+        npm run security-check
+        
     - name: Validate HTML
       run: |
         echo "Validating HTML files..."

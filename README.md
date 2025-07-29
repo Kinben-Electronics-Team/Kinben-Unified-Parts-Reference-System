@@ -3,12 +3,24 @@
 [![Deploy Status](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/workflows/Deploy%20KPN%20System%20Workbook/badge.svg)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/actions)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Available-brightgreen)](https://kinbenpartssystem.web.app/)
 [![Version](https://img.shields.io/badge/Version-3.0.0-blue)](https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System/releases)
+[![Security](https://img.shields.io/badge/Security-Protected-green)](SECURITY_SETUP.md)
 
 ## 🚀 [**LAUNCH APPLICATION**](https://kinbenpartssystem.web.app/)
 
 **🎯 Occam's Razor Applied**: Simple. Fast. Essential. - Three Core Data Types Only
 
 **Production URL**: [https://kinbenpartssystem.web.app/](https://kinbenpartssystem.web.app/)
+
+## 🔒 Security Notice
+
+This repository implements **comprehensive security measures** to protect against secret leaks:
+
+- ✅ **Automated secret detection** on every commit
+- ✅ **Environment variable configuration** for all sensitive data
+- ✅ **Secure build process** with safe credential injection
+- ✅ **Git hooks** to prevent accidental commits of secrets
+
+**For security setup instructions:** [SECURITY_SETUP.md](SECURITY_SETUP.md)
 
 ## 📋 Complete Documentation
 

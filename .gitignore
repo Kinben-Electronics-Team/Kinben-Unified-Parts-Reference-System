@@ -10,9 +10,15 @@ node_modules/
 # Build artifacts
 build/
 
-# Development
+# Development & Secrets
 .env
-.env.local
+.env.*
+!.env.example
+*.pem
+*.key
+*firebase-service-account*.json
+*secrets*
+*credentials*
 
 # IDE
 .vscode/
