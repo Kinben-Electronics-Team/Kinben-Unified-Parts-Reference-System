@@ -33,11 +33,15 @@ This comprehensive documentation includes:
 3. **🏗️ System Hierarchy** - Multi-PCB system organization
 
 **Key Features:**
-- ✅ Single-file HTML application
+- ✅ Direct CSV file integration with File System Access API
+- ✅ Real-time synchronization between app and CSV files
+- ✅ Directory management and empty folder handling
+- ✅ Browser compatibility with localStorage fallback
+- ✅ Table sorting functionality for all columns
+- ✅ Offline capability without internet dependency
 - ✅ Zero configuration required
 - ✅ Automatic deployment from GitHub
 - ✅ Mobile responsive design
-- ✅ Local storage persistence
 
 ---
 

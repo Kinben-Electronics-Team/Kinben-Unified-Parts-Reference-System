@@ -3,51 +3,56 @@
 ## 🎯 Project Summary
 **Repository**: https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System  
 **Live Site**: https://kinbenpartssystem.web.app/  
-**Primary Application**: `KPN_System_Workbook.html` - Advanced multi-level hierarchy management system for electronic components  
-**Local CSV Variant**: `KPN_System_Local.html` - Direct CSV file integration for offline use
+**Primary Application**: `KPN_System_Workbook.html` - CSV-integrated system with File System Access API for direct file management  
+**Legacy Application**: `KPN_System_Workbook_Legacy.html` - localStorage-based version for browser compatibility
 
 ## 🗂️ Core Architecture
 
 ### 📁 Key Files Structure
 ```
 Kinben-Unified-Parts-Reference-System/
-├── 🏠 index.html                    # Landing page with navigation
-├── 🎛️ KPN_System_Workbook.html     # Main application (Firebase-hosted)
-├── 📁 KPN_System_Local.html        # Local CSV variant (offline capable)
-├── 🔥 firebase.json                # Firebase hosting configuration
-├── 📊 KPN Master Reference Sheet/  # CSV data files
-│   └── CSV_Files/                  # Local CSV storage directory
-├── 🔧 Kinben Basic Kicad Library/  # Component libraries
-├── 🧪 tests/                       # Playwright test suite
-├── ⚙️ package.json                # Dependencies and scripts
-└── 🚀 .github/workflows/           # CI/CD automation
+├── 🏠 index.html                      # Landing page with navigation
+├── 🎛️ KPN_System_Workbook.html       # Primary application (CSV-integrated)
+├── 📦 KPN_System_Workbook_Legacy.html # Legacy application (localStorage-based)
+├── 🔥 firebase.json                  # Firebase hosting configuration
+├── 📊 KPN Master Reference Sheet/    # CSV data files (integrated with primary app)
+│   └── CSV_Files/                    # Direct CSV integration directory
+├── 🔧 Kinben Basic Kicad Library/    # Component libraries
+├── 🧪 tests/                         # Playwright test suite
+├── ⚙️ package.json                  # Dependencies and scripts
+├── 🔨 build-for-firebase.js          # Build script for deployment
+└── 🚀 .github/workflows/             # CI/CD automation
 ```
 
 ### 🎨 Application Features
 
-#### 🌐 Firebase Hosted Version (`KPN_System_Workbook.html`)
-- **Multi-level Hierarchy**: Components → PCBs → Assemblies → Systems  
-- **File Upload/Download**: CSV import/export functionality
+#### 🎯 Primary Application (`KPN_System_Workbook.html`) - CSV Integrated
+- **Direct CSV Integration**: File System Access API for real-time CSV file operations
+- **Real-time Sync**: Changes instantly written to CSV files in working directory  
+- **Multi-level Hierarchy**: Components → PCBs → Assemblies → Systems
+- **Directory Management**: Switch between different project folders
+- **Table Sorting**: All columns sortable with visual indicators
+- **Browser Compatibility**: Full support for Chrome 86+, Edge 86+, falls back to localStorage
+- **Offline Capability**: Works without internet after initial directory setup
+- **Dual Storage**: CSV files + localStorage backup for data safety
+
+#### 📦 Legacy Application (`KPN_System_Workbook_Legacy.html`) - localStorage Based  
+- **LocalStorage Persistence**: Browser-based data storage
+- **CSV Import/Export**: Manual file operations for data transfer
 - **Image Management**: Component photos with base64 encoding
 - **Search & Filter**: Advanced filtering across all levels
-- **Category Management**: Organize components by categories
 - **Mobile Responsive**: Works on tablets and phones
-- **Data Persistence**: LocalStorage for user sessions
-
-#### 📁 Local CSV Version (`KPN_System_Local.html`)
-- **Direct CSV Integration**: File System Access API for real-time CSV operations
-- **Offline Capability**: Works without internet connection
-- **Real-time Sync**: Changes instantly written to CSV files
-- **Directory Management**: Switch between different project folders
-- **Browser Compatibility**: Chrome/Safari full support, Firefox fallback
-- **Dual Storage**: CSV files + localStorage backup for data safety
-- **Table Sorting**: All columns sortable with visual indicators
+- **Universal Compatibility**: Works on all modern browsers
 
 ## 🔧 Technical Stack
 
 ### 🖥️ Frontend
 - **HTML5**: Single-page application structure
-- **JavaScript**: Vanilla ES6+ (no frameworks)  
+- **JavaScript**: Vanilla ES6+ (no frameworks)
+- **File System Access API**: Direct CSV file integration (Chrome 86+, Edge 86+)
+- **LocalStorage Fallback**: Browser compatibility for unsupported environments
+- **CSS3**: Responsive design with grid and flexbox
+- **CSV Processing**: Real-time parsing and synchronization  
 - **CSS3**: Responsive design with CSS Grid/Flexbox
 - **Bootstrap**: UI framework for components
 - **Papa Parse**: CSV parsing library

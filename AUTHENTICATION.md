@@ -2,7 +2,13 @@
 
 ## 🔐 Local User Management System
 
-The KPN System uses a local user management system with localStorage persistence.
+The KPN System uses a local user management system with localStorage persistence that works identically across both the primary CSV-integrated application and the legacy localStorage-only version.
+
+### 🎯 Application Compatibility
+- **Primary App** (`KPN_System_Workbook.html`): CSV-integrated with File System Access API
+- **Legacy App** (`KPN_System_Workbook_Legacy.html`): localStorage-only version
+- **User Management**: Identical across both versions using localStorage
+- **Authentication Flow**: Same login/logout process for both applications
 
 ## 🎯 Default Login
 

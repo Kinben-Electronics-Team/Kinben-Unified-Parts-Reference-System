@@ -54,6 +54,10 @@ This system has been **dramatically simplified** following Occam's Razor princip
 - **Removed**: Complex assembly procedures and multi-level tracking
 
 ### ✅ Success Criteria Achieved
+- **CSV Integration**: ✅ Direct CSV file management using File System Access API
+- **Real-time Sync**: ✅ Changes immediately written to CSV files
+- **Browser Fallback**: ✅ localStorage backup for unsupported browsers
+- **Offline Capability**: ✅ Works without internet after initial load
 - **2-minute rule**: ✅ All common operations complete in < 2 minutes
 - **Zero training**: ✅ Engineers can use without training
 - **Immediate utility**: ✅ Useful from day 1 for real work
@@ -66,12 +70,14 @@ This system has been **dramatically simplified** following Occam's Razor princip
 ```
 Kinben-Unified-Parts-Reference-System/
 ├── 🏠 index.html                      # Landing page with navigation
-├── 🎛️ KPN_System_Workbook.html       # Main application (single-file app)
+├── 🎛️ KPN_System_Workbook.html       # Main application (CSV integrated)
+├── 📦 KPN_System_Workbook_Legacy.html # Legacy version (localStorage only)
 ├── 🔥 firebase.json                  # Firebase hosting configuration
-├── 📊 KPN Master Reference Sheet/    # CSV data files
+├── 📊 KPN Master Reference Sheet/    # CSV data files (integrated with app)
 ├── 🔧 Kinben Basic Kicad Library/    # Component libraries
 ├── 🧪 tests/                         # Playwright test suite
 ├── ⚙️ package.json                  # Dependencies and scripts
+├── 🔨 build-for-firebase.js          # Build script for deployment
 ├── 📋 README.md                      # Project overview (simplified)
 ├── 📖 DEPLOYMENT.md                  # Deployment guide
 ├── 🔧 FIREBASE_SETUP.md              # Firebase configuration guide
@@ -81,6 +87,32 @@ Kinben-Unified-Parts-Reference-System/
 ├── 🚀 .github/workflows/             # CI/CD automation
 └── 📝 .github/ISSUE_TEMPLATE/        # Issue templates for bug reports and tasks
 ```
+
+---
+
+## 💾 CSV File Integration
+
+### 🎯 Direct File System Access
+The primary application now uses the **File System Access API** for direct CSV file integration:
+
+- **Real-time Sync**: Changes are immediately written to CSV files
+- **Directory Management**: Select and change CSV working directories
+- **Auto-detection**: Automatically finds `KPN Master Reference Sheet/CSV_Files/` 
+- **Empty Directory Handling**: Prompts to create blank CSV files or select different directory
+- **Browser Compatibility**: Fallback to localStorage for unsupported browsers
+
+### 📁 CSV Workflow
+1. **Initial Setup**: Grant directory access permission when prompted
+2. **Directory Selection**: App auto-detects CSV folder or allows manual selection
+3. **Live Integration**: All changes sync immediately to CSV files
+4. **Backup Storage**: Dual storage with localStorage for reliability
+5. **Table Sorting**: Enhanced sorting functionality across all columns
+
+### 🔧 Technical Requirements
+- **HTTPS Required**: File System Access API requires secure connection (✅ Firebase provides)
+- **User Gesture**: Directory selection requires user interaction
+- **Browser Support**: Chrome 86+, Edge 86+, Opera 72+ (falls back to localStorage)
+- **Offline Capability**: Works without internet after initial directory setup
 
 ---
 
