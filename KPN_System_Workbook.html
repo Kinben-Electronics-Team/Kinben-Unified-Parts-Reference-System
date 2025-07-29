@@ -2003,6 +2003,164 @@
             await writable.close();
         }
 
+        // Category configurations with component-specific fields
+        const categoryConfigs = {
+            resistors: { 
+                code: 'RES', 
+                subcategories: ['STD', 'PRE', 'VAR', 'NET'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Yageo, Vishay' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., RC0805FR-0710KL', validation: 'manufacturer-pn' },
+                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 4.7', units: 'resistance', autoFormat: true, validation: 'component-value' },
+                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: ['0201', '0402', '0603', '0805', '1206', '1210', '2010', '2512'], validation: 'package' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: true, options: ['1%', '5%', '10%', '20%'] },
+                    { id: 'temp-rating', label: 'Temp Rating', type: 'text', required: false, placeholder: 'e.g., -55°C to +125°C' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            capacitors: { 
+                code: 'CAP', 
+                subcategories: ['CER', 'ELE', 'TAN', 'FIL'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, TDK' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., GRM21BR71H104KA01L', validation: 'manufacturer-pn' },
+                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 100', units: 'capacitance', autoFormat: true, validation: 'component-value' },
+                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: ['0201', '0402', '0603', '0805', '1206', '1210', '1812', '2220'], validation: 'package' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: false, options: ['5%', '10%', '20%', '±0.25pF', '±0.5pF'] },
+                    { id: 'voltage', label: 'Voltage Rating', type: 'value-with-unit', required: true, placeholder: 'e.g., 25, 50', units: 'voltage', validation: 'numeric' },
+                    { id: 'rating', label: 'Dielectric', type: 'dropdown', required: false, options: ['X7R', 'X5R', 'Y5V', 'C0G', 'NP0', 'Z5U'] },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            ics: { 
+                code: 'IC', 
+                subcategories: ['MCU', 'ANA', 'DIG', 'PWR'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., STMicroelectronics, TI' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., STM32F103C8T6' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 32-bit ARM Cortex-M3 MCU' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., LQFP-48, QFN-32' },
+                    { id: 'rating', label: 'Rating', type: 'text', required: false, placeholder: 'e.g., Automotive, Industrial' },
+                    { id: 'datasheet-link', label: 'Datasheet/Product Link', type: 'url', required: false, placeholder: 'https://...' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            inductors: { 
+                code: 'IND', 
+                subcategories: ['PWR', 'CHK', 'FER'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, Coilcraft' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., LQM18FN1R0M00D', validation: 'manufacturer-pn' },
+                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 220', units: 'inductance', autoFormat: true, validation: 'component-value' },
+                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: ['0201', '0402', '0603', '0805', '1206', '1210', '1812', '2220'], validation: 'package' },
+                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: false, options: ['5%', '10%', '20%', '30%'] },
+                    { id: 'current-rating', label: 'Current Rating', type: 'value-with-unit', required: false, placeholder: 'e.g., 1, 500', units: 'current', validation: 'numeric' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            diodes: { 
+                code: 'DIO', 
+                subcategories: ['STD', 'LED', 'ZEN', 'SCH'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Vishay, Diodes Inc' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 1N4148WS' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOD-323, SOT-23' },
+                    { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 75V, 100V' },
+                    { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 150mA, 1A' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            transistors: { 
+                code: 'TRA', 
+                subcategories: ['BJT', 'FET', 'MOS'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Infineon, ON Semi' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 2N7002K' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOT-23, TO-220' },
+                    { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 60V, 100V' },
+                    { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 300mA, 1A' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            connectors: { 
+                code: 'CON', 
+                subcategories: ['HDR', 'JST', 'USB', 'RJ45'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., JST, Molex' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., B2B-XH-A(LF)(SN)' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 2-pin JST XH connector' },
+                    { id: 'pitch', label: 'Pitch', type: 'text', required: false, placeholder: 'e.g., 2.54mm, 1.25mm' },
+                    { id: 'pins', label: 'Pins', type: 'number', required: false, placeholder: 'e.g., 2, 4, 8' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            switches: { 
+                code: 'SWI', 
+                subcategories: ['TAC', 'DIP', 'ROT', 'SLI'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., ALPS, Omron' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., SKHHPNA010' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Tactile switch 4.3x4.3mm' },
+                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 4.3x4.3mm, SMD' },
+                    { id: 'actuation-force', label: 'Actuation Force', type: 'text', required: false, placeholder: 'e.g., 160gf, 260gf' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            pcb: { 
+                code: 'PCB', 
+                subcategories: ['STD', 'FLX', 'RIG', 'MLB'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., JLCPCB, PCBWay' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., PCB-MAIN-V1.0' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Main Controller PCB 2-layer' },
+                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., 50x30mm, 100x80mm' },
+                    { id: 'layers', label: 'Layers', type: 'text', required: false, placeholder: 'e.g., 2, 4, 6' },
+                    { id: 'thickness', label: 'Thickness', type: 'text', required: false, placeholder: 'e.g., 1.6mm, 0.8mm' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            mechanical: { 
+                code: 'MEC', 
+                subcategories: ['SCR', 'NUT', 'WSH', 'BRK', 'SPR'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., McMaster-Carr, Fastenal' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., 91292A110' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., M3x10mm Phillips Head Screw' },
+                    { id: 'material', label: 'Material', type: 'text', required: false, placeholder: 'e.g., Stainless Steel, Aluminum' },
+                    { id: 'finish', label: 'Finish', type: 'text', required: false, placeholder: 'e.g., Black Oxide, Zinc Plated' },
+                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., M3x10mm, 6.35x12.7mm' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            printed3d: { 
+                code: 'P3D', 
+                subcategories: ['CAS', 'BRK', 'SPA', 'MNT'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Internal, Shapeways' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., CASE-001-V1.2' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Sensor Housing Top Cover' },
+                    { id: 'material', label: 'Material', type: 'text', required: false, placeholder: 'e.g., PLA, ABS, PETG' },
+                    { id: 'color', label: 'Color', type: 'text', required: false, placeholder: 'e.g., Black, White, Clear' },
+                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., 80x60x25mm' },
+                    { id: 'file-link', label: 'CAD File Link', type: 'url', required: false, placeholder: 'https://...' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            },
+            cable: { 
+                code: 'CAB', 
+                subcategories: ['PWR', 'DATA', 'SIG', 'CUS'],
+                fields: [
+                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Amphenol, TE Connectivity' },
+                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., USB-A-TO-C-1M' },
+                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., USB-A to USB-C Cable 1m' },
+                    { id: 'length', label: 'Length', type: 'text', required: false, placeholder: 'e.g., 1m, 500mm, 6ft' },
+                    { id: 'connectors', label: 'Connectors', type: 'text', required: false, placeholder: 'e.g., USB-A to USB-C, JST-XH 2pin' },
+                    { id: 'wire-gauge', label: 'Wire Gauge', type: 'text', required: false, placeholder: 'e.g., 24AWG, 20AWG' },
+                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
+                ]
+            }
+        };
+
         // ============ VALIDATION FRAMEWORK ============
         
         // Unit definitions for different component types
@@ -2226,164 +2384,6 @@
         }
 
         // ============ END VALIDATION FRAMEWORK ============
-
-        // Category configurations with component-specific fields
-        const categoryConfigs = {
-            resistors: { 
-                code: 'RES', 
-                subcategories: ['STD', 'PRE', 'VAR', 'NET'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Yageo, Vishay' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., RC0805FR-0710KL', validation: 'manufacturer-pn' },
-                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 4.7', units: 'resistance', autoFormat: true, validation: 'component-value' },
-                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: packageOptions.resistors, validation: 'package' },
-                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: true, options: toleranceOptions.resistors },
-                    { id: 'temp-rating', label: 'Temp Rating', type: 'text', required: false, placeholder: 'e.g., -55°C to +125°C' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            capacitors: { 
-                code: 'CAP', 
-                subcategories: ['CER', 'ELE', 'TAN', 'FIL'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, TDK' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., GRM21BR71H104KA01L', validation: 'manufacturer-pn' },
-                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 100', units: 'capacitance', autoFormat: true, validation: 'component-value' },
-                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: packageOptions.capacitors, validation: 'package' },
-                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: false, options: toleranceOptions.capacitors },
-                    { id: 'voltage', label: 'Voltage Rating', type: 'value-with-unit', required: true, placeholder: 'e.g., 25, 50', units: 'voltage', validation: 'numeric' },
-                    { id: 'rating', label: 'Dielectric', type: 'dropdown', required: false, options: ['X7R', 'X5R', 'Y5V', 'C0G', 'NP0', 'Z5U'] },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            ics: { 
-                code: 'IC', 
-                subcategories: ['MCU', 'ANA', 'DIG', 'PWR'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., STMicroelectronics, TI' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., STM32F103C8T6' },
-                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 32-bit ARM Cortex-M3 MCU' },
-                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., LQFP-48, QFN-32' },
-                    { id: 'rating', label: 'Rating', type: 'text', required: false, placeholder: 'e.g., Automotive, Industrial' },
-                    { id: 'datasheet-link', label: 'Datasheet/Product Link', type: 'url', required: false, placeholder: 'https://...' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            inductors: { 
-                code: 'IND', 
-                subcategories: ['PWR', 'CHK', 'FER'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Murata, Coilcraft' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., LQM18FN1R0M00D', validation: 'manufacturer-pn' },
-                    { id: 'value', label: 'Value', type: 'value-with-unit', required: true, placeholder: 'e.g., 10, 220', units: 'inductance', autoFormat: true, validation: 'component-value' },
-                    { id: 'package', label: 'Package', type: 'dropdown', required: true, options: packageOptions.inductors, validation: 'package' },
-                    { id: 'tolerance', label: 'Tolerance', type: 'dropdown', required: false, options: toleranceOptions.inductors },
-                    { id: 'current-rating', label: 'Current Rating', type: 'value-with-unit', required: false, placeholder: 'e.g., 1, 500', units: 'current', validation: 'numeric' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            diodes: { 
-                code: 'DIO', 
-                subcategories: ['STD', 'LED', 'ZEN', 'SCH'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Vishay, Diodes Inc' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 1N4148WS' },
-                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOD-323, SOT-23' },
-                    { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 75V, 100V' },
-                    { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 150mA, 1A' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            transistors: { 
-                code: 'TRA', 
-                subcategories: ['BJT', 'FET', 'MOS'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Infineon, ON Semi' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., 2N7002K' },
-                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., SOT-23, TO-220' },
-                    { id: 'voltage-rating', label: 'Voltage Rating', type: 'text', required: false, placeholder: 'e.g., 60V, 100V' },
-                    { id: 'current-rating', label: 'Current Rating', type: 'text', required: false, placeholder: 'e.g., 300mA, 1A' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            connectors: { 
-                code: 'CON', 
-                subcategories: ['HDR', 'JST', 'USB', 'RJ45'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., JST, Molex' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., B2B-XH-A(LF)(SN)' },
-                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., 2-pin JST XH connector' },
-                    { id: 'pitch', label: 'Pitch', type: 'text', required: false, placeholder: 'e.g., 2.54mm, 1.25mm' },
-                    { id: 'pins', label: 'Pins', type: 'number', required: false, placeholder: 'e.g., 2, 4, 8' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            switches: { 
-                code: 'SWI', 
-                subcategories: ['TAC', 'DIP', 'ROT', 'SLI'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., ALPS, Omron' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: true, placeholder: 'e.g., SKHHPNA010' },
-                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Tactile switch 4.3x4.3mm' },
-                    { id: 'package', label: 'Package', type: 'text', required: true, placeholder: 'e.g., 4.3x4.3mm, SMD' },
-                    { id: 'actuation-force', label: 'Actuation Force', type: 'text', required: false, placeholder: 'e.g., 160gf, 260gf' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            pcb: { 
-                code: 'PCB', 
-                subcategories: ['STD', 'FLX', 'RIG', 'MLB'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., JLCPCB, PCBWay' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., PCB-MAIN-V1.0' },
-                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Main Controller PCB 2-layer' },
-                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., 50x30mm, 100x80mm' },
-                    { id: 'layers', label: 'Layers', type: 'text', required: false, placeholder: 'e.g., 2, 4, 6' },
-                    { id: 'thickness', label: 'Thickness', type: 'text', required: false, placeholder: 'e.g., 1.6mm, 0.8mm' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            mechanical: { 
-                code: 'MEC', 
-                subcategories: ['SCR', 'NUT', 'WSH', 'BRK', 'SPR'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., McMaster-Carr, Fastenal' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., 91292A110' },
-                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., M3x10mm Phillips Head Screw' },
-                    { id: 'material', label: 'Material', type: 'text', required: false, placeholder: 'e.g., Stainless Steel, Aluminum' },
-                    { id: 'finish', label: 'Finish', type: 'text', required: false, placeholder: 'e.g., Black Oxide, Zinc Plated' },
-                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., M3x10mm, 6.35x12.7mm' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            printed3d: { 
-                code: 'P3D', 
-                subcategories: ['CAS', 'BRK', 'SPA', 'MNT'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Internal, Shapeways' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., CASE-001-V1.2' },
-                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., Sensor Housing Top Cover' },
-                    { id: 'material', label: 'Material', type: 'text', required: false, placeholder: 'e.g., PLA, ABS, PETG' },
-                    { id: 'color', label: 'Color', type: 'text', required: false, placeholder: 'e.g., Black, White, Clear' },
-                    { id: 'dimensions', label: 'Dimensions', type: 'text', required: false, placeholder: 'e.g., 80x60x25mm' },
-                    { id: 'file-link', label: 'CAD File Link', type: 'url', required: false, placeholder: 'https://...' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            },
-            cable: { 
-                code: 'CAB', 
-                subcategories: ['PWR', 'DATA', 'SIG', 'CUS'],
-                fields: [
-                    { id: 'manufacturer', label: 'Manufacturer', type: 'text', required: false, placeholder: 'e.g., Amphenol, TE Connectivity' },
-                    { id: 'manufacturer-pn', label: 'Manufacturer PN', type: 'text', required: false, placeholder: 'e.g., USB-A-TO-C-1M' },
-                    { id: 'description', label: 'Description', type: 'text', required: true, placeholder: 'e.g., USB-A to USB-C Cable 1m' },
-                    { id: 'length', label: 'Length', type: 'text', required: false, placeholder: 'e.g., 1m, 500mm, 6ft' },
-                    { id: 'connectors', label: 'Connectors', type: 'text', required: false, placeholder: 'e.g., USB-A to USB-C, JST-XH 2pin' },
-                    { id: 'wire-gauge', label: 'Wire Gauge', type: 'text', required: false, placeholder: 'e.g., 24AWG, 20AWG' },
-                    { id: 'preferred-vendor', label: 'Preferred Vendor', type: 'vendor-select', required: false }
-                ]
-            }
-        };
 
         // Tab management
         function showTab(tabName) {
