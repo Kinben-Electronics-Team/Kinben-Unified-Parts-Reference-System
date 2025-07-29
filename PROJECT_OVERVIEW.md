@@ -2,7 +2,7 @@
 
 ## 🎯 Project Summary
 **Repository**: https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System  
-**Live Site**: https://the-clever-studio-f3b16.web.app/  
+**Live Site**: https://kinbenpartssystem.web.app/  
 **Primary Application**: `KPN_System_Workbook.html` - Advanced multi-level hierarchy management system for electronic components
 
 ## 🗂️ Core Architecture
@@ -60,7 +60,7 @@ Kinben-Unified-Parts-Reference-System/
 - **Source**: GitHub repository (single source of truth)
 - **Build**: `npm run build` creates Firebase-ready files
 - **Deploy**: Manual deployment via `firebase deploy`
-- **Live**: https://the-clever-studio-f3b16.web.app/
+- **Live**: https://kinbenpartssystem.web.app/
 
 ### ⚠️ Known Issues
 - **GitHub Actions**: Auto-deploy not working (Issue #22)

@@ -162,6 +162,6 @@ For issues or customization requests:
 
 ---
 
-**Version**: 2.1.2  
+**Version**: 3.0.0  
 **Last Updated**: July 23, 2025  
 **Status**: Production Ready ✅
