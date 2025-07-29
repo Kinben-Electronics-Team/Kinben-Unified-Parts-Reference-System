@@ -651,6 +651,7 @@
                     <button class="btn btn-info" onclick="document.getElementById('csv-import-input').click()">Import CSV</button>
                     <button class="btn" onclick="exportTemplate()" style="background: #6c757d; color: white;">Download Template</button>
                     
+<<<<<<< HEAD
                     <!-- Bulk Select Button -->
                     <button class="btn" onclick="toggleBulkSelection()" style="background: #6c757d; color: white;" id="bulk-select-btn">Enable Bulk Select</button>
                 </div>
@@ -661,6 +662,18 @@
                     <button class="btn" onclick="deselectAllComponents()" style="background: #6c757d; color: white;">Deselect All</button>
                     <button class="btn archive-btn" onclick="bulkArchiveComponents()">Archive Selected</button>
                     <button class="btn delete-btn" onclick="bulkDeleteComponents()" id="bulk-delete-btn" style="display: none;">Delete Selected</button>
+=======
+                    <!-- Bulk Actions -->
+                    <div style="margin-top: 10px;">
+                        <button class="btn" onclick="toggleBulkSelection()" style="background: #6c757d; color: white;" id="bulk-select-btn">Enable Bulk Select</button>
+                        <div id="bulk-actions" style="display: none; margin-top: 10px; gap: 10px; flex-wrap: wrap;">
+                            <button class="btn" onclick="selectAllComponents()" style="background: #17a2b8; color: white;">Select All</button>
+                            <button class="btn" onclick="deselectAllComponents()" style="background: #6c757d; color: white;">Deselect All</button>
+                            <button class="btn" onclick="bulkArchiveComponents()" style="background: #ffc107; color: #212529;">Archive Selected</button>
+                            <button class="btn" onclick="bulkDeleteComponents()" id="bulk-delete-btn" style="display: none; background: #dc3545; color: white;">Delete Selected</button>
+                        </div>
+                    </div>
+>>>>>>> f075decef2f4cf51b93a5c30bf16fd84a588c33d
                 </div>
                 
                 <input type="text" class="search-box" id="comp-search" placeholder="Search components..." onkeyup="filterComponents()">
@@ -738,6 +751,10 @@
                         <input type="number" id="bom-quantity" min="1" value="1">
                     </div>
                     <div class="form-group">
+                        <label>Droppage (%)</label>
+                        <input type="number" id="bom-droppage" min="0" max="100" step="0.1" value="0" placeholder="e.g., 5 for 5%">
+                    </div>
+                    <div class="form-group">
                         <label>Reference Designator</label>
                         <input type="text" id="bom-refdes" placeholder="e.g., R1, C2, U3">
                     </div>
@@ -763,6 +780,7 @@
                             <th>Description</th>
                             <th>Assembly Items</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="assemblies-tbody">
@@ -843,6 +861,7 @@
                             <th>Description</th>
                             <th>Item Count</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="systems-tbody">
@@ -852,29 +871,59 @@
             
             <!-- Export Tab -->
             <div id="export" class="tab-panel">
-                <h2>Data Export</h2>
-                <p>Export your data in CSV format for external tools</p>
+                <h2>Manufacturing Export</h2>
+                <p>Select assemblies and systems for manufacturing, specify quantities, and export BOMs</p>
                 
-                <div class="stats">
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-components">0</div>
-                        <div class="stat-label">Components to Export</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-assemblies">0</div>
-                        <div class="stat-label">Assemblies to Export</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="export-systems">0</div>
-                        <div class="stat-label">Systems to Export</div>
+                <!-- Assembly Selection -->
+                <div style="margin-bottom: 30px;">
+                    <h3>📦 Select Assemblies for Manufacturing</h3>
+                    <div id="export-assemblies-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #f9f9f9;">
+                        <!-- Assembly checkboxes will be populated here -->
                     </div>
                 </div>
                 
-                <div class="actions">
-                    <button class="btn btn-primary" onclick="exportAll()">Export All Data</button>
-                    <button class="btn btn-success" onclick="exportComponents()">Export Components Only</button>
-                    <button class="btn btn-success" onclick="exportAssemblies()">Export Assemblies Only</button>
-                    <button class="btn btn-success" onclick="exportSystems()">Export Systems Only</button>
+                <!-- System Selection -->
+                <div style="margin-bottom: 30px;">
+                    <h3>🏗️ Select Systems for Manufacturing</h3>
+                    <div id="export-systems-list" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #f9f9f9;">
+                        <!-- System checkboxes will be populated here -->
+                    </div>
+                </div>
+                
+                <!-- Export Options -->
+                <div style="margin-bottom: 30px;">
+                    <h3>📊 Export Options</h3>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="exportIndividualBOMs()">Export Individual BOMs</button>
+                        <button class="btn btn-success" onclick="exportMergedBOM()">Export Merged BOM</button>
+                        <button class="btn" onclick="clearAllSelections()" style="background: #6c757d; color: white;">Clear All Selections</button>
+                    </div>
+                </div>
+                
+                <!-- Legacy Export Options -->
+                <div style="border-top: 1px solid #ddd; padding-top: 20px;">
+                    <h3>📋 Quick Export (All Data)</h3>
+                    <div class="stats">
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-components">0</div>
+                            <div class="stat-label">Components to Export</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-assemblies">0</div>
+                            <div class="stat-label">Assemblies to Export</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="export-systems">0</div>
+                            <div class="stat-label">Systems to Export</div>
+                        </div>
+                    </div>
+                    
+                    <div class="actions">
+                        <button class="btn btn-primary" onclick="exportAll()">Export All Data</button>
+                        <button class="btn btn-success" onclick="exportComponents()">Export Components Only</button>
+                        <button class="btn btn-success" onclick="exportAssemblies()">Export Assemblies Only</button>
+                        <button class="btn btn-success" onclick="exportSystems()">Export Systems Only</button>
+                    </div>
                 </div>
             </div>
             
@@ -1179,7 +1228,11 @@
                 return;
             }
             
-            if (localUsers[username]) {
+            const normalizedUsername = username.toLowerCase();
+            const isUsernameTaken = Object.keys(localUsers).some(
+                existingUsername => existingUsername.toLowerCase() === normalizedUsername
+            );
+            if (isUsernameTaken) {
                 alert('Username already exists. Please choose a different username.');
                 return;
             }
@@ -2622,6 +2675,7 @@
         function addBOMItem() {
             const kpn = document.getElementById('bom-kpn').value;
             const quantity = parseInt(document.getElementById('bom-quantity').value);
+            const droppage = parseFloat(document.getElementById('bom-droppage').value) || 0;
             const refdes = document.getElementById('bom-refdes').value;
             
             if (!kpn || !quantity || !refdes) {
@@ -2635,10 +2689,17 @@
                 return;
             }
             
+            // Calculate total quantity including droppage
+            const droppageAmount = Math.ceil(quantity * (droppage / 100));
+            const totalQuantity = quantity + droppageAmount;
+            
             const bomItem = {
                 kpn,
                 componentName: `${component.manufacturer} ${component.partNumber}`,
                 quantity,
+                droppage,
+                droppageQuantity: droppageAmount,
+                totalQuantity,
                 refdes
             };
             
@@ -2648,6 +2709,7 @@
             // Clear form
             document.getElementById('bom-kpn').value = '';
             document.getElementById('bom-quantity').value = '1';
+            document.getElementById('bom-droppage').value = '0';
             document.getElementById('bom-refdes').value = '';
         }
 
@@ -2665,11 +2727,15 @@
             currentBOM.forEach((item, index) => {
                 const div = document.createElement('div');
                 div.className = 'bom-row';
+                div.style.cssText = 'padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 5px; background: #f9f9f9; display: flex; justify-content: space-between; align-items: center;';
+                
+                const droppageInfo = item.droppage > 0 
+                    ? ` (Base: ${item.quantity}, Droppage: ${item.droppageQuantity}, Total: ${item.totalQuantity})` 
+                    : ` (Qty: ${item.quantity})`;
+                
                 div.innerHTML = `
-                    <span>${item.componentName}</span>
-                    <span>Qty: ${item.quantity}</span>
-                    <span>RefDes: ${item.refdes}</span>
-                    <button class="remove-btn" onclick="removeBOMItem(${index})">Remove</button>
+                    <span><strong>${item.componentName}</strong>${droppageInfo} | RefDes: ${item.refdes}</span>
+                    <button style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 3px; cursor: pointer;" onclick="removeBOMItem(${index})">Remove</button>
                 `;
                 container.appendChild(div);
             });
@@ -3004,14 +3070,29 @@
             const tbody = document.getElementById('assemblies-tbody');
             tbody.innerHTML = '';
             
-            data.assemblies.forEach(assembly => {
+            data.assemblies.forEach((assembly, index) => {
                 const row = document.createElement('tr');
+                
+                // Build action buttons based on user role
+                let actionButtons = '';
+                if (currentUser.role === 'admin') {
+                    actionButtons = `
+                        <button class="btn" onclick="editAssembly(${index})" style="background: #0078d4; color: white; margin-right: 5px;">Edit</button>
+                        <button class="delete-btn" onclick="deleteAssembly(${index})">Delete</button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button class="btn" onclick="editAssembly(${index})" style="background: #0078d4; color: white;">Edit</button>
+                    `;
+                }
+                
                 row.innerHTML = `
                     <td>${assembly.name}</td>
                     <td>${assembly.version}</td>
                     <td>${assembly.description}</td>
                     <td>${assembly.bom.length} items</td>
                     <td><span class="status-${assembly.status.toLowerCase()}">${assembly.status}</span></td>
+                    <td>${actionButtons}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -3021,16 +3102,31 @@
             const tbody = document.getElementById('systems-tbody');
             tbody.innerHTML = '';
             
-            data.systems.forEach(system => {
+            data.systems.forEach((system, index) => {
                 const row = document.createElement('tr');
                 // Handle backward compatibility - migrate pcbs to items if needed
                 const itemCount = system.items ? system.items.length : (system.pcbs ? system.pcbs.length : 0);
+                
+                // Build action buttons based on user role
+                let actionButtons = '';
+                if (currentUser.role === 'admin') {
+                    actionButtons = `
+                        <button class="btn" onclick="editSystem(${index})" style="background: #0078d4; color: white; margin-right: 5px;">Edit</button>
+                        <button class="delete-btn" onclick="deleteSystem(${index})">Delete</button>
+                    `;
+                } else {
+                    actionButtons = `
+                        <button class="btn" onclick="editSystem(${index})" style="background: #0078d4; color: white;">Edit</button>
+                    `;
+                }
+                
                 row.innerHTML = `
                     <td>${system.name}</td>
                     <td>${system.version}</td>
                     <td>${system.description}</td>
                     <td>${itemCount} items</td>
                     <td><span class="status-${system.status.toLowerCase()}">${system.status}</span></td>
+                    <td>${actionButtons}</td>
                 `;
                 tbody.appendChild(row);
             });
@@ -3042,6 +3138,7 @@
             renderSystems();
             renderVendors();
             updateDropdowns();
+            renderExportSelections();
         }
 
         // Filter functions
@@ -3535,6 +3632,556 @@
                     alert(`Component ${kpn} has been permanently deleted. The KPN can now be reused.`);
                 }
             }
+        }
+
+        // Assembly edit and delete functions
+        function editAssembly(index) {
+            const assembly = data.assemblies[index];
+            if (!assembly) {
+                alert('Assembly not found');
+                return;
+            }
+            
+            // Switch to assemblies tab
+            showTab('assemblies');
+            
+            // Populate form fields
+            document.getElementById('assembly-name').value = assembly.name;
+            document.getElementById('assembly-version').value = assembly.version;
+            document.getElementById('assembly-status').value = assembly.status;
+            document.getElementById('assembly-description').value = assembly.description;
+            
+            // Clear existing BOM items display
+            const bomDiv = document.getElementById('assembly-bom');
+            bomDiv.innerHTML = '';
+            
+            // Display existing BOM items
+            assembly.bom.forEach((item, bomIndex) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.style.cssText = 'padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 5px; background: #f9f9f9;';
+                itemDiv.innerHTML = `
+                    <span><strong>Type:</strong> ${escapeHTML(item.type)} | <strong>Item:</strong> ${escapeHTML(item.name)} | <strong>Qty:</strong> ${escapeHTML(item.quantity)} | <strong>Ref:</strong> ${escapeHTML(item.reference || 'N/A')}</span>
+                    <button style="margin-left: 10px; background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer;" onclick="removeAssemblyBOMItem(${bomIndex})">Remove</button>
+                `;
+                bomDiv.appendChild(itemDiv);
+            });
+            
+            // Store current editing index
+            window.currentEditingAssembly = index;
+            
+            // Change the "Add Assembly" button to "Update Assembly"
+            const addBtn = document.querySelector('button[onclick="addAssembly()"]');
+            addBtn.textContent = 'Update Assembly';
+            addBtn.setAttribute('onclick', 'updateAssembly()');
+            
+            // Add cancel button if not exists
+            if (!document.getElementById('cancel-assembly-edit')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.id = 'cancel-assembly-edit';
+                cancelBtn.className = 'btn';
+                cancelBtn.style.cssText = 'background: #6c757d; color: white; margin-left: 10px;';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.onclick = cancelAssemblyEdit;
+                addBtn.parentNode.insertBefore(cancelBtn, addBtn.nextSibling);
+            }
+        }
+
+        function updateAssembly() {
+            if (window.currentEditingAssembly === undefined) {
+                alert('No assembly being edited');
+                return;
+            }
+            
+            const index = window.currentEditingAssembly;
+            const assembly = data.assemblies[index];
+            
+            // Update assembly data
+            assembly.name = document.getElementById('assembly-name').value;
+            assembly.version = document.getElementById('assembly-version').value;
+            assembly.status = document.getElementById('assembly-status').value;
+            assembly.description = document.getElementById('assembly-description').value;
+            
+            saveData();
+            renderAssemblies();
+            updateDropdowns();
+            cancelAssemblyEdit();
+            alert('Assembly updated successfully!');
+        }
+
+        function cancelAssemblyEdit() {
+            // Clear form
+            document.getElementById('assembly-name').value = '';
+            document.getElementById('assembly-version').value = '';
+            document.getElementById('assembly-status').value = 'Active';
+            document.getElementById('assembly-description').value = '';
+            
+            // Clear BOM display
+            const bomDiv = document.getElementById('assembly-bom');
+            bomDiv.innerHTML = '';
+            
+            // Reset button
+            const addBtn = document.querySelector('button[onclick="updateAssembly()"]') || document.querySelector('button[onclick="addAssembly()"]');
+            addBtn.textContent = 'Add Assembly';
+            addBtn.setAttribute('onclick', 'addAssembly()');
+            
+            // Remove cancel button
+            const cancelBtn = document.getElementById('cancel-assembly-edit');
+            if (cancelBtn) {
+                cancelBtn.remove();
+            }
+            
+            // Clear editing state
+            window.currentEditingAssembly = undefined;
+        }
+
+        function deleteAssembly(index) {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin users can delete assemblies.');
+                return;
+            }
+            
+            const assembly = data.assemblies[index];
+            if (confirm(`Are you sure you want to PERMANENTLY DELETE assembly "${assembly.name} ${assembly.version}"?`)) {
+                data.assemblies.splice(index, 1);
+                saveData();
+                renderAssemblies();
+                updateDropdowns();
+                alert(`Assembly "${assembly.name} ${assembly.version}" has been permanently deleted.`);
+            }
+        }
+
+        // System edit and delete functions
+        function editSystem(index) {
+            const system = data.systems[index];
+            if (!system) {
+                alert('System not found');
+                return;
+            }
+            
+            // Switch to systems tab
+            showTab('systems');
+            
+            // Populate form fields
+            document.getElementById('system-name').value = system.name;
+            document.getElementById('system-version').value = system.version;
+            document.getElementById('system-status').value = system.status;
+            document.getElementById('system-description').value = system.description;
+            
+            // Clear existing items display
+            const itemsDiv = document.getElementById('system-items');
+            itemsDiv.innerHTML = '';
+            
+            // Display existing items (handle backward compatibility)
+            const items = system.items || system.pcbs || [];
+            items.forEach((item, itemIndex) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.style.cssText = 'padding: 10px; border: 1px solid #ddd; margin: 5px 0; border-radius: 5px; background: #f9f9f9;';
+                const span = document.createElement('span');
+                span.innerHTML = `<strong>Type:</strong> `;
+                const typeText = document.createTextNode(item.type + ' | ');
+                span.appendChild(typeText);
+                span.innerHTML += `<strong>Item:</strong> `;
+                const nameText = document.createTextNode(item.name + ' | ');
+                span.appendChild(nameText);
+                span.innerHTML += `<strong>Qty:</strong> `;
+                const quantityText = document.createTextNode(item.quantity);
+                span.appendChild(quantityText);
+                
+                const removeButton = document.createElement('button');
+                removeButton.style.cssText = 'margin-left: 10px; background: #dc3545; color: white; border: none; padding: 2px 6px; border-radius: 3px; cursor: pointer;';
+                removeButton.textContent = 'Remove';
+                removeButton.onclick = () => removeSystemItem(itemIndex);
+                
+                itemDiv.appendChild(span);
+                itemDiv.appendChild(removeButton);
+                itemsDiv.appendChild(itemDiv);
+            });
+            
+            // Store current editing index
+            window.currentEditingSystem = index;
+            
+            // Change the "Add System" button to "Update System"
+            const addBtn = document.querySelector('button[onclick="addSystem()"]');
+            addBtn.textContent = 'Update System';
+            addBtn.setAttribute('onclick', 'updateSystem()');
+            
+            // Add cancel button if not exists
+            if (!document.getElementById('cancel-system-edit')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.id = 'cancel-system-edit';
+                cancelBtn.className = 'btn';
+                cancelBtn.style.cssText = 'background: #6c757d; color: white; margin-left: 10px;';
+                cancelBtn.textContent = 'Cancel';
+                cancelBtn.onclick = cancelSystemEdit;
+                addBtn.parentNode.insertBefore(cancelBtn, addBtn.nextSibling);
+            }
+        }
+
+        function updateSystem() {
+            if (window.currentEditingSystem === undefined) {
+                alert('No system being edited');
+                return;
+            }
+            
+            const index = window.currentEditingSystem;
+            const system = data.systems[index];
+            
+            // Update system data
+            system.name = document.getElementById('system-name').value;
+            system.version = document.getElementById('system-version').value;
+            system.status = document.getElementById('system-status').value;
+            system.description = document.getElementById('system-description').value;
+            
+            saveData();
+            renderSystems();
+            updateDropdowns();
+            cancelSystemEdit();
+            alert('System updated successfully!');
+        }
+
+        function cancelSystemEdit() {
+            // Clear form
+            document.getElementById('system-name').value = '';
+            document.getElementById('system-version').value = '';
+            document.getElementById('system-status').value = 'Active';
+            document.getElementById('system-description').value = '';
+            
+            // Clear items display
+            const itemsDiv = document.getElementById('system-items');
+            itemsDiv.innerHTML = '';
+            
+            // Reset button
+            const addBtn = document.querySelector('button[onclick="updateSystem()"]') || document.querySelector('button[onclick="addSystem()"]');
+            addBtn.textContent = 'Add System';
+            addBtn.setAttribute('onclick', 'addSystem()');
+            
+            // Remove cancel button
+            const cancelBtn = document.getElementById('cancel-system-edit');
+            if (cancelBtn) {
+                cancelBtn.remove();
+            }
+            
+            // Clear editing state
+            window.currentEditingSystem = undefined;
+        }
+
+        function deleteSystem(index) {
+            if (currentUser.role !== 'admin') {
+                alert('Only Admin users can delete systems.');
+                return;
+            }
+            
+            const system = data.systems[index];
+            if (confirm(`Are you sure you want to PERMANENTLY DELETE system "${system.name} ${system.version}"?`)) {
+                data.systems.splice(index, 1);
+                saveData();
+                renderSystems();
+                updateDropdowns();
+                alert(`System "${system.name} ${system.version}" has been permanently deleted.`);
+            }
+        }
+
+        // Export enhancement functions
+        function renderExportSelections() {
+            renderExportAssemblies();
+            renderExportSystems();
+        }
+
+        function renderExportAssemblies() {
+            const container = document.getElementById('export-assemblies-list');
+            container.innerHTML = '';
+            
+            if (data.assemblies.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; margin: 20px 0;">No assemblies available for export</p>';
+                return;
+            }
+            
+            data.assemblies.forEach((assembly, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #e0e0e0; margin: 5px 0; border-radius: 3px; background: white;';
+                
+                div.innerHTML = `
+                    <label style="display: flex; align-items: center; flex: 1; cursor: pointer;">
+                        <input type="checkbox" value="${index}" onchange="toggleAssemblySelection(${index})" style="margin-right: 10px;">
+                        <span><strong>${assembly.name} ${assembly.version}</strong> - ${assembly.description}</span>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 12px;">Qty:</label>
+                        <input type="number" id="assembly-qty-${index}" min="1" value="1" style="width: 60px; padding: 2px 5px;" disabled>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderExportSystems() {
+            const container = document.getElementById('export-systems-list');
+            container.innerHTML = '';
+            
+            if (data.systems.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center; margin: 20px 0;">No systems available for export</p>';
+                return;
+            }
+            
+            data.systems.forEach((system, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 10px; border: 1px solid #e0e0e0; margin: 5px 0; border-radius: 3px; background: white;';
+                
+                div.innerHTML = `
+                    <label style="display: flex; align-items: center; flex: 1; cursor: pointer;">
+                        <input type="checkbox" value="${index}" onchange="toggleSystemSelection(${index})" style="margin-right: 10px;">
+                        <span><strong>${system.name} ${system.version}</strong> - ${system.description}</span>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="font-size: 12px;">Qty:</label>
+                        <input type="number" id="system-qty-${index}" min="1" value="1" style="width: 60px; padding: 2px 5px;" disabled>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function toggleAssemblySelection(index) {
+            const checkbox = document.querySelector(`#export-assemblies-list input[value="${index}"]`);
+            const qtyInput = document.getElementById(`assembly-qty-${index}`);
+            
+            if (checkbox.checked) {
+                qtyInput.disabled = false;
+                qtyInput.style.background = 'white';
+            } else {
+                qtyInput.disabled = true;
+                qtyInput.style.background = '#f5f5f5';
+            }
+        }
+
+        function toggleSystemSelection(index) {
+            const checkbox = document.querySelector(`#export-systems-list input[value="${index}"]`);
+            const qtyInput = document.getElementById(`system-qty-${index}`);
+            
+            if (checkbox.checked) {
+                qtyInput.disabled = false;
+                qtyInput.style.background = 'white';
+            } else {
+                qtyInput.disabled = true;
+                qtyInput.style.background = '#f5f5f5';
+            }
+        }
+
+        function getSelectedAssemblies() {
+            const selected = [];
+            const checkboxes = document.querySelectorAll('#export-assemblies-list input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const index = parseInt(checkbox.value);
+                const quantity = parseInt(document.getElementById(`assembly-qty-${index}`).value) || 1;
+                selected.push({
+                    assembly: data.assemblies[index],
+                    index,
+                    quantity
+                });
+            });
+            
+            return selected;
+        }
+
+        function getSelectedSystems() {
+            const selected = [];
+            const checkboxes = document.querySelectorAll('#export-systems-list input[type="checkbox"]:checked');
+            
+            checkboxes.forEach(checkbox => {
+                const index = parseInt(checkbox.value);
+                const quantity = parseInt(document.getElementById(`system-qty-${index}`).value) || 1;
+                selected.push({
+                    system: data.systems[index],
+                    index,
+                    quantity
+                });
+            });
+            
+            return selected;
+        }
+
+        function exportIndividualBOMs() {
+            const selectedAssemblies = getSelectedAssemblies();
+            const selectedSystems = getSelectedSystems();
+            
+            if (selectedAssemblies.length === 0 && selectedSystems.length === 0) {
+                alert('Please select at least one assembly or system to export.');
+                return;
+            }
+            
+            // Export individual BOMs for each selected assembly
+            selectedAssemblies.forEach(({ assembly, quantity }) => {
+                const csv = generateAssemblyBOM(assembly, quantity);
+                const filename = `BOM_${assembly.name}_${assembly.version}_qty${quantity}.csv`;
+                downloadCSV(csv, filename);
+            });
+            
+            // Export individual BOMs for each selected system
+            selectedSystems.forEach(({ system, quantity }) => {
+                const csv = generateSystemBOM(system, quantity);
+                const filename = `BOM_${system.name}_${system.version}_qty${quantity}.csv`;
+                downloadCSV(csv, filename);
+            });
+            
+            alert(`Exported ${selectedAssemblies.length + selectedSystems.length} individual BOM files.`);
+        }
+
+        function exportMergedBOM() {
+            const selectedAssemblies = getSelectedAssemblies();
+            const selectedSystems = getSelectedSystems();
+            
+            if (selectedAssemblies.length === 0 && selectedSystems.length === 0) {
+                alert('Please select at least one assembly or system to export.');
+                return;
+            }
+            
+            const mergedBOM = {};
+            
+            // Process selected assemblies
+            selectedAssemblies.forEach(({ assembly, quantity }) => {
+                assembly.bom.forEach(item => {
+                    const key = item.kpn;
+                    const totalQty = (item.totalQuantity || item.quantity) * quantity;
+                    
+                    if (mergedBOM[key]) {
+                        mergedBOM[key].quantity += totalQty;
+                    } else {
+                        mergedBOM[key] = {
+                            kpn: item.kpn,
+                            componentName: item.componentName,
+                            quantity: totalQty,
+                            refdes: item.refdes,
+                            sources: [`${assembly.name} ${assembly.version} (${quantity}x)`]
+                        };
+                    }
+                    
+                    if (!mergedBOM[key].sources.includes(`${assembly.name} ${assembly.version} (${quantity}x)`)) {
+                        mergedBOM[key].sources.push(`${assembly.name} ${assembly.version} (${quantity}x)`);
+                    }
+                });
+            });
+            
+            // Process selected systems with recursive BOM expansion
+            selectedSystems.forEach(({ system, quantity }) => {
+                system.bom.forEach(({ assembly, assemblyQuantity }) => {
+                    const effectiveQuantity = assemblyQuantity * quantity;
+                    
+                    assembly.bom.forEach(item => {
+                        const key = item.kpn;
+                        const totalQty = (item.totalQuantity || item.quantity) * effectiveQuantity;
+                        
+                        if (mergedBOM[key]) {
+                            mergedBOM[key].quantity += totalQty;
+                        } else {
+                            mergedBOM[key] = {
+                                kpn: item.kpn,
+                                componentName: item.componentName,
+                                quantity: totalQty,
+                                refdes: item.refdes,
+                                sources: [`${system.name} ${system.version} (${quantity}x systems)`]
+                            };
+                        }
+                        
+                        if (!mergedBOM[key].sources.includes(`${system.name} ${system.version} (${quantity}x systems)`)) {
+                            mergedBOM[key].sources.push(`${system.name} ${system.version} (${quantity}x systems)`);
+                        }
+                    });
+                });
+            });
+            
+            // Generate merged CSV
+            const csvRows = ['KPN,Component,Total Quantity,Reference Designators,Used In'];
+            
+            Object.values(mergedBOM).forEach(item => {
+                const row = [
+                    item.kpn,
+                    `"${item.componentName}"`,
+                    item.quantity,
+                    `"${item.refdes}"`,
+                    `"${item.sources.join('; ')}"`
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            const csv = csvRows.join('\n');
+            const timestamp = new Date().toISOString().split('T')[0];
+            downloadCSV(csv, `Merged_BOM_${timestamp}.csv`);
+            
+            alert('Merged BOM exported successfully!');
+        }
+
+        function generateAssemblyBOM(assembly, quantity) {
+            const csvRows = [`BOM for ${assembly.name} ${assembly.version} (Quantity: ${quantity})`];
+            csvRows.push('KPN,Component,Base Qty,Droppage %,Droppage Qty,Total Per Unit,Total Required,Reference Designator');
+            
+            assembly.bom.forEach(item => {
+                const baseQty = item.quantity || 0;
+                const droppage = item.droppage || 0;
+                const droppageQty = item.droppageQuantity || 0;
+                const totalPerUnit = item.totalQuantity || baseQty;
+                const totalRequired = totalPerUnit * quantity;
+                
+                const row = [
+                    item.kpn,
+                    `"${item.componentName}"`,
+                    baseQty,
+                    droppage,
+                    droppageQty,
+                    totalPerUnit,
+                    totalRequired,
+                    `"${item.refdes}"`
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        function generateSystemBOM(system, quantity) {
+            const csvRows = [`BOM for ${system.name} ${system.version} (Quantity: ${quantity})`];
+            csvRows.push('Type,Name,Version,Quantity Per System,Total Required');
+            
+            const items = system.items || system.pcbs || [];
+            items.forEach(item => {
+                const totalRequired = item.quantity * quantity;
+                const row = [
+                    item.type,
+                    `"${item.name}"`,
+                    item.version || 'N/A',
+                    item.quantity,
+                    totalRequired
+                ].join(',');
+                csvRows.push(row);
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        function clearAllSelections() {
+            // Clear assembly selections
+            document.querySelectorAll('#export-assemblies-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                const index = checkbox.value;
+                const qtyInput = document.getElementById(`assembly-qty-${index}`);
+                if (qtyInput) {
+                    qtyInput.disabled = true;
+                    qtyInput.style.background = '#f5f5f5';
+                    qtyInput.value = 1;
+                }
+            });
+            
+            // Clear system selections
+            document.querySelectorAll('#export-systems-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                const index = checkbox.value;
+                const qtyInput = document.getElementById(`system-qty-${index}`);
+                if (qtyInput) {
+                    qtyInput.disabled = true;
+                    qtyInput.style.background = '#f5f5f5';
+                    qtyInput.value = 1;
+                }
+            });
         }
 
         function downloadCSV(csv, filename) {
