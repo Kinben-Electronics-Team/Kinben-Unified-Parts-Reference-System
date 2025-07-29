@@ -1,1 +1,4 @@
 Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Description,Voltage_Rating,Current_Rating,Tolerance,Mounting,Preferred_Supplier,Mouser_PN,DigiKey_PN,Unit_Cost,Stock_Level,Symbol_File,Footprint_File,3D_Model_File,Datasheet_URL,Status,Created_Date,Notes
+RES-STD-001,resistors,STD,10k,0805,,,,,,1%,,Mouser,,,,,,,,,Active,2025-07-29,
+RES-PRE-002,resistors,PRE,4.7k,0603,,,,,,0.1%,,Digi-Key,,,,,,,,,Active,2025-07-29,
+RES-VAR-003,resistors,VAR,10k,3296W,,,,,,10%,,Newark,,,,,,,,,Active,2025-07-29,

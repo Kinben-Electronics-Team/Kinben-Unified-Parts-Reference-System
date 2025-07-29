@@ -1,1 +1,5 @@
 Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Description,Voltage_Rating,Current_Rating,Tolerance,Mounting,Preferred_Supplier,Mouser_PN,DigiKey_PN,Unit_Cost,Stock_Level,Symbol_File,Footprint_File,3D_Model_File,Datasheet_URL,Status,Created_Date,Notes
+CON-HDR-022,connectors,HDR,,,,TSW-102-07-G-S,2-pin 0.1 header socket,,,,,Samtec,,,,,,,,,Active,2025-07-29,
+CON-JST-023,connectors,JST,,,,B4B-XH-A(LF)(SN),4-pin JST XH connector,,,,,JST,,,,,,,,,Active,2025-07-29,
+CON-USB-024,connectors,USB,,,,USB4085-GF-A,USB-C receptacle,,,,,GCT,,,,,,,,,Active,2025-07-29,
+CON-RJ45-025,connectors,RJ45,,,,SI-60062-F,RJ45 Ethernet connector with LEDs,,,,,Bel Fuse,,,,,,,,,Active,2025-07-29,
