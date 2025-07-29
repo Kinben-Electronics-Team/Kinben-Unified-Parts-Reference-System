@@ -9,6 +9,7 @@
     "test": "./test-fallback.sh",
     "precommit": "node scripts/check-secrets.js",
     "security-check": "node scripts/check-secrets.js",
+    "security-validate": "./scripts/validate-security.sh",
     "setup": "npm install && ./scripts/install-hooks.sh",
     "postinstall": "echo '🔧 Run: npm run setup (to install security hooks)'"
   },
