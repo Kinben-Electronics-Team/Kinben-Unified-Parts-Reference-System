@@ -2,8 +2,9 @@
 
 ## 🎯 Project Summary
 **Repository**: https://github.com/Kinben-Electronics-Team/Kinben-Unified-Parts-Reference-System  
-**Live Site**: https://the-clever-studio-f3b16.web.app/  
-**Primary Application**: `KPN_System_Workbook.html` - Advanced multi-level hierarchy management system for electronic components
+**Live Site**: https://kinbenpartssystem.web.app/  
+**Primary Application**: `KPN_System_Workbook.html` - Advanced multi-level hierarchy management system for electronic components  
+**Local CSV Variant**: `KPN_System_Local.html` - Direct CSV file integration for offline use
 
 ## 🗂️ Core Architecture
 
@@ -11,9 +12,11 @@
 ```
 Kinben-Unified-Parts-Reference-System/
 ├── 🏠 index.html                    # Landing page with navigation
-├── 🎛️ KPN_System_Workbook.html     # Main application (single-file app)
+├── 🎛️ KPN_System_Workbook.html     # Main application (Firebase-hosted)
+├── 📁 KPN_System_Local.html        # Local CSV variant (offline capable)
 ├── 🔥 firebase.json                # Firebase hosting configuration
 ├── 📊 KPN Master Reference Sheet/  # CSV data files
+│   └── CSV_Files/                  # Local CSV storage directory
 ├── 🔧 Kinben Basic Kicad Library/  # Component libraries
 ├── 🧪 tests/                       # Playwright test suite
 ├── ⚙️ package.json                # Dependencies and scripts
@@ -21,6 +24,8 @@ Kinben-Unified-Parts-Reference-System/
 ```
 
 ### 🎨 Application Features
+
+#### 🌐 Firebase Hosted Version (`KPN_System_Workbook.html`)
 - **Multi-level Hierarchy**: Components → PCBs → Assemblies → Systems  
 - **File Upload/Download**: CSV import/export functionality
 - **Image Management**: Component photos with base64 encoding
@@ -28,6 +33,15 @@ Kinben-Unified-Parts-Reference-System/
 - **Category Management**: Organize components by categories
 - **Mobile Responsive**: Works on tablets and phones
 - **Data Persistence**: LocalStorage for user sessions
+
+#### 📁 Local CSV Version (`KPN_System_Local.html`)
+- **Direct CSV Integration**: File System Access API for real-time CSV operations
+- **Offline Capability**: Works without internet connection
+- **Real-time Sync**: Changes instantly written to CSV files
+- **Directory Management**: Switch between different project folders
+- **Browser Compatibility**: Chrome/Safari full support, Firefox fallback
+- **Dual Storage**: CSV files + localStorage backup for data safety
+- **Table Sorting**: All columns sortable with visual indicators
 
 ## 🔧 Technical Stack
 
@@ -60,12 +74,82 @@ Kinben-Unified-Parts-Reference-System/
 - **Source**: GitHub repository (single source of truth)
 - **Build**: `npm run build` creates Firebase-ready files
 - **Deploy**: Manual deployment via `firebase deploy`
-- **Live**: https://the-clever-studio-f3b16.web.app/
+- **Live**: https://kinbenpartssystem.web.app/
 
 ### ⚠️ Known Issues
 - **GitHub Actions**: Auto-deploy not working (Issue #22)
 - **Dependency Installation**: Network connectivity issues in CI
 - **Test Suite**: Playwright browser installation failures
+
+## 📁 Local CSV Usage Guide
+
+### 🚀 Quick Start (Local CSV Version)
+
+#### 1. **Setup**
+- Open `KPN_System_Local.html` in your web browser
+- No installation required - works offline
+- Compatible with Chrome 88+, Safari 15.2+, Firefox (fallback mode)
+
+#### 2. **Connect to CSV Files**
+- Click **"📁 Select CSV Files Directory"**
+- Navigate to your repository folder
+- Select the root folder containing `KPN Master Reference Sheet/CSV_Files/`
+- Grant folder access permission
+
+#### 3. **Automatic Data Management**
+- App automatically finds the `CSV_Files` subdirectory
+- Loads existing component data from CSV files
+- Creates missing CSV files with proper headers if needed
+
+### 📊 CSV File Structure
+
+#### **Unified Schema (24 Fields)**
+All CSV files use the same standardized format:
+```csv
+Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Description,Voltage_Rating,Current_Rating,Tolerance,Mounting,Preferred_Supplier,Mouser_PN,DigiKey_PN,Unit_Cost,Stock_Level,Symbol_File,Footprint_File,3D_Model_File,Datasheet_URL,Status,Created_Date,Notes
+```
+
+#### **Supported CSV Files**
+- `RESISTORS.csv`, `CAPACITORS.csv`, `INDUCTORS.csv`, `DIODES.csv`
+- `TRANSISTORS.csv`, `INTEGRATED_CIRCUITS.csv`, `CONNECTORS.csv`
+- `SWITCHES.csv`, `CRYSTALS_OSCILLATORS.csv`, `LEDS.csv`
+- `FUSES.csv`, `RELAYS.csv`, `SENSORS.csv`, `OPTOCOUPLERS.csv`
+- `HARDWARE.csv`, `MECHANICAL.csv`, `kpn_master.csv` (master list)
+
+### 🔄 Real-time Synchronization
+
+#### **Data Flow**
+1. **Startup**: Load all CSV files → Display in app
+2. **User Action**: Add/edit component in app
+3. **Auto-sync**: Component saved to localStorage + CSV file
+4. **Status Update**: "✅ X components synced to Y CSV files"
+
+#### **Browser Compatibility**
+- **Chrome/Edge 88+**: Full CSV file access ✅
+- **Safari 15.2+**: Full CSV file access ✅
+- **Firefox**: Automatic fallback to localStorage + manual export
+- **Older Browsers**: localStorage only
+
+### 🛠️ Advanced Features
+
+#### **Directory Management**
+- **Change Directory**: Switch to different CSV folder
+- **Reload Data**: Refresh from current CSV files
+- **Empty Directory Handling**: Auto-create blank CSV files
+
+#### **Status Indicators**
+- 🟢 **"✅ Connected to CSV files"** - Full CSV functionality
+- 🟡 **"🔄 Syncing to CSV files..."** - Write operation in progress
+- 🔴 **"❌ CSV access failed"** - Using localStorage fallback
+- 🟠 **"⚠️ CSV sync failed"** - Data saved to localStorage only
+
+### 🔧 Troubleshooting
+
+#### **Common Issues**
+- **"Must be handling a user gesture" Error**: Click buttons directly, don't use browser back/forward
+- **"No CSV files found" Dialog**: Create blank files OR select different directory
+- **Components Not Syncing**: Check browser console, try "Reload CSV Files" button
+- **Browser Not Supported**: Update to Chrome 88+, Safari 15.2+, or use Firefox fallback
 
 ## 🧪 Testing Framework
 
@@ -106,6 +190,12 @@ npm run test:safe         # Fallback first, then full tests
 - [x] File operation tests implemented
 - [x] UI component tests created
 - [x] Build process working correctly
+- [x] Local CSV system implementation completed
+- [x] File System Access API integration
+- [x] Real-time CSV synchronization
+- [x] Directory management and empty folder handling
+- [x] Table sorting functionality
+- [x] Browser compatibility with fallback support
 
 ### 🔄 In Progress (Issue #20)
 - [ ] Fix Playwright dependency installation
@@ -124,9 +214,10 @@ npm run test:safe         # Fallback first, then full tests
 
 ### 🎯 Application Entry Points
 1. **Landing Page**: `index.html` → Links to main application
-2. **Main App**: `KPN_System_Workbook.html` → Complete functionality
-3. **Data Files**: `KPN Master Reference Sheet/` → CSV templates
-4. **Libraries**: `Kinben Basic Kicad Library/` → Component definitions
+2. **Firebase App**: `KPN_System_Workbook.html` → Complete functionality (hosted)
+3. **Local CSV App**: `KPN_System_Local.html` → Direct CSV file integration (offline)
+4. **Data Files**: `KPN Master Reference Sheet/CSV_Files/` → Local CSV storage
+5. **Libraries**: `Kinben Basic Kicad Library/` → Component definitions
 
 ### 🔧 Development Workflow  
 1. **Local Testing**: `npm start` → Python server on port 8080
@@ -179,6 +270,7 @@ npm run test:safe         # Fallback first, then full tests
 - Resolve all test suite issues
 - Improve test coverage to 90%+
 - Add comprehensive error handling
+- Migrate local CSV variant to Firebase hosting
 
 ### 📈 Long-term Vision  
 - Multi-user collaboration features
@@ -203,6 +295,6 @@ npm run test:safe         # Fallback first, then full tests
 
 ---
 
-*📅 Last Updated: January 22, 2025*  
-*🔄 Status: Active Development - Test Suite Improvement Phase*  
+*📅 Last Updated: July 29, 2025*  
+*🔄 Status: Active Development - Local CSV System Complete*  
 *👥 Team: Kinben Electronics Team*

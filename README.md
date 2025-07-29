@@ -64,11 +64,14 @@ This system has been **dramatically simplified** following Occam's Razor princip
 
 ```
 Kinben-Unified-Parts-Reference-System/
-├── KPN_System_Workbook.html        # ⭐ Main simplified application (single file)
+├── KPN_System_Workbook.html        # ⭐ Main simplified application (Firebase-hosted)
+├── KPN_System_Local.html           # 📁 Local CSV variant (offline capable)
 ├── KPN Master Reference Sheet/     # Component database (CSV files)
+│   └── CSV_Files/                  # Local CSV storage directory
 ├── Kinben Basic KiCad Library/     # Complete EDA library (338+ files)
 ├── Project Templates/              # Design standards and templates
 ├── README.md                       # This file
+├── PROJECT_OVERVIEW.md             # Comprehensive system documentation
 ├── DEPLOYMENT.md                   # Deployment documentation
 ├── firebase.json                   # Firebase hosting config
 ├── package.json                    # Simplified dependencies
@@ -78,20 +81,23 @@ Kinben-Unified-Parts-Reference-System/
 
 ## 🔧 Simplified System Features
 
-### Single-File HTML Application (`KPN_System_Workbook.html`)
+### Dual Application Approach
 
-#### Core Functionality Only
+#### 🌐 Firebase-Hosted Version (`KPN_System_Workbook.html`)
 - **Components Management**: Add/edit/search KPN components with essential fields only
 - **PCB Management**: Create PCBs with simple BOMs linking to components
 - **System Hierarchy**: Build systems containing multiple PCBs
 - **Data Export**: CSV export for external tools integration
 - **Local Storage**: Browser-based persistence (no complex database)
-
-#### User Interface
 - **Clean Design**: Minimal, focused interface with 4 main tabs
-- **Responsive Layout**: Works on desktop and mobile devices
-- **Fast Performance**: Single-file application loads instantly
-- **Zero Configuration**: No setup required, just open in browser
+
+#### 📁 Local CSV Version (`KPN_System_Local.html`)
+- **Direct CSV Integration**: File System Access API for real-time CSV operations
+- **Offline Capability**: Works without internet connection
+- **Real-time Sync**: Changes instantly written to CSV files
+- **Directory Management**: Switch between different project folders
+- **Browser Compatibility**: Chrome/Safari full support, Firefox fallback
+- **Dual Storage**: CSV files + localStorage backup for data safety
 
 ### KPN Naming Convention (Unchanged)
 Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`

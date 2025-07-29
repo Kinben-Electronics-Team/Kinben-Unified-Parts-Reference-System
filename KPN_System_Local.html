@@ -175,6 +175,38 @@
             background: #e3f2fd;
         }
         
+        /* Sortable table headers */
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 25px !important;
+        }
+        
+        .sortable:hover {
+            background: #106ebe !important;
+        }
+        
+        .sortable::after {
+            content: '↕️';
+            position: absolute;
+            right: 8px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        .sortable.sort-asc::after {
+            content: '↑';
+            opacity: 1;
+            font-weight: bold;
+        }
+        
+        .sortable.sort-desc::after {
+            content: '↓';
+            opacity: 1;
+            font-weight: bold;
+        }
+        
         .search-box {
             width: 100%;
             padding: 12px;
@@ -684,13 +716,13 @@
                             <th id="bulk-select-header" style="display: none;">
                                 <input type="checkbox" id="select-all-checkbox" onchange="toggleAllCheckboxes(this)">
                             </th>
-                            <th>KPN</th>
-                            <th>Category</th>
-                            <th>Subcategory</th>
-                            <th>Value/PN</th>
-                            <th>Package</th>
-                            <th>Specs</th>
-                            <th>Vendor</th>
+                            <th class="sortable" onclick="sortComponents('kpn')">KPN</th>
+                            <th class="sortable" onclick="sortComponents('category')">Category</th>
+                            <th class="sortable" onclick="sortComponents('subcategory')">Subcategory</th>
+                            <th class="sortable" onclick="sortComponents('value')">Value/PN</th>
+                            <th class="sortable" onclick="sortComponents('package')">Package</th>
+                            <th class="sortable" onclick="sortComponents('manufacturer')">Specs</th>
+                            <th class="sortable" onclick="sortComponents('preferredVendor')">Vendor</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -771,11 +803,11 @@
                 <table class="table" id="assemblies-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Version</th>
-                            <th>Description</th>
-                            <th>Assembly Items</th>
-                            <th>Status</th>
+                            <th class="sortable" onclick="sortAssemblies('name')">Name</th>
+                            <th class="sortable" onclick="sortAssemblies('version')">Version</th>
+                            <th class="sortable" onclick="sortAssemblies('description')">Description</th>
+                            <th class="sortable" onclick="sortAssemblies('itemCount')">Assembly Items</th>
+                            <th class="sortable" onclick="sortAssemblies('status')">Status</th>
                         </tr>
                     </thead>
                     <tbody id="assemblies-tbody">
@@ -851,11 +883,11 @@
                 <table class="table" id="systems-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Version</th>
-                            <th>Description</th>
-                            <th>Item Count</th>
-                            <th>Status</th>
+                            <th class="sortable" onclick="sortSystems('name')">Name</th>
+                            <th class="sortable" onclick="sortSystems('version')">Version</th>
+                            <th class="sortable" onclick="sortSystems('description')">Description</th>
+                            <th class="sortable" onclick="sortSystems('itemCount')">Item Count</th>
+                            <th class="sortable" onclick="sortSystems('status')">Status</th>
                         </tr>
                     </thead>
                     <tbody id="systems-tbody">
@@ -3433,6 +3465,167 @@
         }
 
         // Render functions
+        // Sorting state
+        let componentSortColumn = null;
+        let componentSortDirection = 'asc';
+        let assemblySortColumn = null;
+        let assemblySortDirection = 'asc';
+        let systemSortColumn = null;
+        let systemSortDirection = 'asc';
+        
+        // Sort components table
+        function sortComponents(column) {
+            // Toggle direction if same column, otherwise default to ascending
+            if (componentSortColumn === column) {
+                componentSortDirection = componentSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                componentSortColumn = column;
+                componentSortDirection = 'asc';
+            }
+            
+            // Update header styling
+            document.querySelectorAll('#components-table .sortable').forEach(th => {
+                th.className = 'sortable';
+            });
+            document.querySelector(`#components-table .sortable:nth-child(${getComponentColumnIndex(column)})`).className = 
+                `sortable sort-${componentSortDirection}`;
+            
+            // Sort the data
+            data.components.sort((a, b) => {
+                let aVal = getComponentValue(a, column);
+                let bVal = getComponentValue(b, column);
+                
+                // Handle numeric sorting for KPN
+                if (column === 'kpn') {
+                    const aNum = parseInt(aVal.split('-').pop());
+                    const bNum = parseInt(bVal.split('-').pop());
+                    aVal = aNum || 0;
+                    bVal = bNum || 0;
+                }
+                
+                let comparison = 0;
+                if (aVal < bVal) comparison = -1;
+                if (aVal > bVal) comparison = 1;
+                
+                return componentSortDirection === 'desc' ? -comparison : comparison;
+            });
+            
+            renderComponents();
+        }
+        
+        // Sort assemblies table
+        function sortAssemblies(column) {
+            if (assemblySortColumn === column) {
+                assemblySortDirection = assemblySortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                assemblySortColumn = column;
+                assemblySortDirection = 'asc';
+            }
+            
+            // Update header styling
+            document.querySelectorAll('#assemblies-table .sortable').forEach(th => {
+                th.className = 'sortable';
+            });
+            document.querySelector(`#assemblies-table .sortable:nth-child(${getAssemblyColumnIndex(column)})`).className = 
+                `sortable sort-${assemblySortDirection}`;
+            
+            // Sort the data
+            data.assemblies.sort((a, b) => {
+                let aVal = getAssemblyValue(a, column);
+                let bVal = getAssemblyValue(b, column);
+                
+                let comparison = 0;
+                if (aVal < bVal) comparison = -1;
+                if (aVal > bVal) comparison = 1;
+                
+                return assemblySortDirection === 'desc' ? -comparison : comparison;
+            });
+            
+            renderAssemblies();
+        }
+        
+        // Sort systems table
+        function sortSystems(column) {
+            if (systemSortColumn === column) {
+                systemSortDirection = systemSortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                systemSortColumn = column;
+                systemSortDirection = 'asc';
+            }
+            
+            // Update header styling
+            document.querySelectorAll('#systems-table .sortable').forEach(th => {
+                th.className = 'sortable';
+            });
+            document.querySelector(`#systems-table .sortable:nth-child(${getSystemColumnIndex(column)})`).className = 
+                `sortable sort-${systemSortDirection}`;
+            
+            // Sort the data
+            data.systems.sort((a, b) => {
+                let aVal = getSystemValue(a, column);
+                let bVal = getSystemValue(b, column);
+                
+                let comparison = 0;
+                if (aVal < bVal) comparison = -1;
+                if (aVal > bVal) comparison = 1;
+                
+                return systemSortDirection === 'desc' ? -comparison : comparison;
+            });
+            
+            renderSystems();
+        }
+        
+        // Helper functions for sorting
+        function getComponentValue(component, column) {
+            switch(column) {
+                case 'kpn': return component.kpn || '';
+                case 'category': return component.category || '';
+                case 'subcategory': return component.subcategory || '';
+                case 'value': return component.value || component.manufacturerPn || '';
+                case 'package': return component.package || '';
+                case 'manufacturer': return component.manufacturer || '';
+                case 'preferredVendor': return component.preferredVendor || '';
+                default: return '';
+            }
+        }
+        
+        function getAssemblyValue(assembly, column) {
+            switch(column) {
+                case 'name': return assembly.name || '';
+                case 'version': return assembly.version || '';
+                case 'description': return assembly.description || '';
+                case 'itemCount': return assembly.bom ? assembly.bom.length : 0;
+                case 'status': return assembly.status || '';
+                default: return '';
+            }
+        }
+        
+        function getSystemValue(system, column) {
+            switch(column) {
+                case 'name': return system.name || '';
+                case 'version': return system.version || '';
+                case 'description': return system.description || '';
+                case 'itemCount': return system.items ? system.items.length : (system.pcbs ? system.pcbs.length : 0);
+                case 'status': return system.status || '';
+                default: return '';
+            }
+        }
+        
+        function getComponentColumnIndex(column) {
+            const columns = ['', 'kpn', 'category', 'subcategory', 'value', 'package', 'manufacturer', 'preferredVendor'];
+            return columns.indexOf(column) + 1;
+        }
+        
+        function getAssemblyColumnIndex(column) {
+            const columns = ['name', 'version', 'description', 'itemCount', 'status'];
+            return columns.indexOf(column) + 1;
+        }
+        
+        function getSystemColumnIndex(column) {
+            const columns = ['name', 'version', 'description', 'itemCount', 'status'];
+            return columns.indexOf(column) + 1;
+        }
+
         function renderComponents() {
             const tbody = document.getElementById('components-tbody');
             tbody.innerHTML = '';
