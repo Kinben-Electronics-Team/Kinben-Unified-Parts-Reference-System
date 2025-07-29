@@ -18,6 +18,7 @@ build/
 *.key
 *firebase-service-account*.json
 *secrets*
+!scripts/check-secrets.js
 *credentials*
 
 # IDE
