@@ -32,9 +32,6 @@ Kinben-Unified-Parts-Reference-System/
 - **Multi-level Hierarchy**: Components → PCBs → Assemblies → Systems
 - **Directory Management**: Switch between different project folders
 - **Table Sorting**: All columns sortable with visual indicators
-- **Data Validation**: Real-time input validation with format checking and unit dropdowns
-- **Unit Standardization**: Automatic value+unit combination (47kΩ, 10µF, 1mH)
-- **Package Validation**: Category-specific dropdown suggestions for standard packages
 - **Browser Compatibility**: Full support for Chrome 86+, Edge 86+, falls back to localStorage
 - **Offline Capability**: Works without internet after initial directory setup
 - **Dual Storage**: CSV files + localStorage backup for data safety
@@ -188,57 +185,6 @@ npm run test:comprehensive # Extended test coverage
 npm run test:safe         # Fallback first, then full tests
 ```
 
-## 🛡️ Data Validation System
-
-### 📋 **Component Validation Framework**
-The system includes comprehensive real-time validation for all component data entry:
-
-#### **🔧 Value Validation with Units**
-- **Resistors**: Accepts `10k`, `4.7kΩ`, `100R` → Standardizes to `10kΩ`, `4.7kΩ`, `100Ω`
-- **Capacitors**: Accepts `10µF`, `100nF`, `22pF` → Validates proper unit formats
-- **Inductors**: Accepts `10µH`, `1mH`, `220nH` → Ensures correct inductance units
-
-#### **📦 Package Validation**
-- **Category-Specific Dropdowns**: 0402, 0603, 0805, 1206 for passives; SOT-23, TO-220 for actives
-- **Fallback Options**: "Other (specify)" for custom packages
-- **Validation Messages**: Suggests correct packages for each component category
-
-#### **🏭 Manufacturer PN Validation**
-- **Pattern Matching**: Alphanumeric characters + hyphens, underscores, dots, slashes
-- **Format Examples**: `LMR36006FSCQRNXRQ1`, `2N7002K`, `B2B-XH-A(LF)(SN)`
-- **Optional Field**: Validation only applied when field has content
-
-#### **✅ Visual Feedback System**
-- **Real-time Validation**: Green/red borders as user types
-- **Error Messages**: Helpful format examples and correction guidance
-- **Form Protection**: Submit button disabled until all validation passes
-
-### 🎨 **UI Implementation**
-```html
-<!-- Value + Unit Input Example -->
-<div class="value-unit-container">
-    <input type="text" placeholder="Enter numeric value">
-    <select>
-        <option value="kΩ">kΩ</option>
-        <option value="MΩ">MΩ</option>
-    </select>
-</div>
-```
-
-#### **CSS Styling**
-- **Consistent Sizing**: 2:1 flex ratio for value:unit inputs
-- **Validation States**: `.valid` (green) and `.invalid` (red) classes
-- **Message Display**: Fixed-height containers prevent layout shifts
-
-### 🔧 **Technical Implementation**
-```javascript
-// Validation Functions
-validateComponentValue(value, category)  // Format checking
-validatePackage(packageValue, category) // Package suggestions  
-validateManufacturerPN(partNumber)      // Pattern validation
-standardizeValue(value, category)       // Auto-formatting
-```
-
 ## 📊 Current Development Status
 
 ### ✅ Completed Tasks
@@ -255,9 +201,6 @@ standardizeValue(value, category)       // Auto-formatting
 - [x] Directory management and empty folder handling
 - [x] Table sorting functionality
 - [x] Browser compatibility with fallback support
-- [x] **Data validation framework** with real-time input validation
-- [x] **Unit dropdown system** for standardized component values
-- [x] **Package validation** with category-specific suggestions
 
 ### 🔄 In Progress (Issue #20)
 - [ ] Fix Playwright dependency installation
