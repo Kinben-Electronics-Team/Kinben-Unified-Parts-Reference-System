@@ -110,6 +110,61 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 14px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        
+        /* Validation styles - consistent field sizing */
+        .form-group input.valid,
+        .form-group select.valid {
+            border-color: #28a745;
+            box-shadow: 0 0 0 0.1rem rgba(40, 167, 69, 0.25);
+        }
+
+        .form-group input.invalid,
+        .form-group select.invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.1rem rgba(220, 53, 69, 0.25);
+        }
+
+        .validation-message {
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+            min-height: 16px;
+        }
+
+        .validation-message.error {
+            color: #dc3545;
+            display: block;
+        }
+
+        .validation-message.success {
+            color: #28a745;
+            display: block;
+        }
+
+        /* Value with unit input styles - consistent sizing */
+        .value-unit-container {
+            display: flex;
+            gap: 8px;
+            align-items: stretch;
+        }
+
+        .value-unit-container input {
+            flex: 2;
+            min-width: 0;
+        }
+
+        .value-unit-container select {
+            flex: 1;
+            min-width: 80px;
+            max-width: 120px;
+        }
+
+        /* Required field indicator */
+        .required-field {
+            color: #dc3545;
+            margin-left: 2px;
         }
         
         .btn {
@@ -2112,6 +2167,201 @@
             }
         };
 
+        // ============ VALIDATION FRAMEWORK ============
+        
+        // Standard package options per category
+        const packageOptions = {
+            resistors: ['0402', '0603', '0805', '1206', '1210', '2010', '2512', 'AXIAL'],
+            capacitors: ['0402', '0603', '0805', '1206', '1210', '1812', '2220', 'RADIAL'],
+            inductors: ['0402', '0603', '0805', '1206', '1210', '1812', 'RADIAL'],
+            diodes: ['SOD-123', 'SOD-323', 'SOD-523', 'SMA', 'SMB', 'SMC', 'DO-214'],
+            transistors: ['SOT-23', 'SOT-223', 'TO-220', 'DPAK', 'D2PAK', 'SO-8'],
+            ics: ['SOIC-8', 'SOIC-14', 'SOIC-16', 'TSSOP-14', 'QFN-16', 'BGA-256'],
+            connectors: ['THT', 'SMD', '2.54mm', '1.27mm', 'USB', 'RJ45']
+        };
+
+        // Standard unit options
+        const unitOptions = {
+            resistance: ['Ω', 'kΩ', 'MΩ', 'GΩ'],
+            capacitance: ['pF', 'nF', 'µF', 'mF'],
+            inductance: ['nH', 'µH', 'mH', 'H'],
+            voltage: ['mV', 'V', 'kV'],
+            current: ['µA', 'mA', 'A']
+        };
+
+        // Validation functions
+        function validateComponentValue(value, category) {
+            if (!value || value.trim() === '') {
+                return { valid: false, message: 'Value is required' };
+            }
+
+            // Patterns for different component types
+            const patterns = {
+                resistors: /^(\d+(?:\.\d+)?)\s*([kKmMgG]?[rRΩ])$/i,
+                capacitors: /^(\d+(?:\.\d+)?)\s*([pnµumk]+[fF])$/i,
+                inductors: /^(\d+(?:\.\d+)?)\s*([nµumk]+[hH])$/i
+            };
+
+            const pattern = patterns[category];
+            if (pattern && pattern.test(value.trim())) {
+                return { valid: true, message: 'Valid format' };
+            } else if (pattern) {
+                const examples = {
+                    resistors: 'e.g., 10kΩ, 4.7k, 100R',
+                    capacitors: 'e.g., 10µF, 100nF, 22pF',
+                    inductors: 'e.g., 10µH, 1mH, 220nH'
+                };
+                return { 
+                    valid: false, 
+                    message: `Invalid format. ${examples[category] || ''}` 
+                };
+            }
+            
+            return { valid: true, message: '' }; // Other categories don't have strict validation
+        }
+
+        function validatePackage(packageValue, category) {
+            if (!packageValue || packageValue.trim() === '') {
+                return { valid: false, message: 'Package is required' };
+            }
+
+            const validPackages = packageOptions[category] || [];
+            if (validPackages.length > 0 && !validPackages.includes(packageValue)) {
+                return { 
+                    valid: false, 
+                    message: `Suggested: ${validPackages.slice(0, 3).join(', ')}` 
+                };
+            }
+
+            return { valid: true, message: 'Valid package' };
+        }
+
+        function validateManufacturerPN(partNumber) {
+            if (!partNumber || partNumber.trim() === '') {
+                return { valid: true, message: '' }; // Optional field
+            }
+
+            // Basic pattern: alphanumeric with some special characters
+            const pattern = /^[A-Za-z0-9\-_\.\/]+$/;
+            if (pattern.test(partNumber.trim())) {
+                return { valid: true, message: 'Valid format' };
+            } else {
+                return { 
+                    valid: false, 
+                    message: 'Only letters, numbers, hyphens, underscores, dots, and slashes allowed' 
+                };
+            }
+        }
+
+        function standardizeValue(value, category) {
+            if (!value) return value;
+
+            const standardizations = {
+                resistors: value => {
+                    return value
+                        .replace(/r/gi, 'Ω')
+                        .replace(/k/gi, 'k')
+                        .replace(/m/gi, 'M')
+                        .replace(/(\d+)k(\d*)/gi, (match, p1, p2) => {
+                            // Handle resistor values like '10k5' (convert to '10.5kΩ') and '10k' (convert to '10kΩ')
+                            if (p2 && p2.trim() !== '') {
+                                return `${p1}.${p2}kΩ`;
+                            } else {
+                                return `${p1}kΩ`;
+                            }
+                        });
+                },
+                capacitors: value => {
+                    return value
+                        .replace(/u/gi, 'µ')
+                        .replace(/(\d+)µ([fF])/gi, '$1µF')
+                        .replace(/(\d+)n([fF])/gi, '$1nF')
+                        .replace(/(\d+)p([fF])/gi, '$1pF');
+                },
+                inductors: value => {
+                    return value
+                        .replace(/u/gi, 'µ')
+                        .replace(/(\d+)µ([hH])/gi, '$1µH')
+                        .replace(/(\d+)n([hH])/gi, '$1nH')
+                        .replace(/(\d+)m([hH])/gi, '$1mH');
+                }
+            };
+
+            const standardize = standardizations[category];
+            return standardize ? standardize(value) : value;
+        }
+
+        function addValidationToField(field, category, fieldConfig) {
+            const validationContainer = document.createElement('div');
+            validationContainer.className = 'validation-message';
+            validationContainer.id = `${field.id}-validation`;
+            
+            field.addEventListener('input', function() {
+                validateField(field, category, fieldConfig);
+            });
+
+            field.addEventListener('blur', function() {
+                if (fieldConfig.autoFormat && fieldConfig.id === 'value') {
+                    field.value = standardizeValue(field.value, category);
+                }
+                validateField(field, category, fieldConfig);
+            });
+
+            field.parentNode.appendChild(validationContainer);
+        }
+
+        function validateField(field, category, fieldConfig) {
+            const value = field.value;
+            const validationMessage = document.getElementById(`${field.id}-validation`);
+            let result = { valid: true, message: '' };
+
+            // Clear previous validation state
+            field.classList.remove('valid', 'invalid');
+
+            // Apply validation based on field type
+            if (fieldConfig.id === 'value') {
+                result = validateComponentValue(value, category);
+            } else if (fieldConfig.id === 'package') {
+                result = validatePackage(value, category);
+            } else if (fieldConfig.id === 'manufacturer-pn') {
+                result = validateManufacturerPN(value);
+            }
+
+            // Only show validation state if field has content or if it's required and empty
+            if (value || (fieldConfig.required && !value)) {
+                field.classList.add(result.valid ? 'valid' : 'invalid');
+            }
+
+            if (validationMessage) {
+                validationMessage.className = `validation-message ${result.valid ? 'success' : 'error'}`;
+                validationMessage.textContent = result.message;
+            }
+
+            return result.valid;
+        }
+
+        function validateAllComponentFields() {
+            const category = document.getElementById('comp-category').value;
+            if (!category || !categoryConfigs[category]) {
+                return true;
+            }
+
+            let allValid = true;
+            const config = categoryConfigs[category];
+
+            config.fields.forEach(fieldConfig => {
+                const field = document.getElementById(`comp-${fieldConfig.id}`);
+                if (field) {
+                    const isValid = validateField(field, category, fieldConfig);
+                    if (!isValid && fieldConfig.required) allValid = false;
+                }
+            });
+
+            return allValid;
+        }
+
+        // ============ END VALIDATION FRAMEWORK ============
+
         // Tab management
         function showTab(tabName) {
             // Hide all panels
@@ -2175,22 +2425,22 @@
             // Add KPN field (always present)
             fieldsHTML += `
                 <div class="form-group">
-                    <label>KPN <span style="color: red;">*</span></label>
+                    <label>KPN <span class="required-field">*</span></label>
                     <input type="text" id="comp-kpn" readonly style="background: #f5f5f5;">
                 </div>
                 <div class="form-group">
-                    <label>Category <span style="color: red;">*</span></label>
+                    <label>Category <span class="required-field">*</span></label>
                     <input type="text" id="comp-category-display" readonly style="background: #f5f5f5;">
                 </div>
                 <div class="form-group">
-                    <label>Subcategory <span style="color: red;">*</span></label>
+                    <label>Subcategory <span class="required-field">*</span></label>
                     <input type="text" id="comp-subcategory-display" readonly style="background: #f5f5f5;">
                 </div>
             `;
             
             // Add category-specific fields
             config.fields.forEach(field => {
-                const requiredMark = field.required ? '<span style="color: red;">*</span>' : '';
+                const requiredMark = field.required ? '<span class="required-field">*</span>' : '';
                 
                 if (field.type === 'vendor-select') {
                     // Create vendor dropdown
@@ -2204,6 +2454,55 @@
                             <label>${field.label} ${requiredMark}</label>
                             <select id="comp-${field.id}" ${field.required ? 'required' : ''}>
                                 ${vendorOptions}
+                            </select>
+                        </div>
+                    `;
+                } else if (field.id === 'value' && ['resistors', 'capacitors', 'inductors'].includes(category)) {
+                    // Special value field with unit dropdown for passive components
+                    let unitType = '';
+                    let unitList = [];
+                    
+                    const categoryUnitMap = {
+                        resistors: { unitType: 'resistance', unitList: unitOptions.resistance },
+                        capacitors: { unitType: 'capacitance', unitList: unitOptions.capacitance },
+                        inductors: { unitType: 'inductance', unitList: unitOptions.inductance }
+                    };
+                    
+                    const { unitType, unitList } = categoryUnitMap[category] || { unitType: '', unitList: [] };
+                    
+                    let unitOptionsHTML = unitList.map(unit => 
+                        `<option value="${unit}">${unit}</option>`
+                    ).join('');
+                    
+                    fieldsHTML += `
+                        <div class="form-group">
+                            <label>${field.label} ${requiredMark}</label>
+                            <div class="value-unit-container">
+                                <input type="text" 
+                                       id="comp-${field.id}" 
+                                       placeholder="Enter numeric value"
+                                       ${field.required ? 'required' : ''}>
+                                <select id="comp-${field.id}-unit">
+                                    <option value="${unitList[0]}" selected>${unitList[0]}</option>
+                                    ${unitOptionsHTML}
+                                </select>
+                            </div>
+                        </div>
+                    `;
+                } else if (field.id === 'package') {
+                    // Package field with dropdown suggestions
+                    const packages = packageOptions[category] || [];
+                    let packageOptionsHTML = packages.map(pkg => 
+                        `<option value="${pkg}">${pkg}</option>`
+                    ).join('');
+                    
+                    fieldsHTML += `
+                        <div class="form-group">
+                            <label>${field.label} ${requiredMark}</label>
+                            <select id="comp-${field.id}" ${field.required ? 'required' : ''}>
+                                <option value="">Select Package</option>
+                                ${packageOptionsHTML}
+                                <option value="custom">Other (specify)</option>
                             </select>
                         </div>
                     `;
@@ -2233,6 +2532,14 @@
             if (subcategorySelect.value) {
                 document.getElementById('comp-subcategory-display').value = subcategorySelect.value;
             }
+            
+            // Add validation to all the new fields
+            config.fields.forEach(fieldConfig => {
+                const field = document.getElementById(`comp-${fieldConfig.id}`);
+                if (field) {
+                    addValidationToField(field, category, fieldConfig);
+                }
+            });
         }
 
         // Generate KPN for component
@@ -2367,6 +2674,12 @@
             
             const kpn = document.getElementById('comp-kpn').value || document.getElementById('comp-kpn-preview').textContent;
             
+            // Validate all fields using the validation framework
+            if (!validateAllComponentFields()) {
+                alert('Please fix validation errors before submitting.');
+                return;
+            }
+            
             // Collect data from dynamic fields
             const component = {
                 kpn,
@@ -2376,14 +2689,23 @@
                 dateAdded: new Date().toISOString().split('T')[0]
             };
             
-            // Validate required fields and collect data
+            // Collect and validate field data
             const config = categoryConfigs[category];
             let missingRequired = [];
             
             config.fields.forEach(field => {
                 const fieldElement = document.getElementById(`comp-${field.id}`);
                 if (fieldElement) {
-                    const value = fieldElement.value.trim();
+                    let value = fieldElement.value.trim();
+                    
+                    // Handle value + unit combination for passive components
+                    if (field.id === 'value' && ['resistors', 'capacitors', 'inductors'].includes(category)) {
+                        const unitElement = document.getElementById(`comp-${field.id}-unit`);
+                        if (unitElement && unitElement.value) {
+                            value = value + unitElement.value;
+                        }
+                    }
+                    
                     if (field.required && !value) {
                         missingRequired.push(field.label);
                     }

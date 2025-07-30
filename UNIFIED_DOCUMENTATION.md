@@ -38,9 +38,12 @@ This system has been **dramatically simplified** following Occam's Razor princip
 
 #### 1. **📋 KPN Components** (Electronic Parts Catalog)
 - Basic component information with auto-generated KPNs
-- 8 essential categories (simplified from 16)
+- 12 essential categories with comprehensive validation
+- **Data Validation**: Real-time input validation with unit dropdowns
+- **Unit Standardization**: Value+unit combination (47kΩ, 10µF, 1mH)
+- **Package Validation**: Category-specific dropdown suggestions
+- **Format Checking**: Manufacturer PN pattern validation
 - Simple fields: KPN, manufacturer, part number, description, package, status
-- **Removed**: Complex specifications and detailed technical data
 
 #### 2. **🔌 PCBs with BOMs** 
 - PCB name, description, version
@@ -56,6 +59,9 @@ This system has been **dramatically simplified** following Occam's Razor princip
 ### ✅ Success Criteria Achieved
 - **CSV Integration**: ✅ Direct CSV file management using File System Access API
 - **Real-time Sync**: ✅ Changes immediately written to CSV files
+- **Data Validation**: ✅ Real-time input validation with format checking and unit dropdowns
+- **Unit Standardization**: ✅ Automatic value+unit combination for consistent data
+- **Package Validation**: ✅ Category-specific dropdown suggestions for standard packages
 - **Browser Fallback**: ✅ localStorage backup for unsupported browsers
 - **Offline Capability**: ✅ Works without internet after initial load
 - **2-minute rule**: ✅ All common operations complete in < 2 minutes
@@ -142,6 +148,10 @@ Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`
 - **Similar structures** for Inductors, Diodes, Transistors, Connectors, Switches
 
 **📋 Advanced Features:**
+- ✅ **Real-time Data Validation**: Input validation with format checking and visual feedback
+- ✅ **Unit Dropdown System**: Standardized units for resistors (Ω/kΩ/MΩ), capacitors (pF/nF/µF), inductors (nH/µH/mH)
+- ✅ **Package Validation**: Category-specific dropdown suggestions (0402, 0603, SOT-23, etc.)
+- ✅ **Manufacturer PN Validation**: Pattern matching for part number formats
 - ✅ **Required vs Optional Fields**: Red asterisks (*), dynamic validation
 - ✅ **CSV Import with Auto KPN**: Batch import, auto-generates sequential KPNs
 - ✅ **Template Export**: Download CSV template with examples for each category  
@@ -155,11 +165,14 @@ Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`
 ## 🎯 Usage Guidelines
 
 ### Component Addition Workflow (< 2 minutes)
-1. **Select Category**: Choose from 8 simplified categories
+1. **Select Category**: Choose from 12 component categories
 2. **Select Subcategory**: Pick appropriate subcategory
 3. **Auto-KPN**: System generates KPN automatically (e.g., CAP-CER-001)
-4. **Fill Essentials**: Manufacturer, part number, description, package, status
-5. **Add Component**: Click to save - component appears in table immediately
+4. **Fill Value with Unit**: Enter numeric value + select unit from dropdown (47kΩ, 10µF)
+5. **Select Package**: Choose from category-specific dropdown or specify custom
+6. **Fill Details**: Manufacturer, part number (with validation), description
+7. **Real-time Validation**: Green/red borders guide correct format entry
+8. **Add Component**: Click to save - validation ensures data quality
 
 ### PCB Creation Workflow (< 5 minutes)
 1. **PCB Details**: Name, version, description, status
