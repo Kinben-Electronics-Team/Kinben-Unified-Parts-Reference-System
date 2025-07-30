@@ -2197,9 +2197,9 @@
 
             // Patterns for different component types
             const patterns = {
-                resistors: /^(\d+(?:\.\d+)?)\s*([kKmMgG]?)([rRΩ]?)$/i,
-                capacitors: /^(\d+(?:\.\d+)?)\s*([pnµumk]?)([fF])$/i,
-                inductors: /^(\d+(?:\.\d+)?)\s*([nµumk]?)([hH])$/i
+                resistors: /^(\d+(?:\.\d+)?)\s*([kKmMgG]?[rRΩ])$/i,
+                capacitors: /^(\d+(?:\.\d+)?)\s*([pnµumk]+[fF])$/i,
+                inductors: /^(\d+(?:\.\d+)?)\s*([nµumk]+[hH])$/i
             };
 
             const pattern = patterns[category];
@@ -2263,7 +2263,12 @@
                         .replace(/k/gi, 'k')
                         .replace(/m/gi, 'M')
                         .replace(/(\d+)k(\d*)/gi, (match, p1, p2) => {
-                            return p2 ? `${p1}.${p2}kΩ` : `${p1}kΩ`;
+                            // Handle resistor values like '10k5' (convert to '10.5kΩ') and '10k' (convert to '10kΩ')
+                            if (p2 && p2.trim() !== '') {
+                                return `${p1}.${p2}kΩ`;
+                            } else {
+                                return `${p1}kΩ`;
+                            }
                         });
                 },
                 capacitors: value => {
@@ -2457,16 +2462,13 @@
                     let unitType = '';
                     let unitList = [];
                     
-                    if (category === 'resistors') {
-                        unitType = 'resistance';
-                        unitList = unitOptions.resistance;
-                    } else if (category === 'capacitors') {
-                        unitType = 'capacitance';
-                        unitList = unitOptions.capacitance;
-                    } else if (category === 'inductors') {
-                        unitType = 'inductance';
-                        unitList = unitOptions.inductance;
-                    }
+                    const categoryUnitMap = {
+                        resistors: { unitType: 'resistance', unitList: unitOptions.resistance },
+                        capacitors: { unitType: 'capacitance', unitList: unitOptions.capacitance },
+                        inductors: { unitType: 'inductance', unitList: unitOptions.inductance }
+                    };
+                    
+                    const { unitType, unitList } = categoryUnitMap[category] || { unitType: '', unitList: [] };
                     
                     let unitOptionsHTML = unitList.map(unit => 
                         `<option value="${unit}">${unit}</option>`
@@ -2481,7 +2483,7 @@
                                        placeholder="Enter numeric value"
                                        ${field.required ? 'required' : ''}>
                                 <select id="comp-${field.id}-unit">
-                                    <option value="">Unit</option>
+                                    <option value="${unitList[0]}" selected>${unitList[0]}</option>
                                     ${unitOptionsHTML}
                                 </select>
                             </div>
