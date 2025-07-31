@@ -1,4 +1,4 @@
 Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Description,Voltage_Rating,Current_Rating,Tolerance,Mounting,Preferred_Supplier,Mouser_PN,DigiKey_PN,Unit_Cost,Stock_Level,Symbol_File,Footprint_File,3D_Model_File,Datasheet_URL,Status,Created_Date,Notes
-IND-PWR-012,inductors,PWR,22uH,1210,,,,,2A,20%,,Coilcraft,,,,,,,,,Active,2025-07-29,
-IND-CHK-013,inductors,CHK,100uH,0805,,,,,500mA,10%,,Murata,,,,,,,,,Active,2025-07-29,
-IND-FER-014,inductors,FER,220nH,0603,,,,,200mA,25%,,TDK,,,,,,,,,Active,2025-07-29,
+IND-PWR-012,inductors,PWR,22uH,1210,,,,,,,,Coilcraft,,,,,,,,,Active,,
+IND-CHK-013,inductors,CHK,100uH,0805,,,,,,,,Murata,,,,,,,,,Active,,
+IND-FER-014,inductors,FER,220nH,0603,,,,,,,,TDK,,,,,,,,,Active,,

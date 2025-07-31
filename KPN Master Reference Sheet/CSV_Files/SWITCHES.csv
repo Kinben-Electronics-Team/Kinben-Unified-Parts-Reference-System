@@ -1,5 +1,5 @@
 Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Description,Voltage_Rating,Current_Rating,Tolerance,Mounting,Preferred_Supplier,Mouser_PN,DigiKey_PN,Unit_Cost,Stock_Level,Symbol_File,Footprint_File,3D_Model_File,Datasheet_URL,Status,Created_Date,Notes
-SWI-TAC-026,switches,TAC,,4.3x4.3mm,,SKHHPNA010,Tactile switch 4.3x4.3mm,,,,,Alps,,,,,,,,,Active,2025-07-29,
-SWI-DIP-027,switches,DIP,,SMT,,DS01-254-1-04BK-SMT,4-position DIP switch,,,,,CTS,,,,,,,,,Active,2025-07-29,
-SWI-ROT-028,switches,ROT,,Through-hole,,PEC11R-4015F-S0024,Rotary encoder with switch,,,,,Bourns,,,,,,,,,Active,2025-07-29,
-SWI-SLI-029,switches,SLI,,4.5x1.8mm,,SS12D00G3,SPDT slide switch,,,,,E-Switch,,,,,,,,,Active,2025-07-29,
+SWI-TAC-026,switches,TAC,,4.3x4.3mm,,SKHHPNA010,Tactile switch 4.3x4.3mm,,,,,Alps,,,,,,,,,Active,,
+SWI-DIP-027,switches,DIP,,SMT,,DS01-254-1-04BK-SMT,4-position DIP switch,,,,,CTS,,,,,,,,,Active,,
+SWI-ROT-028,switches,ROT,,Through-hole,,PEC11R-4015F-S0024,Rotary encoder with switch,,,,,Bourns,,,,,,,,,Active,,
+SWI-SLI-029,switches,SLI,,4.5x1.8mm,,SS12D00G3,SPDT slide switch,,,,,E-Switch,,,,,,,,,Active,,
