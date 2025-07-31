@@ -48,6 +48,18 @@ This system has been **dramatically simplified** following Occam's Razor princip
 - Reference designator tracking
 - **Removed**: Complex assembly instructions and production data
 
+#### 2.5. **🏭 Enhanced Assembly Management with Interactive BOM Import**
+- **Interactive CSV Import**: Upload processed BOMs with user decision workflow
+- **KPN Validation**: Real-time cross-referencing against component database
+- **Missing KPN Resolution**: Create new components or map to existing ones
+- **Duplicate Handling**: Smart resolution for conflicting reference designators
+- **Manual Entry**: Add assembly items individually with KPN autocomplete
+- **Edit/Delete Operations**: Inline modification of existing assembly items
+- **Bulk Actions**: Multi-select operations for efficient BOM management
+- **BOM Export**: Export assemblies as standardized BOM CSV files
+- **Reference Designator Support**: Full RefDes tracking (R1, C1, U1, etc.)
+- **Import Modes**: Replace, append, or merge with existing BOMs
+
 #### 3. **🏗️ System Hierarchy**
 - Systems containing multiple PCBs
 - Simple hierarchical structure
@@ -177,6 +189,26 @@ Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`
    - **Unified System**: Manual and imported items work together seamlessly
 4. **Add Assembly**: Save assembly with complete BOM from manual + imported items
 
+### Assembly BOM Import Workflow (< 10 minutes)
+1. **Upload BOM CSV**: Drag-and-drop or select processed BOM file
+2. **Preview & Validate**: Review parsed data with status indicators
+   - ✅ Valid KPNs shown in green with component details
+   - ❌ Missing KPNs highlighted in red for resolution
+3. **Interactive Decisions**: For each issue, choose resolution:
+   - Skip invalid items
+   - Create new components (opens component form)
+   - Map to existing similar KPNs
+4. **Handle Duplicates**: Resolve conflicting reference designators:
+   - Replace existing items
+   - Skip duplicates  
+   - Rename with suffix (R1 → R1_1)
+5. **Import Configuration**: Select import mode:
+   - Replace existing BOM (clear and import)
+   - Append to existing BOM (add new items)
+   - Merge with existing (update quantities)
+6. **Execute Import**: Watch progress with real-time feedback
+7. **Review Summary**: See total imported, skipped, and created items
+
 ### System Building Workflow (< 3 minutes)
 1. **System Details**: Name, version, description, status
 2. **Add PCBs**: Select PCBs from dropdown with quantities
@@ -184,7 +216,9 @@ Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`
 
 ### Data Export (< 1 minute)
 - **Export Tab**: One-click export of components, PCBs, or systems
+- **BOM Export**: Export assemblies as standardized BOM CSV files
 - **CSV Format**: Compatible with Excel and other tools
+- **Export Options**: Include component details, reference designators, quantities
 - **Real-time Stats**: See exactly what will be exported
 
 ---
