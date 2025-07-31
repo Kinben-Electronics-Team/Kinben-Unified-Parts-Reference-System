@@ -3961,15 +3961,39 @@
         // Show Map KPN Modal
         function showMapKPNModal(validation, validationIndex) {
             // Find similar components based on description
-            const similarComponents = data.components.filter(comp => {
-                const desc1 = (validation.description || '').toLowerCase();
-                const desc2 = (comp.description || '').toLowerCase();
-                // Simple similarity check - contains common words
-                const words1 = desc1.split(/\s+/);
-                const words2 = desc2.split(/\s+/);
-                return words1.some(word => word.length > 3 && words2.includes(word));
-            }).slice(0, 10); // Limit to 10 suggestions
+            // Precompute inverted index if not already done
+            if (!data.invertedIndex) {
+                data.invertedIndex = {};
+                data.components.forEach(comp => {
+                    const words = (comp.description || '').toLowerCase().split(/\s+/);
+                    words.forEach(word => {
+                        if (word.length > 3) {
+                            if (!data.invertedIndex[word]) data.invertedIndex[word] = [];
+                            data.invertedIndex[word].push(comp);
+                        }
+                    });
+                });
+            }
 
+            // Find similar components using the inverted index
+            const descWords = (validation.description || '').toLowerCase().split(/\s+/);
+            const potentialMatches = new Map();
+            descWords.forEach(word => {
+                if (word.length > 3 && data.invertedIndex[word]) {
+                    data.invertedIndex[word].forEach(comp => {
+                        if (!potentialMatches.has(comp)) {
+                            potentialMatches.set(comp, 0);
+                        }
+                        potentialMatches.set(comp, potentialMatches.get(comp) + 1);
+                    });
+                }
+            });
+
+            // Sort matches by the number of common words and limit to 10
+            const similarComponents = Array.from(potentialMatches.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(entry => entry[0]);
             const modal = document.createElement('div');
             modal.style.cssText = `
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
