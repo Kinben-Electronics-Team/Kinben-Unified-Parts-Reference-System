@@ -142,7 +142,7 @@ Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`
 - **Similar structures** for Inductors, Diodes, Transistors, Connectors, Switches
 
 **📋 Advanced Features:**
-- ✅ **Required vs Optional Fields**: Red asterisks (*), dynamic validation
+- ✅ **Required vs Optional Fields**: Red asterisks (*) indicate required fields
 - ✅ **CSV Import with Auto KPN**: Batch import, auto-generates sequential KPNs
 - ✅ **Template Export**: Download CSV template with examples for each category  
 - ✅ **Enhanced Table Display**: KPN, Category, Subcategory, Value/PN, Package, Specs, Vendor

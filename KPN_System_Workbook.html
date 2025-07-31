@@ -113,35 +113,6 @@
             transition: border-color 0.3s, box-shadow 0.3s;
         }
         
-        /* Validation styles - consistent field sizing */
-        .form-group input.valid,
-        .form-group select.valid {
-            border-color: #28a745;
-            box-shadow: 0 0 0 0.1rem rgba(40, 167, 69, 0.25);
-        }
-
-        .form-group input.invalid,
-        .form-group select.invalid {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 0.1rem rgba(220, 53, 69, 0.25);
-        }
-
-        .validation-message {
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
-            min-height: 16px;
-        }
-
-        .validation-message.error {
-            color: #dc3545;
-            display: block;
-        }
-
-        .validation-message.success {
-            color: #28a745;
-            display: block;
-        }
 
         /* Value with unit input styles - consistent sizing */
         .value-unit-container {
@@ -2189,185 +2160,6 @@
             current: ['µA', 'mA', 'A']
         };
 
-        // Validation functions
-        function validateComponentValue(value, category) {
-            if (!value || value.trim() === '') {
-                return { valid: false, message: 'Value is required' };
-            }
-
-            const trimmedValue = value.trim();
-            
-            // Allow partial input during typing - if it's just numbers (user still typing), allow it
-            if (/^\d+(\.\d*)?$/.test(trimmedValue)) {
-                return { valid: true, message: '' };
-            }
-
-            // Patterns for different component types
-            const patterns = {
-                resistors: /^(\d+(?:\.\d+)?)\s*([kKmMgG]?[rRΩ])$/i,
-                capacitors: /^(\d+(?:\.\d+)?)\s*([pnµumk]+[fF])$/i,
-                inductors: /^(\d+(?:\.\d+)?)\s*([nµumk]+[hH])$/i
-            };
-
-            const pattern = patterns[category];
-            if (pattern && pattern.test(trimmedValue)) {
-                return { valid: true, message: 'Valid format' };
-            } else if (pattern) {
-                const examples = {
-                    resistors: 'e.g., 10kΩ, 4.7k, 100R',
-                    capacitors: 'e.g., 10µF, 100nF, 22pF',
-                    inductors: 'e.g., 10µH, 1mH, 220nH'
-                };
-                return { 
-                    valid: false, 
-                    message: `Invalid format. ${examples[category] || ''}` 
-                };
-            }
-            
-            return { valid: true, message: '' }; // Other categories don't have strict validation
-        }
-
-        function validatePackage(packageValue, category) {
-            if (!packageValue || packageValue.trim() === '') {
-                return { valid: false, message: 'Package is required' };
-            }
-
-            const validPackages = packageOptions[category] || [];
-            if (validPackages.length > 0 && !validPackages.includes(packageValue)) {
-                return { 
-                    valid: false, 
-                    message: `Suggested: ${validPackages.slice(0, 3).join(', ')}` 
-                };
-            }
-
-            return { valid: true, message: 'Valid package' };
-        }
-
-        function validateManufacturerPN(partNumber) {
-            if (!partNumber || partNumber.trim() === '') {
-                return { valid: true, message: '' }; // Optional field
-            }
-
-            // Basic pattern: alphanumeric with some special characters
-            const pattern = /^[A-Za-z0-9\-_\.\/]+$/;
-            if (pattern.test(partNumber.trim())) {
-                return { valid: true, message: 'Valid format' };
-            } else {
-                return { 
-                    valid: false, 
-                    message: 'Only letters, numbers, hyphens, underscores, dots, and slashes allowed' 
-                };
-            }
-        }
-
-        function standardizeValue(value, category) {
-            if (!value) return value;
-
-            const standardizations = {
-                resistors: value => {
-                    return value
-                        .replace(/r/gi, 'Ω')
-                        .replace(/k/gi, 'k')
-                        .replace(/m/gi, 'M')
-                        .replace(/(\d+)k(\d*)/gi, (match, p1, p2) => {
-                            // Handle resistor values like '10k5' (convert to '10.5kΩ') and '10k' (convert to '10kΩ')
-                            if (p2 && p2.trim() !== '') {
-                                return `${p1}.${p2}kΩ`;
-                            } else {
-                                return `${p1}kΩ`;
-                            }
-                        });
-                },
-                capacitors: value => {
-                    return value
-                        .replace(/u/gi, 'µ')
-                        .replace(/(\d+)µ([fF])/gi, '$1µF')
-                        .replace(/(\d+)n([fF])/gi, '$1nF')
-                        .replace(/(\d+)p([fF])/gi, '$1pF');
-                },
-                inductors: value => {
-                    return value
-                        .replace(/u/gi, 'µ')
-                        .replace(/(\d+)µ([hH])/gi, '$1µH')
-                        .replace(/(\d+)n([hH])/gi, '$1nH')
-                        .replace(/(\d+)m([hH])/gi, '$1mH');
-                }
-            };
-
-            const standardize = standardizations[category];
-            return standardize ? standardize(value) : value;
-        }
-
-        function addValidationToField(field, category, fieldConfig) {
-            const validationContainer = document.createElement('div');
-            validationContainer.className = 'validation-message';
-            validationContainer.id = `${field.id}-validation`;
-            
-            field.addEventListener('input', function() {
-                validateField(field, category, fieldConfig);
-            });
-
-            field.addEventListener('blur', function() {
-                if (fieldConfig.autoFormat && fieldConfig.id === 'value') {
-                    field.value = standardizeValue(field.value, category);
-                }
-                validateField(field, category, fieldConfig);
-            });
-
-            field.parentNode.appendChild(validationContainer);
-        }
-
-        function validateField(field, category, fieldConfig) {
-            const value = field.value;
-            const validationMessage = document.getElementById(`${field.id}-validation`);
-            let result = { valid: true, message: '' };
-
-            // Clear previous validation state
-            field.classList.remove('valid', 'invalid');
-
-            // Apply validation based on field type
-            if (fieldConfig.id === 'value') {
-                result = validateComponentValue(value, category);
-            } else if (fieldConfig.id === 'package') {
-                result = validatePackage(value, category);
-            } else if (fieldConfig.id === 'manufacturer-pn') {
-                result = validateManufacturerPN(value);
-            }
-
-            // Only show validation state if field has content or if it's required and empty
-            if (value || (fieldConfig.required && !value)) {
-                field.classList.add(result.valid ? 'valid' : 'invalid');
-            }
-
-            if (validationMessage) {
-                validationMessage.className = `validation-message ${result.valid ? 'success' : 'error'}`;
-                validationMessage.textContent = result.message;
-            }
-
-            return result.valid;
-        }
-
-        function validateAllComponentFields() {
-            const category = document.getElementById('comp-category').value;
-            if (!category || !categoryConfigs[category]) {
-                return true;
-            }
-
-            let allValid = true;
-            const config = categoryConfigs[category];
-
-            config.fields.forEach(fieldConfig => {
-                const field = document.getElementById(`comp-${fieldConfig.id}`);
-                if (field) {
-                    const isValid = validateField(field, category, fieldConfig);
-                    if (!isValid && fieldConfig.required) allValid = false;
-                }
-            });
-
-            return allValid;
-        }
-
-        // ============ END VALIDATION FRAMEWORK ============
 
         // Tab management
         function showTab(tabName) {
@@ -2537,13 +2329,6 @@
                 document.getElementById('comp-subcategory-display').value = subcategorySelect.value;
             }
             
-            // Add validation to all the new fields
-            config.fields.forEach(fieldConfig => {
-                const field = document.getElementById(`comp-${fieldConfig.id}`);
-                if (field) {
-                    addValidationToField(field, category, fieldConfig);
-                }
-            });
         }
 
         // Generate KPN for component
@@ -2678,11 +2463,6 @@
             
             const kpn = document.getElementById('comp-kpn').value || document.getElementById('comp-kpn-preview').textContent;
             
-            // Validate all fields using the validation framework
-            if (!validateAllComponentFields()) {
-                alert('Please fix validation errors before submitting.');
-                return;
-            }
             
             // Collect data from dynamic fields
             const component = {
