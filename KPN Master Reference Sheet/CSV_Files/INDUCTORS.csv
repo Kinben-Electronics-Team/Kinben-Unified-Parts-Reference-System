@@ -2,3 +2,6 @@ Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Descri
 IND-PWR-012,inductors,PWR,22uH,1210,,,,,,,,Coilcraft,,,,,,,,,Active,,
 IND-CHK-013,inductors,CHK,100uH,0805,,,,,,,,Murata,,,,,,,,,Active,,
 IND-FER-014,inductors,FER,220nH,0603,,,,,,,,TDK,,,,,,,,,Active,,
+IND-PWR-024,inductors,PWR,22uH,1210,,,,,2A,20%,,Coilcraft,,,,,,,,,Active,2025-07-31,
+IND-CHK-026,inductors,CHK,100uH,805,,,,,500mA,10%,,Murata,,,,,,,,,Active,2025-07-31,
+IND-FER-028,inductors,FER,220nH,603,,,,,200mA,25%,,TDK,,,,,,,,,Active,2025-07-31,

@@ -2,3 +2,6 @@ Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Descri
 RES-STD-001,resistors,STD,10k,0805,,,,,,,,Mouser,,,,,,,,,Active,,
 RES-PRE-002,resistors,PRE,4.7k,0603,,,,,,,,Digi-Key,,,,,,,,,Active,,
 RES-VAR-003,resistors,VAR,10k,3296W,,,,,,,,Newark,,,,,,,,,Active,,
+RES-STD-002,resistors,STD,10k,805,,,,,,1%,,Mouser,,,,,,,,,Active,2025-07-31,
+RES-PRE-004,resistors,PRE,4.7k,603,,,,,,0.10%,,Digi-Key,,,,,,,,,Active,2025-07-31,
+RES-VAR-006,resistors,VAR,10k,3296W,,,,,,10%,,Newark,,,,,,,,,Active,2025-07-31,

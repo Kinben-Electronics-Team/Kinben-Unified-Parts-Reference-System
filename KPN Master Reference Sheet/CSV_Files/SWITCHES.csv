@@ -3,3 +3,7 @@ SWI-TAC-026,switches,TAC,,4.3x4.3mm,,SKHHPNA010,Tactile switch 4.3x4.3mm,,,,,Alp
 SWI-DIP-027,switches,DIP,,SMT,,DS01-254-1-04BK-SMT,4-position DIP switch,,,,,CTS,,,,,,,,,Active,,
 SWI-ROT-028,switches,ROT,,Through-hole,,PEC11R-4015F-S0024,Rotary encoder with switch,,,,,Bourns,,,,,,,,,Active,,
 SWI-SLI-029,switches,SLI,,4.5x1.8mm,,SS12D00G3,SPDT slide switch,,,,,E-Switch,,,,,,,,,Active,,
+SWI-TAC-052,switches,TAC,,4.3x4.3mm,,SKHHPNA010,Tactile switch 4.3x4.3mm,,,,,Alps,,,,,,,,,Active,2025-07-31,
+SWI-DIP-054,switches,DIP,,SMT,,DS01-254-1-04BK-SMT,4-position DIP switch,,,,,CTS,,,,,,,,,Active,2025-07-31,
+SWI-ROT-056,switches,ROT,,Through-hole,,PEC11R-4015F-S0024,Rotary encoder with switch,,,,,Bourns,,,,,,,,,Active,2025-07-31,
+SWI-SLI-058,switches,SLI,,4.5x1.8mm,,SS12D00G3,SPDT slide switch,,,,,E-Switch,,,,,,,,,Active,2025-07-31,

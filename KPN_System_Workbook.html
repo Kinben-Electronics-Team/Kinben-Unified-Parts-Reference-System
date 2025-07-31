@@ -322,6 +322,271 @@
             background: #f8f9fa;
         }
         
+        .expand-btn {
+            background: none;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            padding: 2px 6px;
+            margin-right: 8px;
+            color: #0066cc;
+            border-radius: 3px;
+        }
+        
+        .expand-btn:hover {
+            background: #f0f8ff;
+        }
+        
+        .bom-detail-row {
+            background: #f8f9fa !important;
+        }
+        
+        .bom-detail-container {
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin: 5px 0;
+        }
+        
+        .bom-detail-container h4 {
+            margin: 0 0 15px 0;
+            color: #495057;
+            font-size: 16px;
+        }
+        
+        .bom-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .bom-item-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 12px;
+        }
+        
+        .bom-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .quantity-badge {
+            background: #007bff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .bom-item-details {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .bom-item-details div {
+            margin-bottom: 4px;
+        }
+        
+        .bom-item-details .notes {
+            font-style: italic;
+            color: #868e96;
+        }
+        
+        .mother-component-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+        }
+        
+        .mother-component-info {
+            flex: 1;
+        }
+        
+        .mother-component-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        
+        .mother-component-details {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .component-type {
+            background: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .component-type-badge {
+            background: #28a745;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .mother-component-card {
+            border-left: 4px solid #28a745;
+        }
+        
+        .mother-quantity-badge {
+            background: #28a745;
+        }
+        
+        .mother-components-section, .bom-components-section {
+            margin-bottom: 20px;
+        }
+        
+        .mother-components-section h5, .bom-components-section h5 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        .quantity-summary {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .stat-value {
+            display: block;
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            display: block;
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .system-assemblies-grid, .consolidated-components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .system-assembly-card, .consolidated-component-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+        }
+        
+        .assembly-card-header, .component-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .system-quantity-badge {
+            background: #17a2b8;
+        }
+        
+        .consolidated-quantity-badge {
+            background: #6f42c1;
+        }
+        
+        .assembly-card-details, .component-card-details {
+            font-size: 13px;
+            color: #6c757d;
+        }
+        
+        .assembly-breakdown {
+            margin-bottom: 8px;
+        }
+        
+        .breakdown-item {
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        .breakdown-icon {
+            margin-right: 6px;
+        }
+        
+        .total-calculation {
+            font-weight: 600;
+            color: #495057;
+            border-top: 1px solid #e9ecef;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        
+        .component-kpn {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #495857;
+        }
+        
+        .component-breakdown {
+            margin-top: 8px;
+        }
+        
+        .assembly-contribution {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 3px;
+            padding: 2px 6px;
+            background: #f8f9fa;
+            border-radius: 3px;
+            margin-bottom: 4px;
+        }
+        
+        .system-assemblies-section, .consolidated-components-section {
+            margin-bottom: 20px;
+        }
+        
+        .system-assemblies-section h5, .consolidated-components-section h5 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         .remove-btn {
             background: #dc3545;
             color: white;
@@ -769,6 +1034,13 @@
                         <input type="text" id="assembly-name" placeholder="e.g., Main Controller Assembly">
                     </div>
                     <div class="form-group">
+                        <label for="assemblyType">Assembly Type <span class="text-danger">*</span></label>
+                        <select id="assemblyType" class="form-control" required onchange="toggleAssemblyFields()">
+                            <option value="pcb">PCB Assembly</option>
+                            <option value="cable">Cable Assembly</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Version</label>
                         <input type="text" id="assembly-version" placeholder="e.g., v1.0">
                     </div>
@@ -784,6 +1056,18 @@
                 <div class="form-group">
                     <label>Description</label>
                     <input type="text" id="assembly-description" placeholder="Assembly description and purpose">
+                </div>
+                
+                <!-- Cable Assembly specific fields -->
+                <div id="cableFields" class="cable-assembly-fields" style="display: none;">
+                    <div class="form-group">
+                        <label for="cableLength">Cable Length (mm)</label>
+                        <input type="number" id="cableLength" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="cableType">Cable Type</label>
+                        <input type="text" id="cableType" class="form-control">
+                    </div>
                 </div>
                 
                 <h3>Assembly Items</h3>
@@ -841,6 +1125,39 @@
                         </div>
                     </div>
                 </div>
+                
+                <h3>🏗️ Assembly-Level Components</h3>
+                <p>Add enclosures, hardware, and other components needed at the assembly level</p>
+                <div id="mother-items"></div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Component Type</label>
+                        <select id="mother-type" onchange="updateMotherItemOptions()">
+                            <option value="">Select Component Type</option>
+                            <option value="enclosure">Enclosure/Housing</option>
+                            <option value="hardware">Hardware (Screws, Standoffs)</option>
+                            <option value="mounting">Mounting Components</option>
+                            <option value="cable">External Cables</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Component KPN</label>
+                        <select id="mother-kpn" onchange="updateMotherComponentName()">
+                            <option value="">Select Component Type First</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <input type="number" id="mother-quantity" min="1" value="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <input type="text" id="mother-notes" placeholder="Optional notes">
+                    </div>
+                </div>
+                <button class="btn btn-secondary" onclick="addMotherComponent()">Add Assembly Component</button>
                 
                 <div class="actions">
                     <button class="btn btn-primary" onclick="addAssembly()">Add Assembly</button>
@@ -1880,6 +2197,23 @@
                         }
                     });
                     saveData();
+                }
+                // Migrate assemblies to include type field (default to PCB)
+                if (data.assemblies) {
+                    let migrationNeeded = false;
+                    data.assemblies.forEach(assembly => {
+                        if (!assembly.type) {
+                            assembly.type = 'pcb'; // Default existing assemblies to PCB type
+                            assembly.pcbData = {
+                                bom: assembly.bom || []
+                            };
+                            assembly.cableData = null;
+                            migrationNeeded = true;
+                        }
+                    });
+                    if (migrationNeeded) {
+                        saveData();
+                    }
                 }
             }
             updateStats();
@@ -3289,6 +3623,7 @@
 
         // Current BOM items for PCB form
         let currentBOM = [];
+        let currentMotherComponents = [];
 
         // Add BOM item
         function addBOMItem() {
@@ -3350,20 +3685,38 @@
         // Add Assembly
         function addAssembly() {
             const name = document.getElementById('assembly-name').value;
+            const assemblyType = document.getElementById('assemblyType').value;
             const version = document.getElementById('assembly-version').value;
             const status = document.getElementById('assembly-status').value;
             const description = document.getElementById('assembly-description').value;
             
-            if (!name || !version || currentBOM.length === 0) {
-                alert('Please fill in assembly details and add at least one item');
+            // Collect cable-specific data if cable assembly
+            const cableLength = document.getElementById('cableLength').value;
+            const cableType = document.getElementById('cableType').value;
+            
+            if (!name || !assemblyType || !version || (currentBOM.length === 0 && currentMotherComponents.length === 0)) {
+                alert('Please fill in assembly details and add at least one BOM item or assembly component');
                 return;
             }
             
             const assembly = {
                 name,
+                type: assemblyType,
                 version,
                 status,
                 description,
+                // Type-specific data
+                pcbData: assemblyType === 'pcb' ? {
+                    bom: [...currentBOM]
+                } : null,
+                cableData: assemblyType === 'cable' ? {
+                    length: cableLength ? parseInt(cableLength) : null,
+                    cableType: cableType || null,
+                    bom: [...currentBOM]
+                } : null,
+                // Assembly-level components (mother view)
+                motherComponents: [...currentMotherComponents],
+                // Legacy field for backward compatibility
                 bom: [...currentBOM],
                 dateAdded: new Date().toISOString().split('T')[0]
             };
@@ -3374,10 +3727,28 @@
             
             // Clear form
             document.getElementById('assembly-name').value = '';
+            document.getElementById('assemblyType').selectedIndex = 0;
             document.getElementById('assembly-version').value = '';
             document.getElementById('assembly-description').value = '';
+            document.getElementById('cableLength').value = '';
+            document.getElementById('cableType').value = '';
             currentBOM = [];
+            currentMotherComponents = [];
             renderBOMItems();
+            renderMotherComponents();
+            toggleAssemblyFields(); // Reset field visibility
+        }
+
+        // Toggle assembly type-specific fields
+        function toggleAssemblyFields() {
+            const assemblyType = document.getElementById('assemblyType').value;
+            const cableFields = document.getElementById('cableFields');
+            
+            if (assemblyType === 'cable') {
+                cableFields.style.display = 'block';
+            } else {
+                cableFields.style.display = 'none';
+            }
         }
 
         // Current system items
@@ -3837,36 +4208,534 @@
             const tbody = document.getElementById('assemblies-tbody');
             tbody.innerHTML = '';
             
-            data.assemblies.forEach(assembly => {
+            data.assemblies.forEach((assembly, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${assembly.name}</td>
+                    <td>
+                        <button class="expand-btn" onclick="toggleAssemblyBOM(${index})" id="expand-btn-${index}">
+                            ▶
+                        </button>
+                        ${assembly.name}
+                    </td>
                     <td>${assembly.version}</td>
                     <td>${assembly.description}</td>
-                    <td>${assembly.bom.length} items</td>
+                    <td>${(assembly.bom?.length || 0) + (assembly.motherComponents?.length || 0)} items</td>
                     <td><span class="status-${assembly.status.toLowerCase()}">${assembly.status}</span></td>
                 `;
                 tbody.appendChild(row);
+                
+                // Create hidden BOM detail row
+                const bomRow = document.createElement('tr');
+                bomRow.id = `bom-detail-${index}`;
+                bomRow.className = 'bom-detail-row';
+                bomRow.style.display = 'none';
+                bomRow.innerHTML = `
+                    <td colspan="5">
+                        <div class="bom-detail-container">
+                            <h4>Assembly Details - ${assembly.name}</h4>
+                            ${renderAssemblyQuantitySummary(assembly)}
+                            ${assembly.motherComponents && assembly.motherComponents.length > 0 ? `
+                                <div class="mother-components-section">
+                                    <h5>🏗️ Assembly-Level Components</h5>
+                                    <div class="bom-items-list">
+                                        ${renderAssemblyMotherComponents(assembly.motherComponents)}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${assembly.bom && assembly.bom.length > 0 ? `
+                                <div class="bom-components-section">
+                                    <h5>🔧 PCB/Cable Components</h5>
+                                    <div class="bom-items-list">
+                                        ${renderAssemblyBOMItems(assembly.bom)}
+                                    </div>
+                                </div>
+                            ` : ''}
+                            ${(!assembly.bom || assembly.bom.length === 0) && (!assembly.motherComponents || assembly.motherComponents.length === 0) ? '<p>No components defined</p>' : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(bomRow);
             });
+        }
+
+        // Render BOM items for assembly detail view
+        function renderAssemblyBOMItems(bomItems) {
+            if (!bomItems || bomItems.length === 0) {
+                return '<p>No BOM items</p>';
+            }
+            
+            let html = '<div class="bom-items-grid">';
+            bomItems.forEach(item => {
+                html += `
+                    <div class="bom-item-card">
+                        <div class="bom-item-header">
+                            <strong>${item.componentName || item.kpn}</strong>
+                            <span class="quantity-badge">Qty: ${item.quantity}</span>
+                        </div>
+                        <div class="bom-item-details">
+                            <div>KPN: ${item.kpn}</div>
+                            ${item.refdes ? `<div>RefDes: ${item.refdes}</div>` : ''}
+                            ${item.notes ? `<div class="notes">Notes: ${item.notes}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
+        }
+
+        // Toggle assembly BOM detail view
+        function toggleAssemblyBOM(index) {
+            const bomRow = document.getElementById(`bom-detail-${index}`);
+            const expandBtn = document.getElementById(`expand-btn-${index}`);
+            
+            if (bomRow.style.display === 'none') {
+                bomRow.style.display = 'table-row';
+                expandBtn.textContent = '▼';
+            } else {
+                bomRow.style.display = 'none';
+                expandBtn.textContent = '▶';
+            }
+        }
+
+        // Mother component management functions
+        function updateMotherItemOptions() {
+            const type = document.getElementById('mother-type').value;
+            const kpnSelect = document.getElementById('mother-kpn');
+            
+            kpnSelect.innerHTML = '<option value="">Select Component</option>';
+            
+            if (!type) return;
+            
+            // Map mother component types to component categories
+            const categoryMap = {
+                'enclosure': ['mechanical'],
+                'hardware': ['mechanical', 'hardware'],
+                'mounting': ['mechanical', 'hardware'],
+                'cable': ['connectors', 'cable'],
+                'other': ['mechanical', 'hardware', 'connectors']
+            };
+            
+            const relevantCategories = categoryMap[type] || [];
+            
+            // Get components from DOM table
+            const tableRows = document.querySelectorAll('#components-tbody tr');
+            const availableComponents = [];
+            
+            tableRows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 7) {
+                    const category = cells[1].textContent.trim().toLowerCase();
+                    if (relevantCategories.includes(category)) {
+                        availableComponents.push({
+                            kpn: cells[0].textContent.trim(),
+                            name: cells[3].textContent.trim() || cells[5].textContent.trim(),
+                            category: category
+                        });
+                    }
+                }
+            });
+            
+            // Populate dropdown
+            availableComponents.forEach(comp => {
+                const option = document.createElement('option');
+                option.value = comp.kpn;
+                option.textContent = `${comp.kpn} - ${comp.name}`;
+                kpnSelect.appendChild(option);
+            });
+        }
+        
+        function addMotherComponent() {
+            const type = document.getElementById('mother-type').value;
+            const kpn = document.getElementById('mother-kpn').value;
+            const quantity = parseInt(document.getElementById('mother-quantity').value);
+            const notes = document.getElementById('mother-notes').value;
+            
+            if (!type || !kpn || !quantity || quantity < 1) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            // Get component name from dropdown
+            const kpnSelect = document.getElementById('mother-kpn');
+            const selectedOption = kpnSelect.options[kpnSelect.selectedIndex];
+            const componentName = selectedOption.textContent.split(' - ')[1] || kpn;
+            
+            const motherComponent = {
+                type,
+                kpn,
+                componentName,
+                quantity,
+                notes
+            };
+            
+            currentMotherComponents.push(motherComponent);
+            renderMotherComponents();
+            
+            // Clear form
+            document.getElementById('mother-type').selectedIndex = 0;
+            document.getElementById('mother-kpn').innerHTML = '<option value="">Select Component Type First</option>';
+            document.getElementById('mother-quantity').value = 1;
+            document.getElementById('mother-notes').value = '';
+        }
+        
+        function renderMotherComponents() {
+            const container = document.getElementById('mother-items');
+            container.innerHTML = '';
+            
+            if (currentMotherComponents.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; font-style: italic;">No assembly-level components added</p>';
+                return;
+            }
+            
+            currentMotherComponents.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'mother-component-row';
+                div.innerHTML = `
+                    <div class="mother-component-info">
+                        <div class="mother-component-header">
+                            <strong>${item.componentName}</strong>
+                            <span class="quantity-badge">Qty: ${item.quantity}</span>
+                        </div>
+                        <div class="mother-component-details">
+                            <span class="component-type">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</span> | 
+                            <span class="component-kpn">KPN: ${item.kpn}</span>
+                            ${item.notes ? ` | <span class="component-notes">${item.notes}</span>` : ''}
+                        </div>
+                    </div>
+                    <button class="remove-btn" onclick="removeMotherComponent(${index})">Remove</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function removeMotherComponent(index) {
+            currentMotherComponents.splice(index, 1);
+            renderMotherComponents();
+        }
+        
+        // Render mother components for assembly detail view
+        function renderAssemblyMotherComponents(motherComponents) {
+            if (!motherComponents || motherComponents.length === 0) {
+                return '<p>No assembly-level components</p>';
+            }
+            
+            let html = '<div class="bom-items-grid">';
+            motherComponents.forEach(item => {
+                html += `
+                    <div class="bom-item-card mother-component-card">
+                        <div class="bom-item-header">
+                            <strong>${item.componentName || item.kpn}</strong>
+                            <span class="quantity-badge mother-quantity-badge">Qty: ${item.quantity}</span>
+                        </div>
+                        <div class="bom-item-details">
+                            <div><span class="component-type-badge">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</span></div>
+                            <div>KPN: ${item.kpn}</div>
+                            ${item.notes ? `<div class="notes">Notes: ${item.notes}</div>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
+        }
+        
+        // Render assembly quantity summary
+        function renderAssemblyQuantitySummary(assembly) {
+            const calculations = calculateAssemblyQuantities(assembly, 1);
+            
+            return `
+                <div class="quantity-summary">
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">${calculations.totalItems}</span>
+                            <span class="stat-label">Component Types</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${calculations.totalQuantity}</span>
+                            <span class="stat-label">Total Quantity</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${calculations.bomComponents.length}</span>
+                            <span class="stat-label">BOM Items</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${calculations.motherComponents.length}</span>
+                            <span class="stat-label">Assembly Items</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Quantity Calculation Engine
+        function calculateAssemblyQuantities(assembly, assemblyQuantity = 1) {
+            const result = {
+                bomComponents: [],
+                motherComponents: [],
+                totalItems: 0,
+                totalQuantity: 0
+            };
+            
+            // Calculate BOM component quantities
+            if (assembly.bom && assembly.bom.length > 0) {
+                assembly.bom.forEach(bomItem => {
+                    const calculatedQuantity = bomItem.quantity * assemblyQuantity;
+                    result.bomComponents.push({
+                        ...bomItem,
+                        calculatedQuantity,
+                        assemblyQuantity
+                    });
+                    result.totalQuantity += calculatedQuantity;
+                });
+            }
+            
+            // Calculate mother component quantities
+            if (assembly.motherComponents && assembly.motherComponents.length > 0) {
+                assembly.motherComponents.forEach(motherItem => {
+                    const calculatedQuantity = motherItem.quantity * assemblyQuantity;
+                    result.motherComponents.push({
+                        ...motherItem,
+                        calculatedQuantity,
+                        assemblyQuantity
+                    });
+                    result.totalQuantity += calculatedQuantity;
+                });
+            }
+            
+            result.totalItems = result.bomComponents.length + result.motherComponents.length;
+            return result;
+        }
+        
+        function calculateSystemTotals(system) {
+            const systemTotals = {
+                assemblies: [],
+                consolidatedComponents: new Map(),
+                totalAssemblies: 0,
+                totalComponents: 0,
+                totalQuantity: 0
+            };
+            
+            if (!system.items || system.items.length === 0) return systemTotals;
+            
+            system.items.forEach(systemItem => {
+                if (systemItem.type === 'assembly') {
+                    // Find the referenced assembly
+                    const assembly = data.assemblies.find(a => a.name === systemItem.value);
+                    if (assembly) {
+                        const assemblyCalc = calculateAssemblyQuantities(assembly, systemItem.quantity);
+                        systemTotals.assemblies.push({
+                            name: assembly.name,
+                            quantity: systemItem.quantity,
+                            calculations: assemblyCalc
+                        });
+                        
+                        systemTotals.totalAssemblies += systemItem.quantity;
+                        systemTotals.totalQuantity += assemblyCalc.totalQuantity;
+                        
+                        // Add to consolidated components
+                        [...assemblyCalc.bomComponents, ...assemblyCalc.motherComponents].forEach(comp => {
+                            const key = comp.kpn;
+                            if (systemTotals.consolidatedComponents.has(key)) {
+                                const existing = systemTotals.consolidatedComponents.get(key);
+                                existing.totalQuantity += comp.calculatedQuantity;
+                                existing.assemblies.push({
+                                    assemblyName: assembly.name,
+                                    assemblyQuantity: systemItem.quantity,
+                                    componentQuantity: comp.quantity,
+                                    calculatedQuantity: comp.calculatedQuantity
+                                });
+                            } else {
+                                systemTotals.consolidatedComponents.set(key, {
+                                    kpn: comp.kpn,
+                                    componentName: comp.componentName,
+                                    totalQuantity: comp.calculatedQuantity,
+                                    assemblies: [{
+                                        assemblyName: assembly.name,
+                                        assemblyQuantity: systemItem.quantity,
+                                        componentQuantity: comp.quantity,
+                                        calculatedQuantity: comp.calculatedQuantity
+                                    }]
+                                });
+                            }
+                        });
+                        
+                        systemTotals.totalComponents += assemblyCalc.totalItems;
+                    }
+                }
+            });
+            
+            return systemTotals;
+        }
+        
+        function getComponentTotalAcrossAssemblies(kpn, assemblies) {
+            let total = 0;
+            assemblies.forEach(assembly => {
+                // Check BOM components
+                if (assembly.bom) {
+                    const bomItem = assembly.bom.find(item => item.kpn === kpn);
+                    if (bomItem) total += bomItem.quantity;
+                }
+                // Check mother components
+                if (assembly.motherComponents) {
+                    const motherItem = assembly.motherComponents.find(item => item.kpn === kpn);
+                    if (motherItem) total += motherItem.quantity;
+                }
+            });
+            return total;
         }
 
         function renderSystems() {
             const tbody = document.getElementById('systems-tbody');
             tbody.innerHTML = '';
             
-            data.systems.forEach(system => {
-                const row = document.createElement('tr');
-                // Handle backward compatibility - migrate pcbs to items if needed
+            data.systems.forEach((system, index) => {
+                const systemTotals = calculateSystemTotals(system);
                 const itemCount = system.items ? system.items.length : (system.pcbs ? system.pcbs.length : 0);
+                
+                const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${system.name}</td>
+                    <td>
+                        <button class="expand-btn" onclick="toggleSystemDetails(${index})" id="system-expand-btn-${index}">
+                            ▶
+                        </button>
+                        ${system.name}
+                    </td>
                     <td>${system.version}</td>
                     <td>${system.description}</td>
-                    <td>${itemCount} items</td>
+                    <td>${itemCount} items (${systemTotals.totalQuantity} qty)</td>
                     <td><span class="status-${system.status.toLowerCase()}">${system.status}</span></td>
                 `;
                 tbody.appendChild(row);
+                
+                // Create hidden system detail row
+                const detailRow = document.createElement('tr');
+                detailRow.id = `system-detail-${index}`;
+                detailRow.className = 'bom-detail-row';
+                detailRow.style.display = 'none';
+                detailRow.innerHTML = `
+                    <td colspan="5">
+                        <div class="bom-detail-container">
+                            <h4>System Details - ${system.name}</h4>
+                            ${renderSystemQuantitySummary(systemTotals)}
+                            ${systemTotals.assemblies.length > 0 ? `
+                                <div class="system-assemblies-section">
+                                    <h5>📋 Assemblies in System</h5>
+                                    ${renderSystemAssemblies(systemTotals.assemblies)}
+                                </div>
+                            ` : ''}
+                            ${systemTotals.consolidatedComponents.size > 0 ? `
+                                <div class="consolidated-components-section">
+                                    <h5>🔧 Consolidated Component Requirements</h5>
+                                    ${renderConsolidatedComponents(systemTotals.consolidatedComponents)}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(detailRow);
             });
+        }
+        
+        function toggleSystemDetails(index) {
+            const detailRow = document.getElementById(`system-detail-${index}`);
+            const expandBtn = document.getElementById(`system-expand-btn-${index}`);
+            
+            if (detailRow.style.display === 'none') {
+                detailRow.style.display = 'table-row';
+                expandBtn.textContent = '▼';
+            } else {
+                detailRow.style.display = 'none';
+                expandBtn.textContent = '▶';
+            }
+        }
+        
+        function renderSystemQuantitySummary(systemTotals) {
+            return `
+                <div class="quantity-summary">
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">${systemTotals.totalAssemblies}</span>
+                            <span class="stat-label">Total Assemblies</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${systemTotals.consolidatedComponents.size}</span>
+                            <span class="stat-label">Unique Components</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${systemTotals.totalQuantity}</span>
+                            <span class="stat-label">Total Quantity</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${systemTotals.assemblies.length}</span>
+                            <span class="stat-label">Assembly Types</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderSystemAssemblies(assemblies) {
+            let html = '<div class="system-assemblies-grid">';
+            assemblies.forEach(assemblyItem => {
+                const calc = assemblyItem.calculations;
+                html += `
+                    <div class="system-assembly-card">
+                        <div class="assembly-card-header">
+                            <strong>${assemblyItem.name}</strong>
+                            <span class="quantity-badge system-quantity-badge">Qty: ${assemblyItem.quantity}</span>
+                        </div>
+                        <div class="assembly-card-details">
+                            <div class="assembly-breakdown">
+                                <span class="breakdown-item">
+                                    <i class="breakdown-icon">🔧</i>
+                                    ${calc.bomComponents.length} BOM items (${calc.bomComponents.reduce((sum, c) => sum + c.calculatedQuantity, 0)} qty)
+                                </span>
+                                <span class="breakdown-item">
+                                    <i class="breakdown-icon">🏗️</i>
+                                    ${calc.motherComponents.length} Assembly items (${calc.motherComponents.reduce((sum, c) => sum + c.calculatedQuantity, 0)} qty)
+                                </span>
+                            </div>
+                            <div class="total-calculation">
+                                Total: ${calc.totalQuantity} components
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
+        }
+        
+        function renderConsolidatedComponents(consolidatedMap) {
+            let html = '<div class="consolidated-components-grid">';
+            
+            // Convert Map to array and sort by total quantity (descending)
+            const sortedComponents = Array.from(consolidatedMap.values())
+                .sort((a, b) => b.totalQuantity - a.totalQuantity);
+            
+            sortedComponents.forEach(comp => {
+                html += `
+                    <div class="consolidated-component-card">
+                        <div class="component-card-header">
+                            <strong>${comp.componentName}</strong>
+                            <span class="quantity-badge consolidated-quantity-badge">Total: ${comp.totalQuantity}</span>
+                        </div>
+                        <div class="component-card-details">
+                            <div class="component-kpn">KPN: ${comp.kpn}</div>
+                            <div class="component-breakdown">
+                                ${comp.assemblies.map(asm => 
+                                    `<span class="assembly-contribution">
+                                        ${asm.assemblyName}: ${asm.componentQuantity} × ${asm.assemblyQuantity} = ${asm.calculatedQuantity}
+                                    </span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            return html;
         }
 
         function renderAll() {
@@ -4802,6 +5671,8 @@
         }
         
         function downloadBOMTemplate() {
+            // Get assembly type for context-aware template
+            const assemblyType = document.getElementById('assemblyType').value || 'pcb';
             // Get existing components to create realistic examples
             let existingComponents = [];
             
@@ -4830,51 +5701,85 @@
             let templateContent = 'RefDes,KPN,Quantity,Description,Notes\n';
             
             if (existingComponents.length > 0) {
-                // Use actual KPNs from the system for examples - sample different categories
-                const resistors = existingComponents.filter(c => c.category === 'resistors');
-                const capacitors = existingComponents.filter(c => c.category === 'capacitors');
-                const inductors = existingComponents.filter(c => c.category === 'inductors');
-                const diodes = existingComponents.filter(c => c.category === 'diodes');
-                const transistors = existingComponents.filter(c => c.category === 'transistors');
-                const connectors = existingComponents.filter(c => c.category === 'connectors');
-                
                 let exampleIndex = 1;
                 
-                // Add one example from each category if available
-                if (resistors.length > 0) {
-                    const comp = resistors[0];
-                    templateContent += `R${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Resistor'}","Example resistor"\n`;
-                    exampleIndex++;
-                }
-                
-                if (capacitors.length > 0) {
-                    const comp = capacitors[0];
-                    templateContent += `C${exampleIndex},${comp.kpn},2,"${comp.value || comp.description || 'Capacitor'}","Decoupling capacitor"\n`;
-                    exampleIndex++;
-                }
-                
-                if (inductors.length > 0) {
-                    const comp = inductors[0];
-                    templateContent += `L${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Inductor'}","Power supply filter"\n`;
-                    exampleIndex++;
-                }
-                
-                if (diodes.length > 0) {
-                    const comp = diodes[0];
-                    templateContent += `D${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Diode'}","Protection diode"\n`;
-                    exampleIndex++;
-                }
-                
-                if (transistors.length > 0) {
-                    const comp = transistors[0];
-                    templateContent += `Q${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Transistor'}","Switching transistor"\n`;
-                    exampleIndex++;
-                }
-                
-                if (connectors.length > 0) {
-                    const comp = connectors[0];
-                    templateContent += `J${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Connector'}","Main connector"\n`;
-                    exampleIndex++;
+                if (assemblyType === 'cable') {
+                    // Cable assembly template - prioritize connectors and cable components
+                    const connectors = existingComponents.filter(c => c.category === 'connectors');
+                    const mechanical = existingComponents.filter(c => c.category === 'mechanical');
+                    const other = existingComponents.filter(c => !['connectors', 'mechanical'].includes(c.category));
+                    
+                    // Add connector examples
+                    if (connectors.length > 0) {
+                        const comp = connectors[0];
+                        templateContent += `J1,${comp.kpn},1,"${comp.value || comp.description || 'Connector'}","Source connector"\n`;
+                        exampleIndex++;
+                    }
+                    if (connectors.length > 1) {
+                        const comp = connectors[1];
+                        templateContent += `J2,${comp.kpn},1,"${comp.value || comp.description || 'Connector'}","Destination connector"\n`;
+                        exampleIndex++;
+                    }
+                    
+                    // Add mechanical components (wire, heat shrink, etc.)
+                    if (mechanical.length > 0) {
+                        const comp = mechanical[0];
+                        templateContent += `W1,${comp.kpn},1,"${comp.value || comp.description || 'Wire/Cable'}","Main cable assembly"\n`;
+                        exampleIndex++;
+                    }
+                    
+                    // Add other components if available
+                    if (other.length > 0 && exampleIndex <= 3) {
+                        const comp = other[0];
+                        const refdes = getExampleRefDes(comp.category, exampleIndex);
+                        templateContent += `${refdes},${comp.kpn},1,"${comp.value || comp.description || 'Component'}","Additional component"\n`;
+                        exampleIndex++;
+                    }
+                } else {
+                    // PCB assembly template - use existing logic with electronic components
+                    const resistors = existingComponents.filter(c => c.category === 'resistors');
+                    const capacitors = existingComponents.filter(c => c.category === 'capacitors');
+                    const inductors = existingComponents.filter(c => c.category === 'inductors');
+                    const diodes = existingComponents.filter(c => c.category === 'diodes');
+                    const transistors = existingComponents.filter(c => c.category === 'transistors');
+                    const connectors = existingComponents.filter(c => c.category === 'connectors');
+                    
+                    // Add one example from each category if available
+                    if (resistors.length > 0) {
+                        const comp = resistors[0];
+                        templateContent += `R${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Resistor'}","Example resistor"\n`;
+                        exampleIndex++;
+                    }
+                    
+                    if (capacitors.length > 0) {
+                        const comp = capacitors[0];
+                        templateContent += `C${exampleIndex},${comp.kpn},2,"${comp.value || comp.description || 'Capacitor'}","Decoupling capacitor"\n`;
+                        exampleIndex++;
+                    }
+                    
+                    if (inductors.length > 0) {
+                        const comp = inductors[0];
+                        templateContent += `L${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Inductor'}","Power supply filter"\n`;
+                        exampleIndex++;
+                    }
+                    
+                    if (diodes.length > 0) {
+                        const comp = diodes[0];
+                        templateContent += `D${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Diode'}","Protection diode"\n`;
+                        exampleIndex++;
+                    }
+                    
+                    if (transistors.length > 0) {
+                        const comp = transistors[0];
+                        templateContent += `Q${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Transistor'}","Switching transistor"\n`;
+                        exampleIndex++;
+                    }
+                    
+                    if (connectors.length > 0) {
+                        const comp = connectors[0];
+                        templateContent += `J${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Connector'}","Main connector"\n`;
+                        exampleIndex++;
+                    }
                 }
                 
                 // If we still don't have enough examples, add more from any category

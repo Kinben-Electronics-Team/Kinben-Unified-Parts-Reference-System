@@ -2,3 +2,6 @@ Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Descri
 TRA-BJT-019,transistors,BJT,,SOT-23,,MMBT3904,,,,,,ON Semi,,,,,,,,,Active,,
 TRA-FET-020,transistors,FET,,SOT-23,,2N7002K,,,,,,Nexperia,,,,,,,,,Active,,
 TRA-MOS-021,transistors,MOS,,SOT-23,,BSS138,,,,,,Fairchild,,,,,,,,,Active,,
+TRA-BJT-038,transistors,BJT,,SOT-23,,MMBT3904,,40V,200mA,,,ON Semi,,,,,,,,,Active,2025-07-31,
+TRA-FET-040,transistors,FET,,SOT-23,,2N7002K,,60V,300mA,,,Nexperia,,,,,,,,,Active,2025-07-31,
+TRA-MOS-042,transistors,MOS,,SOT-23,,BSS138,,50V,220mA,,,Fairchild,,,,,,,,,Active,2025-07-31,
