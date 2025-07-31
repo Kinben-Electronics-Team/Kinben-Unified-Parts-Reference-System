@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kinben KPN System - Simplified</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     
     <!-- Production Edition - Direct CSV file integration with localStorage fallback -->
     
@@ -785,7 +786,40 @@
                     <input type="text" id="assembly-description" placeholder="Assembly description and purpose">
                 </div>
                 
-                <h3>Assembly Items</h3>
+                <!-- BOM CSV Import Section -->
+                <div class="csv-import-section" style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #0078d4;">
+                    <h3>📁 BOM CSV Import</h3>
+                    <p>Upload a processed BOM CSV file with pre-assigned KPNs for quick assembly creation</p>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>BOM CSV File</label>
+                            <input type="file" id="bom-csv-file" accept=".csv" onchange="handleBOMCSVUpload(event)">
+                            <small style="color: #666; font-size: 12px;">Expected columns: Reference_Designator, KPN, Component_Type, Description, Manufacturer, Manufacturer_PN, Package, Quantity, Notes</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Import Mode</label>
+                            <select id="bom-import-mode">
+                                <option value="replace">Replace existing BOM</option>
+                                <option value="append">Append to existing BOM</option>
+                                <option value="merge">Merge with existing (update quantities)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- CSV Preview Area (initially hidden) -->
+                    <div id="bom-csv-preview" style="display: none; margin-top: 15px;">
+                        <h4>Preview & Validation</h4>
+                        <div id="bom-csv-status" style="margin-bottom: 10px;"></div>
+                        <div id="bom-csv-preview-table" style="max-height: 300px; overflow-y: auto;"></div>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-primary" onclick="processBOMCSVImport()" id="process-bom-import" disabled>Process Import</button>
+                            <button class="btn btn-secondary" onclick="cancelBOMCSVImport()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3>Manual Entry</h3>
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Item Type</label>
@@ -819,9 +853,32 @@
                 
                 <div id="bom-items"></div>
                 
+                <!-- BOM CSV Import Section -->
+                <div class="csv-import-section" style="margin: 20px 0; padding: 20px; border: 2px dashed #007bff; border-radius: 8px; background-color: #f8f9fa;">
+                    <h3>📁 BOM CSV Import</h3>
+                    <p>Upload a Bill of Materials CSV file to bulk import assembly items with assigned KPNs</p>
+                    <div class="form-group">
+                        <label for="bom-csv-file">Select BOM CSV File:</label>
+                        <input type="file" id="bom-csv-file" accept=".csv" onchange="handleBOMCSVUpload(event)" style="margin: 10px 0;">
+                        <div style="margin: 10px 0;">
+                            <button class="btn btn-secondary" onclick="downloadBOMTemplate()">📥 Download BOM Template</button>
+                        </div>
+                    </div>
+                    <div id="bom-import-status" style="margin: 10px 0; font-weight: bold;"></div>
+                    <div id="bom-preview-section" style="display: none; margin: 15px 0;">
+                        <h4>📋 BOM Preview</h4>
+                        <div id="bom-preview-content"></div>
+                        <div style="margin: 15px 0;">
+                            <button class="btn btn-success" onclick="confirmBOMImport()">Import Items to Assembly</button>
+                            <button class="btn btn-secondary" onclick="cancelBOMImport()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="actions">
                     <button class="btn btn-primary" onclick="addAssembly()">Add Assembly</button>
-                    <button class="btn btn-success" onclick="exportAssemblies()">Export CSV</button>
+                    <button class="btn btn-success" onclick="exportAssemblies()">Export Assemblies List</button>
+                    <button class="btn btn-info" onclick="exportAssemblyBOMs()">Export Assembly BOMs</button>
                 </div>
                 
                 <input type="text" class="search-box" id="assembly-search" placeholder="Search Assemblies..." onkeyup="filterAssemblies()">
@@ -3357,6 +3414,532 @@
             renderBOMItems();
         }
 
+        // BOM CSV Import Variables
+        let bomCSVData = [];
+        let bomImportValidation = [];
+
+        // Handle BOM CSV Upload
+        function handleBOMCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const csvText = e.target.result;
+                parseBOMCSV(csvText);
+            };
+            reader.readAsText(file);
+        }
+
+        // Parse BOM CSV and show preview
+        function parseBOMCSV(csvText) {
+            Papa.parse(csvText, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    bomCSVData = results.data;
+                    validateBOMCSV();
+                    showBOMPreview();
+                },
+                error: function(error) {
+                    alert('Error parsing CSV: ' + error.message);
+                }
+            });
+        }
+
+        // Validate BOM CSV data
+        function validateBOMCSV() {
+            bomImportValidation = [];
+            
+            bomCSVData.forEach((row, index) => {
+                const validation = {
+                    index: index,
+                    refDes: row.Reference_Designator || '',
+                    kpn: row.KPN || '',
+                    quantity: parseInt(row.Quantity) || 1,
+                    description: row.Description || '',
+                    status: 'valid',
+                    issues: [],
+                    actions: []
+                };
+
+                // Check required fields
+                if (!validation.refDes) {
+                    validation.status = 'error';
+                    validation.issues.push('Missing Reference Designator');
+                }
+                if (!validation.kpn) {
+                    validation.status = 'error';
+                    validation.issues.push('Missing KPN');
+                }
+
+                // Check if KPN exists in components
+                const kpnExists = data.components.some(comp => comp.kpn === validation.kpn);
+                if (validation.kpn && !kpnExists) {
+                    validation.status = 'warning';
+                    validation.issues.push('KPN not found in component database');
+                    validation.actions.push('create-component', 'map-existing', 'skip');
+                }
+
+                // Check for duplicate RefDes in current BOM
+                const refDesExists = currentBOM.some(item => item.refDes === validation.refDes);
+                if (validation.refDes && refDesExists) {
+                    validation.status = 'warning';
+                    validation.issues.push('Reference Designator already exists in current BOM');
+                    validation.actions.push('replace', 'rename', 'skip');
+                }
+
+                bomImportValidation.push(validation);
+            });
+        }
+
+        // Show BOM preview table
+        function showBOMPreview() {
+            const previewDiv = document.getElementById('bom-csv-preview');
+            const statusDiv = document.getElementById('bom-csv-status');
+            const tableDiv = document.getElementById('bom-csv-preview-table');
+
+            // Show preview section
+            previewDiv.style.display = 'block';
+
+            // Update status
+            const totalRows = bomImportValidation.length;
+            const validRows = bomImportValidation.filter(v => v.status === 'valid').length;
+            const warningRows = bomImportValidation.filter(v => v.status === 'warning').length;
+            const errorRows = bomImportValidation.filter(v => v.status === 'error').length;
+
+            statusDiv.innerHTML = `
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <span>📊 Total: ${totalRows}</span>
+                    <span style="color: #28a745;">✅ Valid: ${validRows}</span>
+                    <span style="color: #ffc107;">⚠️ Warnings: ${warningRows}</span>
+                    <span style="color: #dc3545;">❌ Errors: ${errorRows}</span>
+                </div>
+            `;
+
+            // Create preview table
+            let tableHTML = `
+                <table class="table" style="font-size: 14px;">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>RefDes</th>
+                            <th>KPN</th>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>Issues/Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            bomImportValidation.forEach((validation, index) => {
+                const statusIcon = validation.status === 'valid' ? '✅' : 
+                                 validation.status === 'warning' ? '⚠️' : '❌';
+                const statusColor = validation.status === 'valid' ? '#28a745' : 
+                                  validation.status === 'warning' ? '#ffc107' : '#dc3545';
+
+                const issuesText = validation.issues.length > 0 ? validation.issues.join(', ') : 'No issues';
+                
+                tableHTML += `
+                    <tr style="border-left: 3px solid ${statusColor};">
+                        <td>${statusIcon}</td>
+                        <td>${validation.refDes}</td>
+                        <td>${validation.kpn}</td>
+                        <td>${validation.description}</td>
+                        <td>${validation.quantity}</td>
+                        <td>
+                            <small style="color: ${statusColor};">${issuesText}</small>
+                            ${validation.actions.length > 0 ? `
+                                <div style="margin-top: 5px;">
+                                    ${validation.actions.map(action => `
+                                        <button class="btn btn-sm" style="font-size: 11px; padding: 2px 8px; margin: 1px;" 
+                                                onclick="handleBOMValidationAction(${index}, '${action}')">
+                                            ${action.replace('-', ' ').toUpperCase()}
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += '</tbody></table>';
+            tableDiv.innerHTML = tableHTML;
+
+            // Enable/disable process button
+            const processBtn = document.getElementById('process-bom-import');
+            processBtn.disabled = errorRows > 0;
+        }
+
+        // Handle validation actions
+        function handleBOMValidationAction(index, action) {
+            const validation = bomImportValidation[index];
+            
+            switch(action) {
+                case 'create-component':
+                    showCreateComponentModal(validation);
+                    break;
+                case 'map-existing':
+                    showMapKPNModal(validation, index);
+                    break;
+                case 'skip':
+                    validation.status = 'skip';
+                    validation.issues = ['Skipped by user'];
+                    validation.actions = [];
+                    showBOMPreview(); // Refresh
+                    break;
+                case 'replace':
+                    validation.status = 'replace';
+                    validation.issues = ['Will replace existing RefDes'];
+                    validation.actions = [];
+                    showBOMPreview(); // Refresh
+                    break;
+                case 'rename':
+                    // Auto-generate new RefDes
+                    const newRefDes = generateUniqueRefDes(validation.refDes);
+                    validation.refDes = newRefDes;
+                    validation.status = 'valid';
+                    validation.issues = [`Renamed to ${newRefDes}`];
+                    validation.actions = [];
+                    showBOMPreview(); // Refresh
+                    break;
+            }
+        }
+
+        // Generate unique RefDes
+        const DEFAULT_REF_DES_COUNTER_START = 1; // Starting value for RefDes suffix generation
+        
+        function generateUniqueRefDes(originalRefDes) {
+            let counter = DEFAULT_REF_DES_COUNTER_START;
+            let newRefDes = `${originalRefDes}_${counter}`;
+            
+            while (currentBOM.some(item => item.refDes === newRefDes)) {
+                counter++;
+                newRefDes = `${originalRefDes}_${counter}`;
+            }
+            
+            return newRefDes;
+        }
+
+        // Process BOM CSV Import
+        function processBOMCSVImport() {
+            const importMode = document.getElementById('bom-import-mode').value;
+            let importedCount = 0;
+            let skippedCount = 0;
+
+            // Show progress
+            const statusDiv = document.getElementById('bom-csv-status');
+            statusDiv.innerHTML = '<div>🔄 Processing import...</div>';
+
+            // Clear current BOM if replace mode
+            if (importMode === 'replace') {
+                currentBOM = [];
+            }
+
+            // Process each validated row
+            bomImportValidation.forEach(validation => {
+                if (validation.status === 'skip') {
+                    skippedCount++;
+                    return;
+                }
+
+                if (validation.status === 'valid' || validation.status === 'replace') {
+                    const bomItem = {
+                        type: 'component', // Assuming components for now
+                        kpn: validation.kpn,
+                        name: validation.description,
+                        quantity: validation.quantity,
+                        refDes: validation.refDes,
+                        dateAdded: new Date().toISOString().split('T')[0]
+                    };
+
+                    if (importMode === 'merge') {
+                        // Find existing item and update quantity
+                        const existingIndex = currentBOM.findIndex(item => item.refDes === validation.refDes);
+                        if (existingIndex >= 0) {
+                            currentBOM[existingIndex].quantity += validation.quantity;
+                        } else {
+                            currentBOM.push(bomItem);
+                        }
+                    } else if (validation.status === 'replace') {
+                        // Replace existing item
+                        const existingIndex = currentBOM.findIndex(item => item.refDes === validation.refDes);
+                        if (existingIndex >= 0) {
+                            currentBOM[existingIndex] = bomItem;
+                        } else {
+                            currentBOM.push(bomItem);
+                        }
+                    } else {
+                        // Append mode or new item
+                        currentBOM.push(bomItem);
+                    }
+
+                    importedCount++;
+                }
+            });
+
+            // Update UI
+            renderBOMItems();
+            statusDiv.innerHTML = `
+                <div style="color: #28a745;">
+                    ✅ Import completed: ${importedCount} items imported, ${skippedCount} skipped
+                </div>
+            `;
+
+            // Hide preview after short delay
+            setTimeout(() => {
+                cancelBOMCSVImport();
+            }, 3000);
+        }
+
+        // Cancel BOM CSV import
+        function cancelBOMCSVImport() {
+            document.getElementById('bom-csv-preview').style.display = 'none';
+            document.getElementById('bom-csv-file').value = '';
+            bomCSVData = [];
+            bomImportValidation = [];
+        }
+
+        // Show Create Component Modal
+        function showCreateComponentModal(validation) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%;">
+                    <h3>Create New Component</h3>
+                    <p>KPN "${validation.kpn}" not found. Create a new component:</p>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">KPN</label>
+                        <input type="text" id="modal-kpn" value="${validation.kpn}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Category</label>
+                        <select id="modal-category" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="resistors">Resistors</option>
+                            <option value="capacitors">Capacitors</option>
+                            <option value="inductors">Inductors</option>
+                            <option value="diodes">Diodes</option>
+                            <option value="transistors">Transistors</option>
+                            <option value="integrated_circuits">Integrated Circuits</option>
+                            <option value="connectors">Connectors</option>
+                            <option value="switches">Switches</option>
+                        </select>
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Description</label>
+                        <input type="text" id="modal-description" value="${validation.description}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Manufacturer</label>
+                        <input type="text" id="modal-manufacturer" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Package</label>
+                        <input type="text" id="modal-package" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="createComponentFromModal('${validation.kpn}')" 
+                                style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+                            Create Component
+                        </button>
+                        <button onclick="closeModal()" 
+                                style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+        }
+
+        // Show Map KPN Modal
+        function showMapKPNModal(validation, validationIndex) {
+            // Find similar components based on description
+            // Precompute inverted index if not already done
+            if (!data.invertedIndex) {
+                data.invertedIndex = {};
+                data.components.forEach(comp => {
+                    const words = (comp.description || '').toLowerCase().split(/\s+/);
+                    words.forEach(word => {
+                        if (word.length > 3) {
+                            if (!data.invertedIndex[word]) data.invertedIndex[word] = [];
+                            data.invertedIndex[word].push(comp);
+                        }
+                    });
+                });
+            }
+
+            // Find similar components using the inverted index
+            const descWords = (validation.description || '').toLowerCase().split(/\s+/);
+            const potentialMatches = new Map();
+            descWords.forEach(word => {
+                if (word.length > 3 && data.invertedIndex[word]) {
+                    data.invertedIndex[word].forEach(comp => {
+                        if (!potentialMatches.has(comp)) {
+                            potentialMatches.set(comp, 0);
+                        }
+                        potentialMatches.set(comp, potentialMatches.get(comp) + 1);
+                    });
+                }
+            });
+
+            // Sort matches by the number of common words and limit to 10
+            const similarComponents = Array.from(potentialMatches.entries())
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 10)
+                .map(entry => entry[0]);
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h3>Map to Existing KPN</h3>
+                    <p>KPN "${validation.kpn}" not found. Map to an existing component:</p>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; font-weight: bold;">Search Components</label>
+                        <input type="text" id="modal-search-kpn" placeholder="Type to search KPNs or descriptions..." 
+                               onkeyup="filterKPNOptions()" 
+                               style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: bold;">
+                            ${similarComponents.length > 0 ? 'Similar Components:' : 'All Components:'}
+                        </label>
+                        <div id="kpn-options" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px;">
+                            ${(similarComponents.length > 0 ? similarComponents : data.components.slice(0, 20)).map(comp => `
+                                <div class="kpn-option" onclick="selectKPNOption('${comp.kpn}', ${validationIndex})" 
+                                     style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;">
+                                    <strong>${comp.kpn}</strong> - ${comp.description || 'No description'}
+                                    <br><small style="color: #666;">${comp.manufacturer || ''} ${comp.manufacturerPN || ''}</small>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="closeModal()" 
+                                style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+        }
+
+        // Filter KPN options in search
+        function filterKPNOptions() {
+            const searchTerm = document.getElementById('modal-search-kpn').value.toLowerCase();
+            const options = document.querySelectorAll('.kpn-option');
+            
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    option.style.display = 'block';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+        }
+
+        // Select KPN option
+        function selectKPNOption(selectedKPN, validationIndex) {
+            const validation = bomImportValidation[validationIndex];
+            validation.kpn = selectedKPN;
+            validation.status = 'valid';
+            validation.issues = [`Mapped to existing KPN: ${selectedKPN}`];
+            validation.actions = [];
+            
+            closeModal();
+            showBOMPreview(); // Refresh preview
+        }
+
+        // Create component from modal
+        function createComponentFromModal(originalKPN) {
+            const kpn = document.getElementById('modal-kpn').value;
+            const category = document.getElementById('modal-category').value;
+            const description = document.getElementById('modal-description').value;
+            const manufacturer = document.getElementById('modal-manufacturer').value;
+            const packageValue = document.getElementById('modal-package').value;
+
+            if (!kpn || !category || !description) {
+                alert('Please fill in KPN, Category, and Description');
+                return;
+            }
+
+            // Check if KPN already exists
+            if (data.components.some(comp => comp.kpn === kpn)) {
+                alert('A component with this KPN already exists');
+                return;
+            }
+
+            // Create new component
+            const newComponent = {
+                kpn: kpn,
+                category: category,
+                subcategory: 'STD', // Default subcategory
+                manufacturer: manufacturer,
+                manufacturerPN: '',
+                description: description,
+                package: packageValue,
+                status: 'Active',
+                dateAdded: new Date().toISOString().split('T')[0]
+            };
+
+            data.components.push(newComponent);
+            saveData();
+
+            // Update validation status
+            const validation = bomImportValidation.find(v => v.kpn === originalKPN);
+            if (validation) {
+                validation.kpn = kpn;
+                validation.status = 'valid';
+                validation.issues = [`Created new component: ${kpn}`];
+                validation.actions = [];
+            }
+
+            closeModal();
+            showBOMPreview(); // Refresh preview
+            
+            // Update components display if on components tab
+            if (typeof renderComponents === 'function') {
+                renderComponents();
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            const modals = document.querySelectorAll('div[style*="position: fixed"]');
+            modals.forEach(modal => {
+                if (modal.style.zIndex === '1000') {
+                    modal.remove();
+                }
+            });
+        }
+
         // Current system items
         let currentSystemItems = [];
 
@@ -3971,6 +4554,212 @@
             downloadCSV(csv, 'kinben-assemblies.csv');
         }
 
+        // Export Assembly BOMs - Interactive export with assembly selection
+        function exportAssemblyBOMs() {
+            if (data.assemblies.length === 0) {
+                alert('No assemblies to export');
+                return;
+            }
+
+            // Show assembly selection modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 8px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h3>📋 Export Assembly BOMs</h3>
+                    <p>Select assemblies to export as BOM CSV files:</p>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px;">
+                            <input type="checkbox" id="select-all-assemblies" onchange="toggleAllAssemblies()" style="margin-right: 8px;">
+                            <strong>Select All Assemblies</strong>
+                        </label>
+                        
+                        <div style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 10px;">
+                            ${data.assemblies.map((assembly, index) => `
+                                <label style="display: block; padding: 8px 0; border-bottom: 1px solid #eee;">
+                                    <input type="checkbox" class="assembly-checkbox" value="${index}" style="margin-right: 8px;">
+                                    <strong>${assembly.name}</strong> (${assembly.version}) - ${assembly.bom.length} items
+                                    <br><small style="color: #666;">${assembly.description}</small>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: bold;">Export Format:</label>
+                        <label style="display: block; margin-bottom: 5px;">
+                            <input type="radio" name="export-format" value="standard" checked style="margin-right: 8px;">
+                            Standard BOM (RefDes, KPN, Description, Qty, Package)
+                        </label>
+                        <label style="display: block; margin-bottom: 5px;">
+                            <input type="radio" name="export-format" value="detailed" style="margin-right: 8px;">
+                            Detailed BOM (includes Manufacturer, Part Number, etc.)
+                        </label>
+                        <label style="display: block; margin-bottom: 5px;">
+                            <input type="radio" name="export-format" value="procurement" style="margin-right: 8px;">
+                            Procurement List (consolidated quantities)
+                        </label>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="processBOMExport()" 
+                                style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+                            Export Selected BOMs
+                        </button>
+                        <button onclick="closeModal()" 
+                                style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) closeModal(); };
+        }
+
+        // Toggle all assemblies selection
+        function toggleAllAssemblies() {
+            const selectAll = document.getElementById('select-all-assemblies');
+            const checkboxes = document.querySelectorAll('.assembly-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+        }
+
+        // Process BOM export
+        function processBOMExport() {
+            const selectedCheckboxes = Array.from(document.querySelectorAll('.assembly-checkbox:checked'));
+            const exportFormat = document.querySelector('input[name="export-format"]:checked').value;
+            
+            if (selectedCheckboxes.length === 0) {
+                alert('Please select at least one assembly to export');
+                return;
+            }
+
+            selectedCheckboxes.forEach(checkbox => {
+                const assemblyIndex = parseInt(checkbox.value);
+                const assembly = data.assemblies[assemblyIndex];
+                exportSingleAssemblyBOM(assembly, exportFormat);
+            });
+
+            closeModal();
+        }
+
+        // Export single assembly BOM
+        function exportSingleAssemblyBOM(assembly, format) {
+            if (!assembly.bom || assembly.bom.length === 0) {
+                alert(`Assembly "${assembly.name}" has no BOM items to export`);
+                return;
+            }
+
+            let csv = '';
+            let filename = `BOM_${assembly.name.replace(/[^a-zA-Z0-9]/g, '_')}_${assembly.version}.csv`;
+
+            switch (format) {
+                case 'standard':
+                    csv = exportStandardBOM(assembly);
+                    break;
+                case 'detailed':
+                    csv = exportDetailedBOM(assembly);
+                    break;
+                case 'procurement':
+                    csv = exportProcurementList(assembly);
+                    filename = `Procurement_${assembly.name.replace(/[^a-zA-Z0-9]/g, '_')}_${assembly.version}.csv`;
+                    break;
+            }
+
+            downloadCSV(csv, filename);
+        }
+
+        // Export standard BOM format
+        function exportStandardBOM(assembly) {
+            const header = 'Reference_Designator,KPN,Component_Type,Description,Quantity,Package,Notes\n';
+            
+            const rows = assembly.bom.map(item => {
+                // Get component details if KPN exists
+                const component = data.components.find(comp => comp.kpn === item.kpn);
+                const componentType = component ? component.category : item.type;
+                const description = component ? component.description : (item.name || item.description || '');
+                const packageInfo = component ? component.package : '';
+                
+                return `"${item.refDes || ''}","${item.kpn}","${componentType}","${description}",${item.quantity},"${packageInfo}",""`;
+            }).join('\n');
+
+            return header + rows;
+        }
+
+        // Export detailed BOM format
+        function exportDetailedBOM(assembly) {
+            const header = 'Reference_Designator,KPN,Component_Type,Description,Manufacturer,Manufacturer_PN,Package,Quantity,Voltage_Rating,Current_Rating,Tolerance,Preferred_Supplier,Notes\n';
+            
+            const rows = assembly.bom.map(item => {
+                // Get component details if KPN exists
+                const component = data.components.find(comp => comp.kpn === item.kpn);
+                
+                const componentType = component ? component.category : item.type;
+                const description = component ? component.description : (item.name || item.description || '');
+                const manufacturer = component ? (component.manufacturer || '') : '';
+                const manufacturerPN = component ? (component.manufacturerPN || '') : '';
+                const packageInfo = component ? (component.package || '') : '';
+                const voltage = component ? (component.voltageRating || '') : '';
+                const current = component ? (component.currentRating || '') : '';
+                const tolerance = component ? (component.tolerance || '') : '';
+                const supplier = component ? (component.preferredSupplier || '') : '';
+                
+                return `"${item.refDes || ''}","${item.kpn}","${componentType}","${description}","${manufacturer}","${manufacturerPN}","${packageInfo}",${item.quantity},"${voltage}","${current}","${tolerance}","${supplier}",""`;
+            }).join('\n');
+
+            return header + rows;
+        }
+
+        // Export procurement list (consolidated quantities)
+        function exportProcurementList(assembly) {
+            const header = 'KPN,Component_Type,Description,Manufacturer,Manufacturer_PN,Package,Total_Quantity,Reference_Designators,Preferred_Supplier,Notes\n';
+            
+            // Consolidate by KPN
+            const consolidatedBOM = {};
+            assembly.bom.forEach(item => {
+                if (!consolidatedBOM[item.kpn]) {
+                    consolidatedBOM[item.kpn] = {
+                        kpn: item.kpn,
+                        quantity: 0,
+                        refDes: [],
+                        type: item.type,
+                        name: item.name || item.description || ''
+                    };
+                }
+                consolidatedBOM[item.kpn].quantity += item.quantity;
+                if (item.refDes) {
+                    consolidatedBOM[item.kpn].refDes.push(item.refDes);
+                }
+            });
+
+            const rows = Object.values(consolidatedBOM).map(item => {
+                // Get component details if KPN exists
+                const component = data.components.find(comp => comp.kpn === item.kpn);
+                
+                const componentType = component ? component.category : item.type;
+                const description = component ? component.description : item.name;
+                const manufacturer = component ? (component.manufacturer || '') : '';
+                const manufacturerPN = component ? (component.manufacturerPN || '') : '';
+                const packageInfo = component ? (component.package || '') : '';
+                const supplier = component ? (component.preferredSupplier || '') : '';
+                const refDesString = item.refDes.join(', ');
+                
+                return `"${item.kpn}","${componentType}","${description}","${manufacturer}","${manufacturerPN}","${packageInfo}",${item.quantity},"${refDesString}","${supplier}",""`;
+            }).join('\n');
+
+            return header + rows;
+        }
+
         function exportSystems() {
             if (data.systems.length === 0) {
                 alert('No systems to export');
@@ -4367,6 +5156,559 @@
             // Load data - will use localStorage as fallback if CSV not available
             loadData();
         });
+
+        // ============ BOM CSV IMPORT FUNCTIONALITY ============
+        
+        let currentBOMData = [];
+        
+        function handleBOMCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const statusDiv = document.getElementById('bom-import-status');
+            statusDiv.innerHTML = '🔄 Processing BOM CSV file...';
+            statusDiv.style.color = '#007bff';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const csvText = e.target.result;
+                    const parsedData = Papa.parse(csvText, {
+                        header: true,
+                        skipEmptyLines: true,
+                        transformHeader: function(header) {
+                            // Normalize headers to expected format
+                            const headerMap = {
+                                'refdes': 'RefDes',
+                                'reference designator': 'RefDes',
+                                'ref': 'RefDes',
+                                'kpn': 'KPN',
+                                'part number': 'KPN',
+                                'kinben_pn': 'KPN',
+                                'quantity': 'Quantity',
+                                'qty': 'Quantity',
+                                'description': 'Description',
+                                'desc': 'Description',
+                                'notes': 'Notes',
+                                'comment': 'Notes'
+                            };
+                            return headerMap[header.toLowerCase()] || header;
+                        }
+                    });
+                    
+                    if (parsedData.errors && parsedData.errors.length > 0) {
+                        throw new Error('CSV parsing errors: ' + parsedData.errors.map(e => e.message).join(', '));
+                    }
+                    
+                    currentBOMData = parsedData.data;
+                    
+                    // Validate and process the BOM data
+                    const validationResult = validateBOMData(currentBOMData);
+                    
+                    if (validationResult.valid) {
+                        showBOMPreview(currentBOMData, validationResult);
+                        statusDiv.innerHTML = `✅ Successfully parsed ${currentBOMData.length} BOM items`;
+                        statusDiv.style.color = '#28a745';
+                    } else {
+                        statusDiv.innerHTML = `❌ ${validationResult.message}`;
+                        statusDiv.style.color = '#dc3545';
+                    }
+                    
+                } catch (error) {
+                    statusDiv.innerHTML = `❌ Error parsing CSV: ${error.message}`;
+                    statusDiv.style.color = '#dc3545';
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        function validateBOMData(data) {
+            if (!data || data.length === 0) {
+                return { valid: false, message: 'No data found in CSV file' };
+            }
+            
+            // Check for required columns
+            const firstRow = data[0];
+            const requiredColumns = ['RefDes', 'KPN', 'Quantity'];
+            const missingColumns = requiredColumns.filter(col => !(col in firstRow));
+            
+            if (missingColumns.length > 0) {
+                return { 
+                    valid: false, 
+                    message: `Missing required columns: ${missingColumns.join(', ')}. Expected: RefDes, KPN, Quantity` 
+                };
+            }
+            
+            // Validate data types and cross-reference KPNs
+            let validItems = 0;
+            let missingKPNs = [];
+            let invalidQuantities = [];
+            
+            // Get components from the actual loaded data (CSV system or localStorage fallback)
+            let existingComponents = [];
+            
+            // Debug: Check what's available
+            console.log('DEBUG: window.components exists?', typeof window.components);
+            console.log('DEBUG: window.components structure:', window.components);
+            console.log('DEBUG: typeof components?', typeof components);
+            console.log('DEBUG: components structure:', components);
+            
+            // Try different ways to access the CSV components data
+            if (typeof components !== 'undefined' && Array.isArray(components) && components.length > 0) {
+                // Use global components variable if it's an array
+                existingComponents = components;
+                console.log('DEBUG: Using global components array:', existingComponents.length);
+            } else if (typeof components !== 'undefined' && typeof components === 'object') {
+                // If components is an object, try to extract all values
+                existingComponents = Object.values(components).flat();
+                console.log('DEBUG: Using components object values:', existingComponents.length);
+                // If Object.values didn't work, fall through to DOM extraction
+                if (existingComponents.length === 0) {
+                    console.log('DEBUG: Object.values returned empty, trying DOM extraction...');
+                }
+            } else if (window.components && Array.isArray(window.components) && window.components.length > 0) {
+                // Use window.components if it's an array
+                existingComponents = window.components;
+                console.log('DEBUG: Using window.components array:', existingComponents.length);
+            } else if (window.components && typeof window.components === 'object') {
+                // If window.components is an object, try to extract all values
+                existingComponents = Object.values(window.components).flat();
+                console.log('DEBUG: Using window.components object values:', existingComponents.length);
+                // If Object.values didn't work, fall through to DOM extraction
+                if (existingComponents.length === 0) {
+                    console.log('DEBUG: Object.values returned empty, trying DOM extraction...');
+                }
+            }
+            
+            // If we still don't have components, try DOM extraction
+            if (existingComponents.length === 0) {
+                // Try to extract components from the DOM table (CSV system might store data here)
+                const tableRows = document.querySelectorAll('#components-tbody tr');
+                console.log('DEBUG: Found table rows:', tableRows.length);
+                console.log('DEBUG: Components table exists?', !!document.getElementById('components-tbody'));
+                console.log('DEBUG: Current active tab:', document.querySelector('.tab.active')?.textContent);
+                
+                // Force refresh components table if it's empty
+                if (tableRows.length === 0) {
+                    console.log('DEBUG: No table rows found, trying to trigger component load...');
+                    // Try calling the function that loads components
+                    if (typeof loadData === 'function') {
+                        loadData();
+                        // Re-check after loading
+                        const newTableRows = document.querySelectorAll('#components-tbody tr');
+                        console.log('DEBUG: Table rows after loadData:', newTableRows.length);
+                    }
+                }
+                
+                const finalTableRows = document.querySelectorAll('#components-tbody tr');
+                if (finalTableRows.length > 0) {
+                    existingComponents = [];
+                    finalTableRows.forEach((row, index) => {
+                        const cells = row.querySelectorAll('td');
+                        console.log(`DEBUG: Row ${index + 1} has ${cells.length} cells`);
+                        if (cells.length >= 7) { // Ensure we have enough columns
+                            const component = {
+                                kpn: cells[0].textContent.trim(),
+                                category: cells[1].textContent.trim(),
+                                subcategory: cells[2].textContent.trim(),
+                                value: cells[3].textContent.trim(),
+                                package: cells[4].textContent.trim(),
+                                manufacturer: cells[5].textContent.trim(),
+                                preferredVendor: cells[6].textContent.trim()
+                            };
+                            existingComponents.push(component);
+                            if (index < 3) { // Log first 3 components
+                                console.log(`DEBUG: Component ${index + 1}:`, component);
+                            }
+                        }
+                    });
+                    console.log('DEBUG: Extracted components from DOM table:', existingComponents.length);
+                } else {
+                    // Final fallback to localStorage
+                    existingComponents = JSON.parse(localStorage.getItem('kinben-components') || '[]');
+                    console.log('DEBUG: Using localStorage components:', existingComponents.length);
+                }
+            }
+            console.log('DEBUG: First few components:', existingComponents.slice(0, 3));
+            
+            const kpnMap = {};
+            existingComponents.forEach(comp => kpnMap[comp.kpn] = comp);
+            console.log('DEBUG: KPN Map created:', Object.keys(kpnMap).slice(0, 5));
+            
+            data.forEach((row, index) => {
+                console.log(`DEBUG: Checking row ${index + 1}:`, row);
+                
+                // Check KPN exists
+                if (row.KPN && !kpnMap[row.KPN]) {
+                    console.log(`DEBUG: Missing KPN: ${row.KPN}`);
+                    missingKPNs.push(`${row.RefDes || `Row ${index + 1}`}: ${row.KPN}`);
+                } else if (row.KPN && kpnMap[row.KPN]) {
+                    console.log(`DEBUG: Found KPN: ${row.KPN}`);
+                }
+                
+                // Check quantity is valid
+                const qty = parseInt(row.Quantity);
+                if (isNaN(qty) || qty <= 0) {
+                    console.log(`DEBUG: Invalid quantity: ${row.Quantity}`);
+                    invalidQuantities.push(`${row.RefDes || `Row ${index + 1}`}: ${row.Quantity}`);
+                } else {
+                    console.log(`DEBUG: Valid quantity: ${qty}`);
+                    validItems++;
+                }
+            });
+            
+            console.log('DEBUG: Validation results:', {
+                validItems,
+                missingKPNs: missingKPNs.length,
+                invalidQuantities: invalidQuantities.length
+            });
+            
+            return {
+                valid: true,
+                validItems,
+                missingKPNs,
+                invalidQuantities,
+                kpnMap
+            };
+        }
+        
+        function showBOMPreview(data, validationResult) {
+            const previewSection = document.getElementById('bom-preview-section');
+            const previewContent = document.getElementById('bom-preview-content');
+            
+            let previewHTML = `
+                <div style="margin-bottom: 15px;">
+                    <strong>📊 Import Summary:</strong><br>
+                    • Total items: ${data.length}<br>
+                    • Valid items: ${validationResult.validItems}<br>
+                    • Missing KPNs: ${validationResult.missingKPNs.length}<br>
+                    • Invalid quantities: ${validationResult.invalidQuantities.length}
+                </div>
+            `;
+            
+            if (validationResult.missingKPNs.length > 0) {
+                previewHTML += `
+                    <div style="margin-bottom: 15px; padding: 10px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px;">
+                        <strong>⚠️ Missing KPNs (${validationResult.missingKPNs.length}):</strong><br>
+                        ${validationResult.missingKPNs.slice(0, 5).join('<br>')}
+                        ${validationResult.missingKPNs.length > 5 ? `<br>... and ${validationResult.missingKPNs.length - 5} more` : ''}
+                    </div>
+                `;
+            }
+            
+            if (validationResult.invalidQuantities.length > 0) {
+                previewHTML += `
+                    <div style="margin-bottom: 15px; padding: 10px; background-color: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px;">
+                        <strong>❌ Invalid Quantities (${validationResult.invalidQuantities.length}):</strong><br>
+                        ${validationResult.invalidQuantities.slice(0, 5).join('<br>')}
+                        ${validationResult.invalidQuantities.length > 5 ? `<br>... and ${validationResult.invalidQuantities.length - 5} more` : ''}
+                    </div>
+                `;
+            }
+            
+            // Show preview table of first 5 valid items
+            const validItems = data.filter((row, index) => {
+                const qty = parseInt(row.Quantity);
+                return row.KPN && validationResult.kpnMap[row.KPN] && !isNaN(qty) && qty > 0;
+            });
+            
+            if (validItems.length > 0) {
+                previewHTML += `
+                    <div style="margin-bottom: 15px;">
+                        <strong>✅ Preview of Valid Items (showing first 5):</strong>
+                        <table class="table" style="margin-top: 10px;">
+                            <thead>
+                                <tr>
+                                    <th>RefDes</th>
+                                    <th>KPN</th>
+                                    <th>Description</th>
+                                    <th>Quantity</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                validItems.slice(0, 5).forEach(row => {
+                    const component = validationResult.kpnMap[row.KPN];
+                    previewHTML += `
+                        <tr>
+                            <td>${row.RefDes || 'N/A'}</td>
+                            <td>${row.KPN}</td>
+                            <td>${component.description || row.Description || 'N/A'}</td>
+                            <td>${row.Quantity}</td>
+                            <td>${row.Notes || ''}</td>
+                        </tr>
+                    `;
+                });
+                
+                previewHTML += `
+                            </tbody>
+                        </table>
+                        ${validItems.length > 5 ? `<p><em>... and ${validItems.length - 5} more valid items</em></p>` : ''}
+                    </div>
+                `;
+            }
+            
+            previewContent.innerHTML = previewHTML;
+            previewSection.style.display = 'block';
+        }
+        
+        function confirmBOMImport() {
+            if (!currentBOMData || currentBOMData.length === 0) {
+                alert('No BOM data to import');
+                return;
+            }
+            
+            const validationResult = validateBOMData(currentBOMData);
+            if (!validationResult.valid) {
+                alert('BOM data validation failed: ' + validationResult.message);
+                return;
+            }
+            
+            let importedCount = 0;
+            let skippedCount = 0;
+            
+            currentBOMData.forEach((row, index) => {
+                const qty = parseInt(row.Quantity);
+                
+                console.log(`DEBUG: Processing import row ${index + 1}:`, row);
+                console.log(`DEBUG: KPN exists in map?`, !!validationResult.kpnMap[row.KPN]);
+                console.log(`DEBUG: Quantity valid?`, !isNaN(qty) && qty > 0);
+                
+                // Only import valid items with existing KPNs
+                if (row.KPN && validationResult.kpnMap[row.KPN] && !isNaN(qty) && qty > 0) {
+                    console.log(`DEBUG: Importing item:`, row.KPN);
+                    // Add to current assembly BOM items display
+                    addBOMItemFromImport({
+                        type: 'component',
+                        kpn: row.KPN,
+                        quantity: qty,
+                        refdes: row.RefDes || '',
+                        notes: row.Notes || ''
+                    });
+                    importedCount++;
+                } else {
+                    console.log(`DEBUG: Skipping item:`, row.KPN, 'Reasons:', {
+                        hasKPN: !!row.KPN,
+                        kpnInMap: !!validationResult.kpnMap[row.KPN],  
+                        validQty: !isNaN(qty) && qty > 0
+                    });
+                    skippedCount++;
+                }
+            });
+            
+            // Clear the import section
+            cancelBOMImport();
+            
+            // Show success message
+            const statusDiv = document.getElementById('bom-import-status');
+            statusDiv.innerHTML = `✅ Imported ${importedCount} items to assembly. ${skippedCount > 0 ? `Skipped ${skippedCount} invalid items.` : ''}`;
+            statusDiv.style.color = '#28a745';
+            
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
+        }
+        
+        function cancelBOMImport() {
+            document.getElementById('bom-preview-section').style.display = 'none';
+            document.getElementById('bom-csv-file').value = '';
+            currentBOMData = [];
+        }
+        
+        function addBOMItemFromImport(itemData) {
+            console.log('DEBUG: addBOMItemFromImport called with:', itemData);
+            
+            // Find the component from DOM data (same as validation)
+            let existingComponents = [];
+            const tableRows = document.querySelectorAll('#components-tbody tr');
+            
+            if (tableRows.length > 0) {
+                tableRows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 7) {
+                        const component = {
+                            kpn: cells[0].textContent.trim(),
+                            category: cells[1].textContent.trim(),
+                            subcategory: cells[2].textContent.trim(),
+                            value: cells[3].textContent.trim(),
+                            package: cells[4].textContent.trim(),
+                            manufacturer: cells[5].textContent.trim(),
+                            preferredVendor: cells[6].textContent.trim()
+                        };
+                        existingComponents.push(component);
+                    }
+                });
+            }
+            
+            const component = existingComponents.find(c => c.kpn === itemData.kpn);
+            if (!component) {
+                console.log('DEBUG: Component not found for KPN:', itemData.kpn);
+                return;
+            }
+            
+            // Add to the same currentBOM array that manual items use
+            const bomItem = {
+                kpn: itemData.kpn,
+                componentName: `${component.manufacturer || 'Unknown'} ${component.value || itemData.kpn}`,
+                quantity: itemData.quantity,
+                refdes: itemData.refdes,
+                notes: itemData.notes || ''
+            };
+            
+            console.log('DEBUG: Adding to currentBOM:', bomItem);
+            currentBOM.push(bomItem);
+            
+            // Use the same render function as manual items
+            renderBOMItems();
+            
+            console.log('DEBUG: currentBOM now has', currentBOM.length, 'items');
+        }
+        
+        function downloadBOMTemplate() {
+            // Get existing components to create realistic examples
+            let existingComponents = [];
+            
+            // Extract components from DOM table
+            const tableRows = document.querySelectorAll('#components-tbody tr');
+            if (tableRows.length > 0) {
+                tableRows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 7) {
+                        const component = {
+                            kpn: cells[0].textContent.trim(),
+                            category: cells[1].textContent.trim(),
+                            subcategory: cells[2].textContent.trim(),
+                            value: cells[3].textContent.trim(),
+                            package: cells[4].textContent.trim(),
+                            manufacturer: cells[5].textContent.trim(),
+                            preferredVendor: cells[6].textContent.trim()
+                        };
+                        existingComponents.push(component);
+                    }
+                });
+            } else {
+                existingComponents = JSON.parse(localStorage.getItem('kinben-components') || '[]');
+            }
+            
+            let templateContent = 'RefDes,KPN,Quantity,Description,Notes\n';
+            
+            if (existingComponents.length > 0) {
+                // Use actual KPNs from the system for examples - sample different categories
+                const resistors = existingComponents.filter(c => c.category === 'resistors');
+                const capacitors = existingComponents.filter(c => c.category === 'capacitors');
+                const inductors = existingComponents.filter(c => c.category === 'inductors');
+                const diodes = existingComponents.filter(c => c.category === 'diodes');
+                const transistors = existingComponents.filter(c => c.category === 'transistors');
+                const connectors = existingComponents.filter(c => c.category === 'connectors');
+                
+                let exampleIndex = 1;
+                
+                // Add one example from each category if available
+                if (resistors.length > 0) {
+                    const comp = resistors[0];
+                    templateContent += `R${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Resistor'}","Example resistor"\n`;
+                    exampleIndex++;
+                }
+                
+                if (capacitors.length > 0) {
+                    const comp = capacitors[0];
+                    templateContent += `C${exampleIndex},${comp.kpn},2,"${comp.value || comp.description || 'Capacitor'}","Decoupling capacitor"\n`;
+                    exampleIndex++;
+                }
+                
+                if (inductors.length > 0) {
+                    const comp = inductors[0];
+                    templateContent += `L${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Inductor'}","Power supply filter"\n`;
+                    exampleIndex++;
+                }
+                
+                if (diodes.length > 0) {
+                    const comp = diodes[0];
+                    templateContent += `D${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Diode'}","Protection diode"\n`;
+                    exampleIndex++;
+                }
+                
+                if (transistors.length > 0) {
+                    const comp = transistors[0];
+                    templateContent += `Q${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Transistor'}","Switching transistor"\n`;
+                    exampleIndex++;
+                }
+                
+                if (connectors.length > 0) {
+                    const comp = connectors[0];
+                    templateContent += `J${exampleIndex},${comp.kpn},1,"${comp.value || comp.description || 'Connector'}","Main connector"\n`;
+                    exampleIndex++;
+                }
+                
+                // If we still don't have enough examples, add more from any category
+                if (exampleIndex <= 2 && existingComponents.length > 0) {
+                    const remaining = existingComponents.slice(0, 5);
+                    remaining.forEach((comp) => {
+                        if (exampleIndex <= 5) {
+                            const refdes = getExampleRefDes(comp.category, exampleIndex);
+                            templateContent += `${refdes},${comp.kpn},1,"${comp.value || comp.description || comp.manufacturer || 'Component'}","Example component"\n`;
+                            exampleIndex++;
+                        }
+                    });
+                }
+                
+            } else {
+                // Generic examples if no components exist
+                templateContent += 'R1,RES-STD-001,1,"10kΩ resistor ±5% 0603","Pull-up resistor"\n';
+                templateContent += 'C1,CAP-CER-001,2,"100nF capacitor X7R 0603","Decoupling capacitor"\n';
+                templateContent += 'U1,IC-MCU-001,1,"ARM Cortex-M4 MCU","Main processor"\n';
+                templateContent += 'D1,LED-STD-001,1,"Red LED 0603","Status indicator"\n';
+                templateContent += 'L1,IND-PWR-001,1,"10µH inductor","Power supply filter"\n';
+            }
+            
+            // Create and download the file
+            const blob = new Blob([templateContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'BOM_Template.csv';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Show confirmation
+            const statusDiv = document.getElementById('bom-import-status');
+            statusDiv.innerHTML = '✅ BOM template downloaded with YOUR actual KPNs! Ready to import.';
+            statusDiv.style.color = '#28a745';
+            
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 3000);
+        }
+        
+        function getExampleRefDes(category, index) {
+            const refDesMap = {
+                'resistors': 'R',
+                'capacitors': 'C', 
+                'inductors': 'L',
+                'diodes': 'D',
+                'transistors': 'Q',
+                'integrated-circuits': 'U',
+                'connectors': 'J',
+                'switches': 'SW',
+                'crystals-oscillators': 'Y',
+                'leds': 'LED',
+                'fuses': 'F',
+                'relays': 'K',
+                'sensors': 'U',
+                'optocouplers': 'U'
+            };
+            
+            const prefix = refDesMap[category] || 'U';
+            return `${prefix}${index}`;
+        }
+
+        // ============ END BOM CSV IMPORT FUNCTIONALITY ============
+        
     </script>
 </body>
 </html>
