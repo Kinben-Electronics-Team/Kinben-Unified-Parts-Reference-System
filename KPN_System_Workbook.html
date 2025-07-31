@@ -3996,7 +3996,7 @@
                         <div id="kpn-options" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px;">
                             ${(similarComponents.length > 0 ? similarComponents : data.components.slice(0, 20)).map(comp => `
                                 <div class="kpn-option" onclick="selectKPNOption('${comp.kpn}', ${validationIndex})" 
-                                     style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; hover:background-color: #f5f5f5;">
+                                     style="padding: 10px; border-bottom: 1px solid #eee; cursor: pointer;">
                                     <strong>${comp.kpn}</strong> - ${comp.description || 'No description'}
                                     <br><small style="color: #666;">${comp.manufacturer || ''} ${comp.manufacturerPN || ''}</small>
                                 </div>
