@@ -2207,7 +2207,7 @@
                             </select>
                         </div>
                     `;
-                } else {
+                } else if (field.type) {
                     // Regular input field
                     fieldsHTML += `
                         <div class="form-group">
