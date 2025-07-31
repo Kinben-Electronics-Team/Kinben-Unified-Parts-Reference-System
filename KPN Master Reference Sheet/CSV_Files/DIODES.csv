@@ -1,5 +1,5 @@
 Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Description,Voltage_Rating,Current_Rating,Tolerance,Mounting,Preferred_Supplier,Mouser_PN,DigiKey_PN,Unit_Cost,Stock_Level,Symbol_File,Footprint_File,3D_Model_File,Datasheet_URL,Status,Created_Date,Notes
-DIO-STD-015,diodes,STD,,SOD-323,,1N4148WS,,75V,150mA,,,Vishay,,,,,,,,,Active,2025-07-29,
-DIO-LED-016,diodes,LED,,0805,,LTST-C170KRKT,,2.1V,20mA,,,Lite-On,,,,,,,,,Active,2025-07-29,
-DIO-ZEN-017,diodes,ZEN,,SOT-23,,BZX84C5V1,,5.1V,250mA,,,NXP,,,,,,,,,Active,2025-07-29,
-DIO-SCH-018,diodes,SCH,,SOT-23,,BAT54S,,30V,200mA,,,Infineon,,,,,,,,,Active,2025-07-29,
+DIO-STD-015,diodes,STD,,SOD-323,,1N4148WS,,75V,150mA,,,Vishay,,,,,,,,,Active,2025-07-31,
+DIO-LED-016,diodes,LED,,0805,,LTST-C170KRKT,,2.1V,20mA,,,Lite-On,,,,,,,,,Active,2025-07-31,
+DIO-ZEN-017,diodes,ZEN,,SOT-23,,BZX84C5V1,,5.1V,250mA,,,NXP,,,,,,,,,Active,2025-07-31,
+DIO-SCH-018,diodes,SCH,,SOT-23,,BAT54S,,30V,200mA,,,Infineon,,,,,,,,,Active,2025-07-31,

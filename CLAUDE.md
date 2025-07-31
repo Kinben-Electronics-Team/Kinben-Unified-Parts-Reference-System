@@ -288,6 +288,86 @@ All references to the old Firebase URL have been corrected throughout CLAUDE.md 
 
 ---
 
+## 🔄 **SESSION UPDATE (2025-07-31): ASSEMBLY BOM IMPORT PLANNING**
+
+### 🎯 **OBJECTIVE: Enhanced Assembly Management with Interactive BOM Import**
+**Goal**: Extend CSV import functionality to assembly page with interactive user decisions  
+**Requirements**: Upload processed BOMs with KPNs, manual entry, edit/delete, bulk actions  
+**User Experience**: Interactive session workflow similar to Components page  
+
+### 📋 **COMPREHENSIVE FEATURE PLAN:**
+
+#### **🏭 Interactive BOM CSV Import**
+- **Upload & Preview**: Drag-and-drop processed BOM CSV files
+- **KPN Validation**: Real-time cross-referencing against component database
+- **Missing KPN Resolution**: User decisions for invalid KPNs:
+  - Skip item
+  - Create new component (opens component form)
+  - Map to existing similar KPN
+- **Duplicate RefDes Handling**: Smart resolution for conflicts:
+  - Replace existing item
+  - Skip duplicate
+  - Rename with suffix (R1 → R1_1)
+- **Import Modes**: Replace, append, or merge with existing BOMs
+- **Progress Feedback**: Real-time import status with success/error logging
+
+#### **📊 BOM CSV Schema**
+```csv
+Reference_Designator,KPN,Component_Type,Description,Manufacturer,Manufacturer_PN,Package,Quantity,Notes,Substitutes
+R1,RES-STD-001,Resistor,10kΩ 0.1% 0402,Yageo,RC0402FR-0710KL,0402,1,,
+C1,CAP-CER-003,Capacitor,10µF 16V X7R 0603,Samsung,CL10A106KP8NNNC,0603,1,,
+U1,IC-MCU-007,Microcontroller,STM32F4 144-pin,STMicroelectronics,STM32F407VGT6,LQFP-100,1,Main MCU,
+```
+
+#### **🛠️ Enhanced Assembly Management**
+- **Manual Entry**: Add assembly items with KPN autocomplete
+- **Edit/Delete**: Inline modification of existing assembly items
+- **Bulk Actions**: Multi-select operations for efficient management
+- **BOM Export**: Export assemblies as standardized BOM CSV files
+- **Reference Designator Support**: Full RefDes tracking (R1, C1, U1, etc.)
+
+### 💾 **SESSION STATUS UPDATE:**
+**Date**: 2025-07-31  
+**Status**: 🚧 **IMPLEMENTATION IN PROGRESS - MAJOR FEATURES COMPLETE**  
+**Current Task**: Assembly BOM import implementation with interactive user decisions  
+**Focus**: Core functionality implemented, testing and PR creation pending  
+**Repository**: Feature branch `feature/assembly-bom-import` with working implementation  
+
+### ✅ **COMPLETED IMPLEMENTATION:**
+
+#### **🏭 Interactive BOM CSV Import - WORKING**
+- ✅ **CSV Upload Section**: Added to assembly page with file validation
+- ✅ **Preview & Validation**: Real-time CSV parsing with status indicators
+- ✅ **KPN Validation**: Cross-referencing against component database
+- ✅ **Interactive Modals**: 
+  - Create new components for missing KPNs
+  - Map to existing similar components with search
+  - Smart duplicate RefDes handling
+- ✅ **Import Modes**: Replace, append, merge functionality
+- ✅ **Progress Tracking**: Real-time import status with success/error counts
+
+#### **📊 Enhanced BOM Export - WORKING**
+- ✅ **Multiple Export Formats**:
+  - Standard BOM (RefDes, KPN, Description, Qty, Package)
+  - Detailed BOM (includes Manufacturer, Part Number, specs)
+  - Procurement List (consolidated quantities by KPN)
+- ✅ **Interactive Export**: Assembly selection modal with batch export
+- ✅ **Professional Filenames**: Auto-generated BOM_AssemblyName_Version.csv
+
+#### **🔧 Technical Implementation:**
+- ✅ **Papa Parse Integration**: Robust CSV parsing with error handling
+- ✅ **Modal System**: Professional modals for all user interactions
+- ✅ **Data Validation**: Comprehensive validation with user-friendly feedback
+- ✅ **Component Integration**: Seamless integration with existing component database
+
+### 🚧 **PENDING TASKS:**
+- ⏳ Manual entry enhancements (KPN autocomplete)
+- ⏳ Edit/delete functionality for assembly items
+- ⏳ Bulk actions for assembly management
+- 🔄 **Final testing and PR creation**
+
+---
+
 ## 🔄 **SESSION UPDATE (2025-07-30): DATA VALIDATION & UNIT DROPDOWNS**
 
 ### 🎯 **OBJECTIVE: Fix Issue #70 - Add Data Validation and Unit Dropdowns**
