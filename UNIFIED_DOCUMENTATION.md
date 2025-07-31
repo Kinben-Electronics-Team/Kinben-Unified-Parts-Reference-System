@@ -149,6 +149,10 @@ Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`
 - ✅ **Comprehensive Export**: All dynamic fields included in CSV export
 - ✅ **Component Editing**: Edit button in table, pre-filled forms, update mode
 - ✅ **Vendor Management**: Standardized vendor dropdown with add/remove functionality
+- ✅ **BOM CSV Import**: Upload Bill of Materials with RefDes, KPN, Quantity columns
+- ✅ **Interactive BOM Preview**: Validation, missing KPN detection, import confirmation
+- ✅ **BOM Template Generation**: Smart templates using your actual component KPNs
+- ✅ **Unified Assembly System**: Manual and CSV imported items work together
 
 ---
 
@@ -161,10 +165,17 @@ Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`
 4. **Fill Essentials**: Manufacturer, part number, description, package, status
 5. **Add Component**: Click to save - component appears in table immediately
 
-### PCB Creation Workflow (< 5 minutes)
-1. **PCB Details**: Name, version, description, status
-2. **Build BOM**: Select components from dropdown, add quantities and reference designators
-3. **Add PCB**: Save PCB with complete BOM
+### Assembly Creation Workflow (< 5 minutes)
+1. **Assembly Details**: Name, version, description, status
+2. **Build BOM**: Two options available:
+   - **Manual Entry**: Select components from dropdown, add quantities and reference designators
+   - **CSV Import**: Upload BOM CSV file with RefDes, KPN, Quantity columns
+3. **BOM Import Features**:
+   - **Interactive Preview**: Shows valid/invalid items before import
+   - **KPN Validation**: Cross-references with existing components
+   - **Template Download**: Get CSV template with your actual KPNs
+   - **Unified System**: Manual and imported items work together seamlessly
+4. **Add Assembly**: Save assembly with complete BOM from manual + imported items
 
 ### System Building Workflow (< 3 minutes)
 1. **System Details**: Name, version, description, status

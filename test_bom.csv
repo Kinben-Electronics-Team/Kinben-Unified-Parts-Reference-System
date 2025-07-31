@@ -1,0 +1,11 @@
+RefDes,KPN,Quantity,Description,Notes
+R1,RES-STD-001,1,10k resistor,Pull-up resistor
+R2,RES-PRE-002,1,4.7k resistor,Current limiting
+C1,CAP-CER-004,2,100nF capacitor,Decoupling caps
+C2,CAP-ELE-005,1,470uF capacitor,Power supply filter
+L1,IND-PWR-012,1,22uH inductor,Power supply filter
+D1,DIO-LED-016,1,LED,Status indicator
+Q1,TRA-BJT-019,1,BJT transistor,Switching transistor
+J1,CON-HDR-022,1,Header connector,Main connector
+SW1,SWI-TAC-026,1,Tactile switch,Reset button
+INVALID,FAKE-KPN-999,1,Fake component,This should show as missing KPN

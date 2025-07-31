@@ -286,7 +286,49 @@ All references to the old Firebase URL have been corrected throughout CLAUDE.md 
 
 ---
 
+## 🔄 **SESSION UPDATE (2025-07-31): ASSEMBLY BOM CSV IMPORT - COMPLETE**
+
+### 🎯 **OBJECTIVE: Implement BOM CSV Import for Assembly Page**
+**Problem**: Assembly page only had manual item entry, needed bulk BOM import capability  
+**Solution**: Comprehensive CSV import system with interactive workflow and validation  
+**User Request**: Extend CSV import to assembly page with interactive user sessions
+
+### ✅ **FEATURES IMPLEMENTED:**
+
+#### **📁 BOM CSV Import System**
+- **File Upload**: CSV file input with Papa Parse integration and validation
+- **Header Normalization**: Accepts RefDes/Reference Designator/Ref, KPN/Part Number, Quantity/Qty
+- **Smart Template**: Download BOM template using actual KPNs from component library
+- **Interactive Preview**: Shows valid/invalid items with detailed summary before import
+
+#### **🔍 Validation & Workflow**
+- **KPN Cross-Reference**: Validates against CSV-loaded components (fixed localStorage issue)
+- **Missing KPN Detection**: Lists items with non-existent KPNs for user review
+- **Import Summary**: Total items, valid items, missing KPNs, invalid quantities
+- **User Decision Points**: Preview → Confirm → Import workflow with cancel option
+
+#### **⚡ Technical Integration**
+- **Unified BOM System**: Import uses same `currentBOM` array and `renderBOMItems()` as manual entry
+- **Data Source Fix**: Reads components from DOM table when CSV data not directly accessible
+- **Seamless Integration**: Manual and imported items work together in same assembly
+- **Real-time Status**: Color-coded feedback throughout upload and import process
+
+### 🚀 **BOM CSV Format:**
+```csv
+RefDes,KPN,Quantity,Description,Notes
+R1,RES-STD-001,1,"10kΩ resistor","Pull-up resistor"
+C1,CAP-CER-004,2,"100nF capacitor","Decoupling caps"
+```
+
+### 💾 **SESSION END STATUS:**
+**Date**: 2025-07-31  
+**Status**: ✅ **BOM CSV IMPORT FULLY FUNCTIONAL**  
+**Features**: Upload, validate, preview, import, integrate with manual items  
+**Ready**: For commit to assembly-bom-import branch and deployment
+
+---
+
 ## claude.md# Guideline Memories
 - Always start with `claude.md#` when adding new memories or guidelines to this file
 - Live site URL is https://kinbenpartssystem.web.app/ (verified working July 28, 2025)
-- Current focus: Local CSV implementation for offline ERP functionality
+- **Latest Focus**: Assembly BOM CSV import with interactive workflow (2025-07-31)

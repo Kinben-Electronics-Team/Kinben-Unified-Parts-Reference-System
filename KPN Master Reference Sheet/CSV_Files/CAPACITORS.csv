@@ -1,5 +1,5 @@
 Kinben_PN,Category,Subcategory,Value,Package,Manufacturer,Manufacturer_PN,Description,Voltage_Rating,Current_Rating,Tolerance,Mounting,Preferred_Supplier,Mouser_PN,DigiKey_PN,Unit_Cost,Stock_Level,Symbol_File,Footprint_File,3D_Model_File,Datasheet_URL,Status,Created_Date,Notes
-CAP-CER-004,capacitors,CER,100nF,0805,,,,50V,,10%,,Digi-Key,,,,,,,,,Active,2025-07-29,
-CAP-ELE-005,capacitors,ELE,470uF,8x12mm,,,,25V,,20%,,Mouser,,,,,,,,,Active,2025-07-29,
-CAP-TAN-006,capacitors,TAN,22uF,1206,,,,16V,,10%,,Arrow,,,,,,,,,Active,2025-07-29,
-CAP-FIL-007,capacitors,FIL,1uF,1210,,,,250V,,5%,,Farnell,,,,,,,,,Active,2025-07-29,
+CAP-CER-004,capacitors,CER,100nF,0805,,,,,,,,Digi-Key,,,,,,,,,Active,,
+CAP-ELE-005,capacitors,ELE,470uF,8x12mm,,,,,,,,Mouser,,,,,,,,,Active,,
+CAP-TAN-006,capacitors,TAN,22uF,1206,,,,,,,,Arrow,,,,,,,,,Active,,
+CAP-FIL-007,capacitors,FIL,1uF,1210,,,,,,,,Farnell,,,,,,,,,Active,,
