@@ -38,7 +38,7 @@ This system has been **dramatically simplified** following Occam's Razor princip
 
 #### 1. **📋 KPN Components** (Electronic Parts Catalog)
 - Basic component information with auto-generated KPNs
-- 8 essential categories (simplified from 16)
+- 8 essential categories (simplified from 12)
 - Simple fields: KPN, manufacturer, part number, description, package, status
 - **Removed**: Complex specifications and detailed technical data
 
