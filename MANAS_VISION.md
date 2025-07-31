@@ -13,7 +13,7 @@
 > 
 > 4) User should be able to select one or multiple systems, enter quantity of the individual systems like a cart and should be able to checkout which generates a structured but single file Bill of material of all that is needed to make a system. A SYSTEM CAN BE SYSTEM OF SYSTEMS BUT AN ASSEMBLY CANT BE ASSEMBLY OF ASSEMBLIES.
 > 
-> Can you make me a plan of action for this app and how I can assign small chunks of tasks to AI agents without them using a lot of tokens to carry a tonne context. I want you to come up with 
+> Can you make me a plan of action for this app and how I can assign small chunks of tasks to AI agents without them using a lot of tokens to carry a tonne of context. I want you to come up with
 > a good plan for me and suggestions on how to accomplish this beautifully and efficiently and as fast as possible."
 
 ---
