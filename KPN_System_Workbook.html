@@ -2459,9 +2459,6 @@
                     `;
                 } else if (field.id === 'value' && ['resistors', 'capacitors', 'inductors'].includes(category)) {
                     // Special value field with unit dropdown for passive components
-                    let unitType = '';
-                    let unitList = [];
-                    
                     const categoryUnitMap = {
                         resistors: { unitType: 'resistance', unitList: unitOptions.resistance },
                         capacitors: { unitType: 'capacitance', unitList: unitOptions.capacitance },
