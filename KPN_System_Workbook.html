@@ -3802,8 +3802,10 @@
         }
 
         // Generate unique RefDes
+        const DEFAULT_REF_DES_COUNTER_START = 1; // Starting value for RefDes suffix generation
+        
         function generateUniqueRefDes(originalRefDes) {
-            let counter = 1;
+            let counter = DEFAULT_REF_DES_COUNTER_START;
             let newRefDes = `${originalRefDes}_${counter}`;
             
             while (currentBOM.some(item => item.refDes === newRefDes)) {
