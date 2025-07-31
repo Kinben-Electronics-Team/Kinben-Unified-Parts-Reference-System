@@ -2195,6 +2195,13 @@
                 return { valid: false, message: 'Value is required' };
             }
 
+            const trimmedValue = value.trim();
+            
+            // Allow partial input during typing - if it's just numbers (user still typing), allow it
+            if (/^\d+(\.\d*)?$/.test(trimmedValue)) {
+                return { valid: true, message: '' };
+            }
+
             // Patterns for different component types
             const patterns = {
                 resistors: /^(\d+(?:\.\d+)?)\s*([kKmMgG]?[rRΩ])$/i,
@@ -2203,7 +2210,7 @@
             };
 
             const pattern = patterns[category];
-            if (pattern && pattern.test(value.trim())) {
+            if (pattern && pattern.test(trimmedValue)) {
                 return { valid: true, message: 'Valid format' };
             } else if (pattern) {
                 const examples = {
