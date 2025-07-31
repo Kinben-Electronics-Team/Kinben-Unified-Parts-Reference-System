@@ -2365,7 +2365,8 @@
                 return;
             }
             
-            const kpn = document.getElementById('comp-kpn').value || document.getElementById('comp-kpn-preview').textContent;
+            const kpn = document.getElementById('comp-kpn').value || 
+                (document.getElementById('comp-kpn-preview') ? document.getElementById('comp-kpn-preview').textContent : '');
             
             // Collect data from dynamic fields
             const component = {
