@@ -170,12 +170,38 @@ Format: `[CATEGORY]-[SUBCATEGORY]-[SEQUENCE]`
 2. **Build BOM**: Two options available:
    - **Manual Entry**: Select components from dropdown, add quantities and reference designators
    - **CSV Import**: Upload BOM CSV file with RefDes, KPN, Quantity columns
-3. **BOM Import Features**:
-   - **Interactive Preview**: Shows valid/invalid items before import
-   - **KPN Validation**: Cross-references with existing components
-   - **Template Download**: Get CSV template with your actual KPNs
-   - **Unified System**: Manual and imported items work together seamlessly
-4. **Add Assembly**: Save assembly with complete BOM from manual + imported items
+
+#### **🔧 Enhanced BOM CSV Import Workflow**
+3. **Upload BOM File**: 
+   - Drag-and-drop or select CSV file with BOM data
+   - Papa Parse integration for robust CSV parsing
+   - Support for flexible headers (RefDes/Reference Designator, KPN/Part Number, Quantity/Qty)
+
+4. **Interactive Preview & Validation**:
+   - **Real-time Validation**: Cross-references KPNs against existing component database
+   - **Status Indicators**: Green checkmarks for valid items, red X for missing KPNs
+   - **Import Summary**: Shows total items, valid count, missing KPNs, invalid quantities
+   - **Missing KPN Details**: Lists specific items that need attention
+
+5. **Template Generation**:
+   - **Smart Templates**: Download BOM template using your actual component KPNs
+   - **Export Template Button**: Generate CSV with RefDes, KPN, Quantity, Description, Notes columns
+   - **Real Component Data**: Template populated with existing KPNs from your component library
+
+6. **Import Execution**:
+   - **User Confirmation**: Preview → Confirm → Import workflow with cancel option
+   - **Unified Integration**: Imported items seamlessly merge with manually added items
+   - **Real-time Feedback**: Progress indicators and success/error messaging
+
+7. **Final Assembly**: Save complete assembly with unified BOM from manual + imported items
+
+#### **📊 Supported BOM CSV Format**
+```csv
+RefDes,KPN,Quantity,Description,Notes
+R1,RES-STD-001,1,"10kΩ resistor","Pull-up resistor"
+C1,CAP-CER-004,2,"100nF capacitor","Decoupling caps"
+L1,IND-PWR-012,1,"22µH inductor","Power supply filter"
+```
 
 ### System Building Workflow (< 3 minutes)
 1. **System Details**: Name, version, description, status
