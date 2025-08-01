@@ -586,6 +586,494 @@
             font-size: 14px;
             font-weight: 600;
         }
+        
+        /* System Item Preview Styles */
+        .system-item-preview {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        
+        .system-item-preview h4 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 16px;
+        }
+        
+        .quantity-info {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: normal;
+        }
+        
+        .item-preview-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .item-preview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .item-preview-name {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .item-preview-quantity {
+            background: #17a2b8;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .item-preview-details {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        .item-preview-calculation {
+            background: #e9f7ef;
+            border-left: 3px solid #28a745;
+            padding: 8px 12px;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+        
+        /* System Items Grid and Cards */
+        .system-items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .system-item-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: box-shadow 0.2s ease;
+        }
+        
+        .system-item-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        .system-item-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .system-item-icon {
+            font-size: 18px;
+        }
+        
+        .system-item-name {
+            flex: 1;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .system-item-quantity {
+            background: #17a2b8;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .system-item-details {
+            font-size: 13px;
+            color: #6c757d;
+            line-height: 1.4;
+        }
+        
+        .system-item-type {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 4px;
+        }
+        
+        .system-item-version {
+            margin-bottom: 6px;
+        }
+        
+        .item-calculation {
+            background: #f8f9fa;
+            border-left: 3px solid #17a2b8;
+            padding: 6px 10px;
+            border-radius: 0 4px 4px 0;
+        }
+        
+        /* System Build Summary */
+        .system-build-summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .system-build-summary h4 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+        }
+        
+        .system-summary-stats {
+            display: flex;
+            gap: 20px;
+            justify-content: space-around;
+        }
+        
+        .summary-stat {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .summary-stat .stat-value {
+            display: block;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1;
+        }
+        
+        .summary-stat .stat-label {
+            display: block;
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        
+        .total-stat {
+            border-left: 2px solid rgba(255,255,255,0.3);
+            padding-left: 20px;
+        }
+        
+        .total-stat .stat-value {
+            font-size: 28px;
+            color: #fff;
+        }
+        
+        @media (max-width: 768px) {
+            .system-items-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .system-summary-stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .total-stat {
+                border-left: none;
+                border-top: 2px solid rgba(255,255,255,0.3);
+                padding-left: 0;
+                padding-top: 10px;
+            }
+        }
+        
+        /* Bulk Operations Panel */
+        .bulk-operations-panel {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .bulk-ops-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .bulk-ops-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .bulk-ops-actions .btn {
+            padding: 4px 12px;
+            font-size: 13px;
+        }
+        
+        .bulk-ops-actions .btn-sm {
+            background: #6c757d;
+            color: white;
+            border: none;
+        }
+        
+        .bulk-ops-actions .btn-sm:hover {
+            background: #5a6268;
+        }
+        
+        .bulk-ops-actions .btn-danger {
+            background: #dc3545 !important;
+        }
+        
+        .bulk-ops-actions .btn-danger:hover {
+            background: #c82333 !important;
+        }
+        
+        .bulk-ops-actions .btn-secondary {
+            background: #6c757d !important;
+        }
+        
+        .bulk-ops-actions .btn-secondary:hover {
+            background: #5a6268 !important;
+        }
+        
+        /* System table action buttons */
+        .btn-edit, .btn-delete {
+            background: none;
+            border: none;
+            font-size: 16px;
+            padding: 4px 6px;
+            margin: 0 2px;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .btn-edit:hover {
+            background-color: #ffc107;
+        }
+        
+        .btn-delete:hover {
+            background-color: #dc3545;
+        }
+        
+        /* Cross-System Analysis Styles */
+        .cross-system-info {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-left: 4px solid #28a745;
+            padding: 10px 12px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #155724;
+        }
+        
+        .cross-system-analysis {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        
+        .cross-system-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #856404;
+        }
+        
+        .systems-count {
+            background: #ffc107;
+            color: #212529;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .cross-system-usage {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .system-usage-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+        
+        .system-name {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .system-quantity {
+            background: #6c757d;
+            color: white;
+            padding: 1px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+        
+        .impact-summary {
+            border-top: 1px solid #ffeaa7;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        .impact-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 0;
+            font-size: 12px;
+        }
+        
+        .impact-row.total-impact {
+            border-top: 1px solid #ffeaa7;
+            padding-top: 6px;
+            margin-top: 6px;
+            font-weight: 600;
+            color: #856404;
+        }
+        
+        .impact-row strong {
+            color: #495057;
+        }
+        
+        .total-impact strong {
+            color: #856404;
+        }
+        
+        /* Quantity Dashboard Styles */
+        .dashboard-content {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .usage-section {
+            margin-bottom: 30px;
+        }
+        
+        .usage-section h4 {
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .usage-item {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .usage-item.has-variance {
+            border-left: 4px solid #ffc107;
+            background: #fffbf0;
+        }
+        
+        .usage-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .usage-header strong {
+            color: #495057;
+            font-size: 14px;
+        }
+        
+        .total-usage {
+            background: #17a2b8;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .component-impact {
+            background: #28a745;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .component-type {
+            background: #6c757d;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .system-breakdown {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        
+        .system-use {
+            background: white;
+            border: 1px solid #dee2e6;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #495057;
+        }
+        
+        .variance-warning {
+            color: #856404;
+            font-size: 12px;
+            font-style: italic;
+            margin-top: 8px;
+            padding: 4px 8px;
+            background: #fff3cd;
+            border-radius: 4px;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 40px 20px;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
 
         .remove-btn {
             background: #dc3545;
@@ -859,6 +1347,282 @@
             background: #0078d4;
             color: white;
             border-color: #0078d4;
+        }
+        
+        /* Assembly Management Styles */
+        .assembly-management-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .assembly-management-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .assembly-mgmt-tools {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .assembly-mgmt-tools .btn {
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+        
+        /* Assembly Health Dashboard */
+        .assembly-health-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        
+        .assembly-health-item.warning {
+            border-left: 4px solid #ffc107;
+            background: #fffbf0;
+        }
+        
+        .assembly-health-item.error {
+            border-left: 4px solid #dc3545;
+            background: #ffeaea;
+        }
+        
+        .assembly-health-item.success {
+            border-left: 4px solid #28a745;
+            background: #eafaf1;
+        }
+        
+        .assembly-status-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        .assembly-status-indicator.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .assembly-status-indicator.inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .assembly-replacement-form {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        
+        .replacement-preview {
+            background: #e3f2fd;
+            border: 1px solid #bbdefb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .usage-analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .analytics-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .analytics-card h5 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .validation-results {
+            margin-top: 15px;
+        }
+        
+        .validation-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+        }
+        
+        .validation-item.valid {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .validation-item.invalid {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .validation-item.warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        /* System BOM Rollup Styles */
+        .system-bom-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f4fd;
+            border-radius: 8px;
+            border: 1px solid #b8daef;
+        }
+        
+        .system-bom-section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .system-bom-tools {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .system-bom-tools .btn {
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+        
+        /* BOM Preview Modal */
+        .bom-preview-content {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .bom-summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .bom-stat-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .bom-stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0078d4;
+        }
+        
+        .bom-stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .bom-component-list {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .bom-component-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: bold;
+        }
+        
+        .bom-component-item {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr 1fr 1fr;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f3f4;
+            align-items: center;
+        }
+        
+        .bom-component-item:last-child {
+            border-bottom: none;
+        }
+        
+        .bom-component-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .bom-component-kpn {
+            font-weight: bold;
+            color: #0078d4;
+        }
+        
+        .bom-component-description {
+            color: #495057;
+        }
+        
+        .bom-component-quantity {
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .bom-component-source {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .bom-component-vendor {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        
+        .bom-analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .purchase-bom-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .vendor-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .vendor-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        
+        .vendor-card h5 {
+            margin-top: 0;
+            color: #495057;
         }
     </style>
 </head>
@@ -1224,20 +1988,49 @@
                     </div>
                     <div class="form-group">
                         <label>Item</label>
-                        <select id="system-pcb">
+                        <select id="system-pcb" onchange="updateSystemItemPreviewWithCrossSystem()">
                             <option value="">Select Item Type First</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Quantity</label>
-                        <input type="number" id="system-pcb-quantity" min="1" value="1">
+                        <label>System Quantity <span class="quantity-info" id="system-quantity-info"></span></label>
+                        <input type="number" id="system-pcb-quantity" min="1" value="1" onchange="updateSystemItemPreviewWithCrossSystem()">
                     </div>
                     <div class="form-group">
                         <button class="btn btn-primary" onclick="addSystemItem()">Add Item</button>
                     </div>
                 </div>
                 
+                <!-- System Item Preview -->
+                <div id="system-item-preview" class="system-item-preview" style="display: none;">
+                    <h4>📋 Item Preview</h4>
+                    <div id="system-item-preview-content"></div>
+                </div>
+                
                 <div id="system-items"></div>
+                
+                <!-- Assembly Management Section -->
+                <div class="assembly-management-section" style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <h3>🔧 Assembly Management</h3>
+                    <div class="assembly-mgmt-tools">
+                        <button class="btn btn-info" onclick="showAssemblyHealthDashboard()">📊 Assembly Health</button>
+                        <button class="btn btn-warning" onclick="showAssemblyReplacementTool()">🔄 Replace Assembly</button>
+                        <button class="btn btn-secondary" onclick="showAssemblyUsageAnalytics()">📈 Usage Analytics</button>
+                        <button class="btn btn-primary" onclick="validateAllAssemblies()">✅ Validate Assemblies</button>
+                    </div>
+                </div>
+                
+                <!-- System BOM Rollup Section -->
+                <div class="system-bom-section" style="margin-top: 30px; padding: 20px; background: #e8f4fd; border-radius: 8px; border: 1px solid #b8daef;">
+                    <h3>📋 System BOM Rollup</h3>
+                    <p style="margin-bottom: 15px; color: #495057;">Generate consolidated Bills of Materials for systems with nested assemblies and components</p>
+                    <div class="system-bom-tools">
+                        <button class="btn btn-primary" onclick="showSystemBOMPreview()">🔍 Preview System BOM</button>
+                        <button class="btn btn-success" onclick="exportSystemBOM()">📤 Export System BOM</button>
+                        <button class="btn btn-info" onclick="showSystemBOMAnalytics()">📊 BOM Analytics</button>
+                        <button class="btn btn-secondary" onclick="generatePurchasingBOM()">🛒 Purchase BOM</button>
+                    </div>
+                </div>
                 
                 <div class="actions">
                     <button class="btn btn-primary" onclick="addSystem()">Add System</button>
@@ -1246,14 +2039,31 @@
                 
                 <input type="text" class="search-box" id="system-search" placeholder="Search systems..." onkeyup="filterSystems()">
                 
+                <!-- Bulk Operations Panel -->
+                <div id="bulk-operations-panel" class="bulk-operations-panel" style="display: none;">
+                    <div class="bulk-ops-content">
+                        <span id="selected-count">0 systems selected</span>
+                        <div class="bulk-ops-actions">
+                            <button class="btn btn-sm" onclick="bulkUpdateStatus('Active')">Set Active</button>
+                            <button class="btn btn-sm" onclick="bulkUpdateStatus('Inactive')">Set Inactive</button>
+                            <button class="btn btn-sm btn-danger" onclick="bulkDeleteSystems()">Delete Selected</button>
+                            <button class="btn btn-sm btn-secondary" onclick="clearSelection()">Clear Selection</button>
+                        </div>
+                    </div>
+                </div>
+                
                 <table class="table" id="systems-table">
                     <thead>
                         <tr>
+                            <th width="40">
+                                <input type="checkbox" id="select-all-systems" onchange="toggleSelectAllSystems()" title="Select all systems">
+                            </th>
                             <th class="sortable" onclick="sortSystems('name')">Name</th>
                             <th class="sortable" onclick="sortSystems('version')">Version</th>
                             <th class="sortable" onclick="sortSystems('description')">Description</th>
                             <th class="sortable" onclick="sortSystems('itemCount')">Item Count</th>
                             <th class="sortable" onclick="sortSystems('status')">Status</th>
+                            <th width="100">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="systems-tbody">
@@ -3818,73 +4628,187 @@
             renderSystemItems();
         }
 
-        // Render system items
+        // Render system items with enhanced display and calculations
         function renderSystemItems() {
             const container = document.getElementById('system-items');
-            container.innerHTML = '';
+            
+            if (currentSystemItems.length === 0) {
+                container.innerHTML = `
+                    <div class="system-items-empty">
+                        <p style="text-align: center; color: #6c757d; padding: 20px; font-style: italic;">
+                            No items added to this system yet. Use the form above to add assemblies, components, or other systems.
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate totals for the system
+            let totalComponents = 0;
+            let totalAssemblies = 0;
+            let totalOtherItems = 0;
+            
+            let itemsHtml = '<div class="system-items-grid">';
             
             currentSystemItems.forEach((item, index) => {
-                const div = document.createElement('div');
-                div.className = 'bom-row';
-                let displayText = '';
+                let itemIcon = '';
+                let itemType = '';
+                let calculationDetails = '';
+                let componentImpact = 0;
+                
                 switch(item.type) {
                     case 'assembly':
-                        displayText = `Assembly: ${item.name} (${item.version})`;
+                        const assembly = data.assemblies.find(a => a.name === item.name);
+                        if (assembly) {
+                            const calc = calculateAssemblyQuantities(assembly);
+                            componentImpact = calc.totalQuantity * item.quantity;
+                            totalComponents += componentImpact;
+                            totalAssemblies += item.quantity;
+                            itemIcon = '🏗️';
+                            itemType = `${assembly.type === 'pcb' ? 'PCB' : 'Cable'} Assembly`;
+                            calculationDetails = `
+                                <div class="item-calculation">
+                                    <small>Components: ${calc.totalQuantity} × ${item.quantity} = <strong>${componentImpact}</strong></small>
+                                </div>
+                            `;
+                        }
                         break;
                     case 'mechanical':
-                        displayText = `Mechanical: ${item.name} - ${item.version}`;
-                        break;
                     case 'printed3d':
-                        displayText = `3D-Printed: ${item.name} - ${item.version}`;
-                        break;
                     case 'cable':
-                        displayText = `Cable: ${item.name} - ${item.version}`;
+                        componentImpact = item.quantity;
+                        totalComponents += componentImpact;
+                        totalOtherItems += item.quantity;
+                        itemIcon = '🔧';
+                        itemType = `${item.type.charAt(0).toUpperCase() + item.type.slice(1)} Part`;
+                        calculationDetails = `
+                            <div class="item-calculation">
+                                <small>Direct parts: <strong>${item.quantity}</strong></small>
+                            </div>
+                        `;
                         break;
                     case 'system':
-                        displayText = `System: ${item.name} (${item.version})`;
+                        const system = data.systems.find(s => s.name === item.name);
+                        if (system) {
+                            const systemTotals = calculateSystemTotals(system);
+                            componentImpact = systemTotals.totalQuantity * item.quantity;
+                            totalComponents += componentImpact;
+                            totalOtherItems += item.quantity;
+                            itemIcon = '🏢';
+                            itemType = 'Nested System';
+                            calculationDetails = `
+                                <div class="item-calculation">
+                                    <small>System components: ${systemTotals.totalQuantity} × ${item.quantity} = <strong>${componentImpact}</strong></small>
+                                </div>
+                            `;
+                        }
                         break;
                 }
-                div.innerHTML = `
-                    <span>${displayText}</span>
-                    <span>Qty: ${item.quantity}</span>
-                    <span></span>
-                    <button class="remove-btn" onclick="removeSystemItem(${index})">Remove</button>
+                
+                itemsHtml += `
+                    <div class="system-item-card">
+                        <div class="system-item-header">
+                            <span class="system-item-icon">${itemIcon}</span>
+                            <span class="system-item-name">${item.name}</span>
+                            <span class="system-item-quantity">× ${item.quantity}</span>
+                            <button class="remove-btn" onclick="removeSystemItem(${index})" title="Remove item">×</button>
+                        </div>
+                        <div class="system-item-details">
+                            <div class="system-item-type">${itemType}</div>
+                            <div class="system-item-version">Version: ${item.version || 'N/A'}</div>
+                            ${calculationDetails}
+                        </div>
+                    </div>
                 `;
-                container.appendChild(div);
             });
+            
+            itemsHtml += '</div>';
+            
+            // Add system summary
+            const summaryHtml = `
+                <div class="system-build-summary">
+                    <h4>📊 System Build Summary</h4>
+                    <div class="system-summary-stats">
+                        <div class="summary-stat">
+                            <span class="stat-value">${totalAssemblies}</span>
+                            <span class="stat-label">Assemblies</span>
+                        </div>
+                        <div class="summary-stat">
+                            <span class="stat-value">${totalOtherItems}</span>
+                            <span class="stat-label">Other Items</span>
+                        </div>
+                        <div class="summary-stat total-stat">
+                            <span class="stat-value">${totalComponents}</span>
+                            <span class="stat-label">Total Components</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = summaryHtml + itemsHtml;
+            
+            // Enable inline quantity editing
+            setTimeout(() => {
+                addQuickQuantityEdit();
+            }, 100);
         }
 
-        // Add system
+        // Add or update system
         function addSystem() {
-            const name = document.getElementById('system-name').value;
-            const version = document.getElementById('system-version').value;
+            const name = document.getElementById('system-name').value.trim();
+            const version = document.getElementById('system-version').value.trim();
             const status = document.getElementById('system-status').value;
-            const description = document.getElementById('system-description').value;
+            const description = document.getElementById('system-description').value.trim();
+            const isEditing = typeof window.editingSystemIndex !== 'undefined';
             
             if (!name || !version || currentSystemItems.length === 0) {
                 alert('Please fill in system details and add at least one item');
                 return;
             }
             
-            const system = {
+            // Check for duplicate name (exclude current system if editing)
+            const existingSystem = data.systems.find((sys, index) => 
+                sys.name.toLowerCase() === name.toLowerCase() && 
+                (!isEditing || index !== window.editingSystemIndex)
+            );
+            
+            if (existingSystem) {
+                alert(`A system with the name "${name}" already exists. Please choose a different name.`);
+                return;
+            }
+            
+            const systemData = {
                 name,
                 version,
                 status,
                 description,
                 items: [...currentSystemItems],
-                dateAdded: new Date().toISOString().split('T')[0]
+                dateAdded: isEditing ? data.systems[window.editingSystemIndex].dateAdded : new Date().toISOString().split('T')[0],
+                lastModified: new Date().toISOString().split('T')[0]
             };
             
-            data.systems.push(system);
+            if (isEditing) {
+                // Update existing system
+                data.systems[window.editingSystemIndex] = systemData;
+                alert(`System "${name}" has been updated successfully.`);
+                cancelSystemEdit(); // Reset form and edit mode
+            } else {
+                // Add new system
+                data.systems.push(systemData);
+                alert(`System "${name}" has been added successfully.`);
+                
+                // Clear form
+                document.getElementById('system-name').value = '';
+                document.getElementById('system-version').value = '';
+                document.getElementById('system-description').value = '';
+                document.getElementById('system-status').value = 'Active';
+                currentSystemItems = [];
+                renderSystemItems();
+            }
+            
             saveData();
             renderSystems();
-            
-            // Clear form
-            document.getElementById('system-name').value = '';
-            document.getElementById('system-version').value = '';
-            document.getElementById('system-description').value = '';
-            currentSystemItems = [];
-            renderSystemItems();
+            updateStats();
         }
 
         // Update dropdowns
@@ -3893,6 +4817,10 @@
             const type = document.getElementById('system-item-type').value;
             const itemSelect = document.getElementById('system-pcb');
             itemSelect.innerHTML = '<option value="">Select Item</option>';
+            
+            // Clear preview when type changes
+            document.getElementById('system-item-preview').style.display = 'none';
+            document.getElementById('system-quantity-info').textContent = '';
             
             if (type === 'assembly') {
                 // Show assemblies
@@ -3915,16 +4843,138 @@
                     }
                 });
             } else if (type === 'system') {
-                // Show other systems (excluding current one being edited if applicable)
+                // Show other systems (excluding current one being edited to prevent circular references)
+                const currentSystemName = document.getElementById('system-name').value.trim();
+                let availableSystems = 0;
+                
                 data.systems.forEach(system => {
-                    if (system.status === 'Active') {
+                    if (system.status === 'Active' && system.name !== currentSystemName) {
                         const option = document.createElement('option');
                         option.value = system.name;
                         option.textContent = `${system.name} (${system.version})`;
                         itemSelect.appendChild(option);
+                        availableSystems++;
                     }
                 });
+                
+                // Show message if no systems available
+                if (availableSystems === 0) {
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = currentSystemName ? 
+                        'No other systems available (circular reference prevention)' : 
+                        'No other systems available';
+                    option.disabled = true;
+                    itemSelect.appendChild(option);
+                }
             }
+        }
+        
+        // Update system item preview with quantity calculations
+        function updateSystemItemPreview() {
+            const type = document.getElementById('system-item-type').value;
+            const itemValue = document.getElementById('system-pcb').value;
+            const quantity = parseInt(document.getElementById('system-pcb-quantity').value) || 1;
+            const previewDiv = document.getElementById('system-item-preview');
+            const previewContent = document.getElementById('system-item-preview-content');
+            const quantityInfo = document.getElementById('system-quantity-info');
+            
+            // Clear preview if no item selected
+            if (!type || !itemValue) {
+                previewDiv.style.display = 'none';
+                quantityInfo.textContent = '';
+                return;
+            }
+            
+            let previewHtml = '';
+            let infoText = '';
+            
+            if (type === 'assembly') {
+                const assembly = data.assemblies.find(a => a.name === itemValue);
+                if (assembly) {
+                    const calculations = calculateAssemblyQuantities(assembly);
+                    const totalComponents = calculations.totalQuantity;
+                    const totalSystemComponents = totalComponents * quantity;
+                    
+                    infoText = `(${totalComponents} components × ${quantity} = ${totalSystemComponents} total)`;
+                    
+                    previewHtml = `
+                        <div class="item-preview-card">
+                            <div class="item-preview-header">
+                                <span class="item-preview-name">🏗️ ${assembly.name} (${assembly.version})</span>
+                                <span class="item-preview-quantity">× ${quantity}</span>
+                            </div>
+                            <div class="item-preview-details">
+                                <strong>Type:</strong> ${assembly.type === 'pcb' ? 'PCB Assembly' : 'Cable Assembly'}<br>
+                                <strong>Description:</strong> ${assembly.description}<br>
+                                <strong>Status:</strong> ${assembly.status}
+                            </div>
+                            <div class="item-preview-calculation">
+                                <strong>Component Impact:</strong><br>
+                                • BOM Components: ${calculations.bomComponents.length} items (${calculations.bomComponents.reduce((sum, c) => sum + c.calculatedQuantity, 0)} total qty)<br>
+                                • Assembly Components: ${calculations.motherComponents.length} items (${calculations.motherComponents.reduce((sum, c) => sum + c.calculatedQuantity, 0)} total qty)<br>
+                                • System Multiplier: ${totalComponents} × ${quantity} = <strong>${totalSystemComponents} total components</strong>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (['mechanical', 'printed3d', 'cable'].includes(type)) {
+                const component = data.components.find(c => c.kpn === itemValue);
+                if (component) {
+                    infoText = `(${quantity} ${type} part${quantity > 1 ? 's' : ''})`;
+                    
+                    previewHtml = `
+                        <div class="item-preview-card">
+                            <div class="item-preview-header">
+                                <span class="item-preview-name">🔧 ${component.kpn}</span>
+                                <span class="item-preview-quantity">× ${quantity}</span>
+                            </div>
+                            <div class="item-preview-details">
+                                <strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Part<br>
+                                <strong>Description:</strong> ${component.description || 'N/A'}<br>
+                                <strong>Manufacturer:</strong> ${component.manufacturer || 'N/A'}<br>
+                                <strong>Status:</strong> ${component.status}
+                            </div>
+                            <div class="item-preview-calculation">
+                                <strong>System Impact:</strong> ${quantity} × ${component.kpn} = <strong>${quantity} total units</strong>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else if (type === 'system') {
+                const system = data.systems.find(s => s.name === itemValue);
+                if (system) {
+                    const systemTotals = calculateSystemTotals(system);
+                    const totalSystemComponents = systemTotals.totalQuantity * quantity;
+                    
+                    infoText = `(${systemTotals.totalQuantity} components × ${quantity} = ${totalSystemComponents} total)`;
+                    
+                    previewHtml = `
+                        <div class="item-preview-card">
+                            <div class="item-preview-header">
+                                <span class="item-preview-name">🏢 ${system.name} (${system.version})</span>
+                                <span class="item-preview-quantity">× ${quantity}</span>
+                            </div>
+                            <div class="item-preview-details">
+                                <strong>Type:</strong> System<br>
+                                <strong>Description:</strong> ${system.description}<br>
+                                <strong>Status:</strong> ${system.status}<br>
+                                <strong>Contains:</strong> ${systemTotals.totalAssemblies} assemblies, ${systemTotals.consolidatedComponents.size} unique components
+                            </div>
+                            <div class="item-preview-calculation">
+                                <strong>System Impact:</strong><br>
+                                • Nested System: ${systemTotals.totalQuantity} components<br>
+                                • System Multiplier: ${systemTotals.totalQuantity} × ${quantity} = <strong>${totalSystemComponents} total components</strong>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            // Update the UI
+            quantityInfo.textContent = infoText;
+            previewContent.innerHTML = previewHtml;
+            previewDiv.style.display = previewHtml ? 'block' : 'none';
         }
 
         // Update BOM item options based on selected type
@@ -4596,6 +5646,9 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
+                        <input type="checkbox" class="system-checkbox" data-system-index="${index}" onchange="updateSystemSelection()">
+                    </td>
+                    <td>
                         <button class="expand-btn" onclick="toggleSystemDetails(${index})" id="system-expand-btn-${index}">
                             ▶
                         </button>
@@ -4605,6 +5658,10 @@
                     <td>${system.description}</td>
                     <td>${itemCount} items (${systemTotals.totalQuantity} qty)</td>
                     <td><span class="status-${system.status.toLowerCase()}">${system.status}</span></td>
+                    <td>
+                        <button class="btn btn-sm btn-edit" onclick="editSystem(${index})" title="Edit system">✏️</button>
+                        <button class="btn btn-sm btn-delete" onclick="deleteSystem(${index})" title="Delete system">🗑️</button>
+                    </td>
                 `;
                 tbody.appendChild(row);
                 
@@ -4614,7 +5671,7 @@
                 detailRow.className = 'bom-detail-row';
                 detailRow.style.display = 'none';
                 detailRow.innerHTML = `
-                    <td colspan="5">
+                    <td colspan="7">
                         <div class="bom-detail-container">
                             <h4>System Details - ${system.name}</h4>
                             ${renderSystemQuantitySummary(systemTotals)}
@@ -4635,6 +5692,11 @@
                 `;
                 tbody.appendChild(detailRow);
             });
+            
+            // Add quantity dashboard button if not present
+            setTimeout(() => {
+                addQuantityDashboardButton();
+            }, 100);
         }
         
         function toggleSystemDetails(index) {
@@ -4736,6 +5798,2514 @@
             });
             html += '</div>';
             return html;
+        }
+        
+        // System bulk operations and enhanced management functions
+        function updateSystemSelection() {
+            const checkboxes = document.querySelectorAll('.system-checkbox');
+            const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const bulkPanel = document.getElementById('bulk-operations-panel');
+            const selectedCountSpan = document.getElementById('selected-count');
+            const selectAllCheckbox = document.getElementById('select-all-systems');
+            
+            // Update selected count display
+            selectedCountSpan.textContent = `${selectedCount} system${selectedCount !== 1 ? 's' : ''} selected`;
+            
+            // Show/hide bulk operations panel
+            if (selectedCount > 0) {
+                bulkPanel.style.display = 'block';
+            } else {
+                bulkPanel.style.display = 'none';
+            }
+            
+            // Update select all checkbox state
+            if (selectedCount === 0) {
+                selectAllCheckbox.indeterminate = false;
+                selectAllCheckbox.checked = false;
+            } else if (selectedCount === checkboxes.length) {
+                selectAllCheckbox.indeterminate = false;
+                selectAllCheckbox.checked = true;
+            } else {
+                selectAllCheckbox.indeterminate = true;
+            }
+        }
+        
+        function toggleSelectAllSystems() {
+            const selectAllCheckbox = document.getElementById('select-all-systems');
+            const checkboxes = document.querySelectorAll('.system-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            
+            updateSystemSelection();
+        }
+        
+        function clearSelection() {
+            const checkboxes = document.querySelectorAll('.system-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            document.getElementById('select-all-systems').checked = false;
+            updateSystemSelection();
+        }
+        
+        function bulkUpdateStatus(newStatus) {
+            const selectedIndices = getSelectedSystemIndices();
+            if (selectedIndices.length === 0) return;
+            
+            const confirmMessage = `Are you sure you want to set ${selectedIndices.length} system${selectedIndices.length !== 1 ? 's' : ''} to ${newStatus}?`;
+            if (!confirm(confirmMessage)) return;
+            
+            selectedIndices.forEach(index => {
+                data.systems[index].status = newStatus;
+            });
+            
+            saveData();
+            renderSystems();
+            clearSelection();
+            alert(`${selectedIndices.length} system${selectedIndices.length !== 1 ? 's' : ''} updated to ${newStatus}.`);
+        }
+        
+        function bulkDeleteSystems() {
+            const selectedIndices = getSelectedSystemIndices();
+            if (selectedIndices.length === 0) return;
+            
+            const confirmMessage = `Are you sure you want to delete ${selectedIndices.length} system${selectedIndices.length !== 1 ? 's' : ''}?\n\nThis action cannot be undone.`;
+            if (!confirm(confirmMessage)) return;
+            
+            // Sort indices in descending order to delete from end to beginning
+            selectedIndices.sort((a, b) => b - a);
+            
+            selectedIndices.forEach(index => {
+                data.systems.splice(index, 1);
+            });
+            
+            saveData();
+            renderSystems();
+            clearSelection();
+            updateStats();
+            alert(`${selectedIndices.length} system${selectedIndices.length !== 1 ? 's' : ''} deleted.`);
+        }
+        
+        function getSelectedSystemIndices() {
+            const checkboxes = document.querySelectorAll('.system-checkbox:checked');
+            return Array.from(checkboxes).map(cb => parseInt(cb.dataset.systemIndex));
+        }
+        
+        function editSystem(index) {
+            const system = data.systems[index];
+            if (!system) return;
+            
+            // Populate form with system data
+            document.getElementById('system-name').value = system.name;
+            document.getElementById('system-version').value = system.version;
+            document.getElementById('system-description').value = system.description;
+            document.getElementById('system-status').value = system.status;
+            
+            // Load system items
+            currentSystemItems = system.items ? [...system.items] : [];
+            renderSystemItems();
+            
+            // Store edit mode
+            window.editingSystemIndex = index;
+            
+            // Update add button to show "Update System"
+            const addButton = document.querySelector('button[onclick="addSystem()"]');
+            addButton.textContent = 'Update System';
+            addButton.style.background = '#ffc107';
+            
+            // Add cancel button
+            if (!document.getElementById('cancel-edit-system')) {
+                const cancelButton = document.createElement('button');
+                cancelButton.id = 'cancel-edit-system';
+                cancelButton.className = 'btn btn-secondary';
+                cancelButton.textContent = 'Cancel Edit';
+                cancelButton.onclick = cancelSystemEdit;
+                addButton.parentNode.insertBefore(cancelButton, addButton.nextSibling);
+            }
+            
+            // Scroll to form
+            document.getElementById('system-name').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function cancelSystemEdit() {
+            // Clear form
+            document.getElementById('system-name').value = '';
+            document.getElementById('system-version').value = '';
+            document.getElementById('system-description').value = '';
+            document.getElementById('system-status').value = 'Active';
+            currentSystemItems = [];
+            renderSystemItems();
+            
+            // Reset add button
+            const addButton = document.querySelector('button[onclick="addSystem()"]');
+            addButton.textContent = 'Add System';
+            addButton.style.background = '';
+            
+            // Remove cancel button
+            const cancelButton = document.getElementById('cancel-edit-system');
+            if (cancelButton) cancelButton.remove();
+            
+            // Clear edit mode
+            delete window.editingSystemIndex;
+        }
+        
+        function deleteSystem(index) {
+            const system = data.systems[index];
+            if (!system) return;
+            
+            const confirmMessage = `Are you sure you want to delete the system "${system.name}"?\n\nThis action cannot be undone.`;
+            if (!confirm(confirmMessage)) return;
+            
+            data.systems.splice(index, 1);
+            saveData();
+            renderSystems();
+            updateStats();
+            alert(`System "${system.name}" has been deleted.`);
+        }
+        
+        // TASK 3.2: System-Level Quantity Management Functions
+        
+        // Analyze cross-system usage of assemblies and components
+        function analyzeCrossSystemUsage(itemName, itemType = 'assembly') {
+            const usage = [];
+            
+            data.systems.forEach((system, systemIndex) => {
+                if (system.items) {
+                    system.items.forEach((item, itemIndex) => {
+                        if (item.name === itemName && item.type === itemType) {
+                            usage.push({
+                                systemIndex,
+                                systemName: system.name,
+                                systemVersion: system.version,
+                                quantity: item.quantity,
+                                itemIndex,
+                                assemblyVersion: item.version
+                            });
+                        }
+                    });
+                }
+            });
+            
+            return usage;
+        }
+        
+        // Get comprehensive quantity analysis for an assembly across all systems
+        function getAssemblyQuantityAnalysis(assemblyName) {
+            const usage = analyzeCrossSystemUsage(assemblyName, 'assembly');
+            const assembly = data.assemblies.find(a => a.name === assemblyName);
+            
+            if (!assembly) return null;
+            
+            const calculations = calculateAssemblyQuantities(assembly);
+            const baseComponentTotal = calculations.totalQuantity;
+            
+            let totalSystemQuantity = 0;
+            let totalComponentImpact = 0;
+            let quantityVariance = { min: Infinity, max: 0 };
+            
+            usage.forEach(use => {
+                totalSystemQuantity += use.quantity;
+                totalComponentImpact += baseComponentTotal * use.quantity;
+                quantityVariance.min = Math.min(quantityVariance.min, use.quantity);
+                quantityVariance.max = Math.max(quantityVariance.max, use.quantity);
+            });
+            
+            // Reset min if no usage found
+            if (quantityVariance.min === Infinity) quantityVariance.min = 0;
+            
+            return {
+                assemblyName,
+                baseComponentTotal,
+                systemUsage: usage,
+                totalSystems: usage.length,
+                totalSystemQuantity,
+                totalComponentImpact,
+                quantityVariance,
+                hasVariance: quantityVariance.max > quantityVariance.min,
+                averageQuantity: usage.length > 0 ? (totalSystemQuantity / usage.length).toFixed(1) : 0
+            };
+        }
+        
+        // Show multi-system impact analysis in preview
+        function showMultiSystemImpact(itemName, itemType, newQuantity, currentSystemName = null) {
+            const usage = analyzeCrossSystemUsage(itemName, itemType);
+            
+            // Filter out current system if editing
+            const otherSystemUsage = usage.filter(use => use.systemName !== currentSystemName);
+            
+            if (otherSystemUsage.length === 0) {
+                return '<div class="cross-system-info">✅ <strong>Single System Usage</strong> - This item is only used in this system.</div>';
+            }
+            
+            let impactHtml = `
+                <div class="cross-system-analysis">
+                    <div class="cross-system-header">
+                        <strong>🔄 Cross-System Impact Analysis</strong>
+                        <span class="systems-count">${otherSystemUsage.length} other system${otherSystemUsage.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div class="cross-system-usage">
+            `;
+            
+            otherSystemUsage.forEach(use => {
+                impactHtml += `
+                    <div class="system-usage-item">
+                        <span class="system-name">${use.systemName}</span>
+                        <span class="system-quantity">Qty: ${use.quantity}</span>
+                    </div>
+                `;
+            });
+            
+            // Calculate total impact if assembly
+            if (itemType === 'assembly') {
+                const assembly = data.assemblies.find(a => a.name === itemName);
+                if (assembly) {
+                    const calc = calculateAssemblyQuantities(assembly);
+                    const componentImpact = calc.totalQuantity;
+                    const totalCurrentImpact = otherSystemUsage.reduce((sum, use) => sum + (componentImpact * use.quantity), 0);
+                    const newSystemImpact = componentImpact * newQuantity;
+                    const totalNewImpact = totalCurrentImpact + newSystemImpact;
+                    
+                    impactHtml += `
+                    </div>
+                    <div class="impact-summary">
+                        <div class="impact-row">
+                            <span>Other Systems Impact:</span>
+                            <span><strong>${totalCurrentImpact} components</strong></span>
+                        </div>
+                        <div class="impact-row">
+                            <span>This System Impact:</span>
+                            <span><strong>${newSystemImpact} components</strong></span>
+                        </div>
+                        <div class="impact-row total-impact">
+                            <span>Total System-wide Impact:</span>
+                            <span><strong>${totalNewImpact} components</strong></span>
+                        </div>
+                    </div>
+                    `;
+                }
+            } else {
+                impactHtml += '</div>';
+            }
+            
+            impactHtml += '</div>';
+            
+            return impactHtml;
+        }
+        
+        // Enhanced system item preview with cross-system analysis
+        function updateSystemItemPreviewWithCrossSystem() {
+            const type = document.getElementById('system-item-type').value;
+            const itemValue = document.getElementById('system-pcb').value;
+            const quantity = parseInt(document.getElementById('system-pcb-quantity').value) || 1;
+            const previewDiv = document.getElementById('system-item-preview');
+            const previewContent = document.getElementById('system-item-preview-content');
+            const quantityInfo = document.getElementById('system-quantity-info');
+            
+            // Clear preview if no item selected
+            if (!type || !itemValue) {
+                previewDiv.style.display = 'none';
+                quantityInfo.textContent = '';
+                return;
+            }
+            
+            let previewHtml = '';
+            let infoText = '';
+            const currentSystemName = document.getElementById('system-name').value.trim();
+            
+            if (type === 'assembly') {
+                const assembly = data.assemblies.find(a => a.name === itemValue);
+                if (assembly) {
+                    const calculations = calculateAssemblyQuantities(assembly);
+                    const totalComponents = calculations.totalQuantity;
+                    const totalSystemComponents = totalComponents * quantity;
+                    
+                    infoText = `(${totalComponents} components × ${quantity} = ${totalSystemComponents} total)`;
+                    
+                    previewHtml = `
+                        <div class="item-preview-card">
+                            <div class="item-preview-header">
+                                <span class="item-preview-name">🏗️ ${assembly.name} (${assembly.version})</span>
+                                <span class="item-preview-quantity">× ${quantity}</span>
+                            </div>
+                            <div class="item-preview-details">
+                                <strong>Type:</strong> ${assembly.type === 'pcb' ? 'PCB Assembly' : 'Cable Assembly'}<br>
+                                <strong>Description:</strong> ${assembly.description}<br>
+                                <strong>Status:</strong> ${assembly.status}
+                            </div>
+                            <div class="item-preview-calculation">
+                                <strong>Component Impact:</strong><br>
+                                • BOM Components: ${calculations.bomComponents.length} items (${calculations.bomComponents.reduce((sum, c) => sum + c.calculatedQuantity, 0)} total qty)<br>
+                                • Assembly Components: ${calculations.motherComponents.length} items (${calculations.motherComponents.reduce((sum, c) => sum + c.calculatedQuantity, 0)} total qty)<br>
+                                • System Multiplier: ${totalComponents} × ${quantity} = <strong>${totalSystemComponents} total components</strong>
+                            </div>
+                            ${showMultiSystemImpact(itemValue, type, quantity, currentSystemName)}
+                        </div>
+                    `;
+                }
+            } else if (['mechanical', 'printed3d', 'cable'].includes(type)) {
+                const component = data.components.find(c => c.kpn === itemValue);
+                if (component) {
+                    infoText = `(${quantity} ${type} part${quantity > 1 ? 's' : ''})`;
+                    
+                    previewHtml = `
+                        <div class="item-preview-card">
+                            <div class="item-preview-header">
+                                <span class="item-preview-name">🔧 ${component.kpn}</span>
+                                <span class="item-preview-quantity">× ${quantity}</span>
+                            </div>
+                            <div class="item-preview-details">
+                                <strong>Type:</strong> ${type.charAt(0).toUpperCase() + type.slice(1)} Part<br>
+                                <strong>Description:</strong> ${component.description || 'N/A'}<br>
+                                <strong>Manufacturer:</strong> ${component.manufacturer || 'N/A'}<br>
+                                <strong>Status:</strong> ${component.status}
+                            </div>
+                            <div class="item-preview-calculation">
+                                <strong>System Impact:</strong> ${quantity} × ${component.kpn} = <strong>${quantity} total units</strong>
+                            </div>
+                            ${showMultiSystemImpact(component.kpn, type, quantity, currentSystemName)}
+                        </div>
+                    `;
+                }
+            } else if (type === 'system') {
+                const system = data.systems.find(s => s.name === itemValue);
+                if (system) {
+                    const systemTotals = calculateSystemTotals(system);
+                    const totalSystemComponents = systemTotals.totalQuantity * quantity;
+                    
+                    infoText = `(${systemTotals.totalQuantity} components × ${quantity} = ${totalSystemComponents} total)`;
+                    
+                    previewHtml = `
+                        <div class="item-preview-card">
+                            <div class="item-preview-header">
+                                <span class="item-preview-name">🏢 ${system.name} (${system.version})</span>
+                                <span class="item-preview-quantity">× ${quantity}</span>
+                            </div>
+                            <div class="item-preview-details">
+                                <strong>Type:</strong> Nested System<br>
+                                <strong>Description:</strong> ${system.description}<br>
+                                <strong>Status:</strong> ${system.status}<br>
+                                <strong>Contains:</strong> ${systemTotals.totalAssemblies} assemblies, ${systemTotals.consolidatedComponents.size} unique components
+                            </div>
+                            <div class="item-preview-calculation">
+                                <strong>System Impact:</strong><br>
+                                • Nested System: ${systemTotals.totalQuantity} components<br>
+                                • System Multiplier: ${systemTotals.totalQuantity} × ${quantity} = <strong>${totalSystemComponents} total components</strong>
+                            </div>
+                            ${showMultiSystemImpact(itemValue, type, quantity, currentSystemName)}
+                        </div>
+                    `;
+                }
+            }
+            
+            // Update the UI
+            quantityInfo.textContent = infoText;
+            previewContent.innerHTML = previewHtml;
+            previewDiv.style.display = previewHtml ? 'block' : 'none';
+        }
+        
+        // Enhancement 2: Live Quantity Persistence
+        
+        // Update quantity in existing system item with immediate persistence
+        function updateSystemItemQuantity(systemIndex, itemIndex, newQuantity) {
+            if (!data.systems[systemIndex] || !data.systems[systemIndex].items[itemIndex]) {
+                console.error('Invalid system or item index');
+                return false;
+            }
+            
+            const oldQuantity = data.systems[systemIndex].items[itemIndex].quantity;
+            data.systems[systemIndex].items[itemIndex].quantity = newQuantity;
+            data.systems[systemIndex].lastModified = new Date().toISOString().split('T')[0];
+            
+            // Save immediately
+            saveData();
+            
+            // Update displays
+            renderSystems();
+            
+            console.log(`Updated ${data.systems[systemIndex].items[itemIndex].name} quantity from ${oldQuantity} to ${newQuantity} in system ${data.systems[systemIndex].name}`);
+            return true;
+        }
+        
+        // Add quick quantity edit functionality to system items
+        function addQuickQuantityEdit() {
+            // This will be called when rendering system items to add inline editing
+            const systemItemCards = document.querySelectorAll('.system-item-card');
+            
+            systemItemCards.forEach((card, index) => {
+                const quantitySpan = card.querySelector('.system-item-quantity');
+                if (quantitySpan) {
+                    quantitySpan.style.cursor = 'pointer';
+                    quantitySpan.title = 'Click to edit quantity';
+                    quantitySpan.onclick = function() {
+                        editQuantityInline(this, index);
+                    };
+                }
+            });
+        }
+        
+        // Inline quantity editing for system items
+        function editQuantityInline(quantityElement, itemIndex) {
+            const currentQuantity = parseInt(quantityElement.textContent.replace('× ', ''));
+            
+            // Create input element
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.min = '1';
+            input.value = currentQuantity;
+            input.className = 'inline-quantity-edit';
+            input.style.width = '60px';
+            input.style.padding = '2px 6px';
+            input.style.border = '1px solid #17a2b8';
+            input.style.borderRadius = '12px';
+            input.style.fontSize = '12px';
+            input.style.textAlign = 'center';
+            
+            // Handle save
+            const saveEdit = () => {
+                const newQuantity = parseInt(input.value);
+                if (newQuantity && newQuantity > 0 && newQuantity !== currentQuantity) {
+                    // Update in currentSystemItems for unsaved systems
+                    if (itemIndex < currentSystemItems.length) {
+                        currentSystemItems[itemIndex].quantity = newQuantity;
+                        renderSystemItems();
+                        
+                        // If editing an existing system, also update the data
+                        if (typeof window.editingSystemIndex !== 'undefined') {
+                            updateSystemItemQuantity(window.editingSystemIndex, itemIndex, newQuantity);
+                        }
+                    }
+                } else {
+                    // Restore original display
+                    quantityElement.textContent = `× ${currentQuantity}`;
+                    quantityElement.style.display = 'inline';
+                }
+                input.remove();
+            };
+            
+            // Handle escape
+            const cancelEdit = () => {
+                quantityElement.textContent = `× ${currentQuantity}`;
+                quantityElement.style.display = 'inline';
+                input.remove();
+            };
+            
+            // Event listeners
+            input.onblur = saveEdit;
+            input.onkeydown = function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    saveEdit();
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    cancelEdit();
+                }
+            };
+            
+            // Replace quantity display with input
+            quantityElement.style.display = 'none';
+            quantityElement.parentNode.insertBefore(input, quantityElement.nextSibling);
+            input.focus();
+            input.select();
+        }
+        
+        // Auto-save functionality for system building
+        let autoSaveTimeout;
+        function scheduleAutoSave() {
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                if (typeof window.editingSystemIndex !== 'undefined') {
+                    // Auto-save existing system
+                    const systemData = {
+                        name: document.getElementById('system-name').value.trim(),
+                        version: document.getElementById('system-version').value.trim(),
+                        status: document.getElementById('system-status').value,
+                        description: document.getElementById('system-description').value.trim(),
+                        items: [...currentSystemItems],
+                        dateAdded: data.systems[window.editingSystemIndex].dateAdded,
+                        lastModified: new Date().toISOString().split('T')[0]
+                    };
+                    
+                    data.systems[window.editingSystemIndex] = systemData;
+                    saveData();
+                    
+                    // Show auto-save indicator
+                    showAutoSaveIndicator();
+                }
+            }, 2000); // Auto-save after 2 seconds of inactivity
+        }
+        
+        // Show auto-save indicator
+        function showAutoSaveIndicator() {
+            let indicator = document.getElementById('auto-save-indicator');
+            if (!indicator) {
+                indicator = document.createElement('div');
+                indicator.id = 'auto-save-indicator';
+                indicator.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #28a745;
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 4px;
+                    font-size: 12px;
+                    z-index: 1000;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                `;
+                indicator.textContent = '✓ Auto-saved';
+                document.body.appendChild(indicator);
+            }
+            
+            indicator.style.opacity = '1';
+            setTimeout(() => {
+                indicator.style.opacity = '0';
+            }, 2000);
+        }
+        
+        // Enhancement 3: Quantity Override System & Multi-System Dashboard
+        
+        // Create a comprehensive system-wide component usage dashboard
+        function createSystemWideQuantityDashboard() {
+            const modal = document.createElement('div');
+            modal.id = 'quantity-dashboard-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const dashboard = document.createElement('div');
+            dashboard.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 90%;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            `;
+            
+            // Generate dashboard content
+            const dashboardContent = generateQuantityDashboardContent();
+            dashboard.innerHTML = `
+                <div class="dashboard-header">
+                    <h3>🔄 System-Wide Quantity Analysis</h3>
+                    <button onclick="closeQuantityDashboard()" style="
+                        background: #dc3545;
+                        color: white;
+                        border: none;
+                        padding: 5px 10px;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        float: right;
+                    ">Close</button>
+                </div>
+                ${dashboardContent}
+            `;
+            
+            modal.appendChild(dashboard);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeQuantityDashboard();
+                }
+            };
+        }
+        
+        // Generate comprehensive quantity analysis content
+        function generateQuantityDashboardContent() {
+            const assemblyUsage = new Map();
+            const componentUsage = new Map();
+            
+            // Analyze all systems
+            data.systems.forEach(system => {
+                if (system.items) {
+                    system.items.forEach(item => {
+                        if (item.type === 'assembly') {
+                            if (!assemblyUsage.has(item.name)) {
+                                assemblyUsage.set(item.name, []);
+                            }
+                            assemblyUsage.get(item.name).push({
+                                system: system.name,
+                                quantity: item.quantity,
+                                version: item.version
+                            });
+                        } else {
+                            if (!componentUsage.has(item.name)) {
+                                componentUsage.set(item.name, []);
+                            }
+                            componentUsage.get(item.name).push({
+                                system: system.name,
+                                quantity: item.quantity,
+                                type: item.type
+                            });
+                        }
+                    });
+                }
+            });
+            
+            let content = '<div class="dashboard-content">';
+            
+            // Assembly usage analysis
+            if (assemblyUsage.size > 0) {
+                content += '<div class="usage-section"><h4>🏗️ Assembly Usage Across Systems</h4>';
+                
+                assemblyUsage.forEach((usage, assemblyName) => {
+                    const assembly = data.assemblies.find(a => a.name === assemblyName);
+                    const totalQuantity = usage.reduce((sum, u) => sum + u.quantity, 0);
+                    const hasVariance = usage.length > 1 && !usage.every(u => u.quantity === usage[0].quantity);
+                    
+                    let componentImpact = 0;
+                    if (assembly) {
+                        const calc = calculateAssemblyQuantities(assembly);
+                        componentImpact = calc.totalQuantity * totalQuantity;
+                    }
+                    
+                    content += `
+                        <div class="usage-item ${hasVariance ? 'has-variance' : ''}">
+                            <div class="usage-header">
+                                <strong>${assemblyName}</strong>
+                                <span class="total-usage">Total: ${totalQuantity} units</span>
+                                ${componentImpact > 0 ? `<span class="component-impact">${componentImpact} components</span>` : ''}
+                            </div>
+                            <div class="system-breakdown">
+                                ${usage.map(u => `
+                                    <span class="system-use ${hasVariance ? 'quantity-' + u.quantity : ''}">
+                                        ${u.system}: ${u.quantity}x
+                                    </span>
+                                `).join('')}
+                            </div>
+                            ${hasVariance ? '<div class="variance-warning">⚠️ Quantity variance detected across systems</div>' : ''}
+                        </div>
+                    `;
+                });
+                
+                content += '</div>';
+            }
+            
+            // Component usage analysis
+            if (componentUsage.size > 0) {
+                content += '<div class="usage-section"><h4>🔧 Component Usage Across Systems</h4>';
+                
+                componentUsage.forEach((usage, componentName) => {
+                    const totalQuantity = usage.reduce((sum, u) => sum + u.quantity, 0);
+                    const hasVariance = usage.length > 1 && !usage.every(u => u.quantity === usage[0].quantity);
+                    
+                    content += `
+                        <div class="usage-item ${hasVariance ? 'has-variance' : ''}">
+                            <div class="usage-header">
+                                <strong>${componentName}</strong>
+                                <span class="total-usage">Total: ${totalQuantity} units</span>
+                                <span class="component-type">${usage[0].type}</span>
+                            </div>
+                            <div class="system-breakdown">
+                                ${usage.map(u => `
+                                    <span class="system-use ${hasVariance ? 'quantity-' + u.quantity : ''}">
+                                        ${u.system}: ${u.quantity}x
+                                    </span>
+                                `).join('')}
+                            </div>
+                            ${hasVariance ? '<div class="variance-warning">⚠️ Quantity variance detected across systems</div>' : ''}
+                        </div>
+                    `;
+                });
+                
+                content += '</div>';
+            }
+            
+            if (assemblyUsage.size === 0 && componentUsage.size === 0) {
+                content += '<div class="no-data">No cross-system usage found. Create some systems with shared assemblies or components to see analysis.</div>';
+            }
+            
+            content += '</div>';
+            
+            return content;
+        }
+        
+        // Close quantity dashboard
+        function closeQuantityDashboard() {
+            const modal = document.getElementById('quantity-dashboard-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // ===== TASK 3.3: ASSEMBLY MANAGEMENT IN SYSTEMS =====
+        
+        // Show Assembly Health Dashboard
+        function showAssemblyHealthDashboard() {
+            const modal = document.createElement('div');
+            modal.id = 'assembly-health-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const dashboard = document.createElement('div');
+            dashboard.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 90%;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            `;
+            
+            dashboard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>📊 Assembly Health Dashboard</h3>
+                    <button onclick="closeAssemblyHealthModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                </div>
+                <div id="assembly-health-content">${generateAssemblyHealthContent()}</div>
+            `;
+            
+            modal.appendChild(dashboard);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeAssemblyHealthModal();
+                }
+            };
+        }
+        
+        function generateAssemblyHealthContent() {
+            const assemblyHealth = analyzeAssemblyHealth();
+            let content = '<div class="assembly-health-dashboard">';
+            
+            // Summary statistics
+            content += `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div class="analytics-card">
+                        <h5>Total Assemblies</h5>
+                        <div style="font-size: 24px; font-weight: bold; color: #0078d4;">${assemblyHealth.total}</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h5>Used in Systems</h5>
+                        <div style="font-size: 24px; font-weight: bold; color: #28a745;">${assemblyHealth.used}</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h5>Health Issues</h5>
+                        <div style="font-size: 24px; font-weight: bold; color: #dc3545;">${assemblyHealth.issues}</div>
+                    </div>
+                    <div class="analytics-card">
+                        <h5>Version Mismatches</h5>
+                        <div style="font-size: 24px; font-weight: bold; color: #ffc107;">${assemblyHealth.versionIssues}</div>
+                    </div>
+                </div>
+            `;
+            
+            // Assembly health details
+            if (assemblyHealth.details.length > 0) {
+                content += '<h4>Assembly Health Details</h4>';
+                assemblyHealth.details.forEach(detail => {
+                    const statusClass = detail.status === 'error' ? 'error' : 
+                                      detail.status === 'warning' ? 'warning' : 'success';
+                    
+                    content += `
+                        <div class="assembly-health-item ${statusClass}">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <strong>${detail.name}</strong>
+                                <span class="assembly-status-indicator ${detail.assembly ? detail.assembly.status.toLowerCase() : 'inactive'}">
+                                    ${detail.assembly ? detail.assembly.status : 'Missing'}
+                                </span>
+                            </div>
+                            <div style="color: #666; margin-bottom: 8px;">
+                                Version: ${detail.version || 'Unknown'} | Used in ${detail.systemCount} system(s)
+                            </div>
+                            <div style="color: ${statusClass === 'error' ? '#721c24' : statusClass === 'warning' ? '#856404' : '#155724'};">
+                                ${detail.message}
+                            </div>
+                            ${detail.systems ? `
+                                <div style="margin-top: 8px; font-size: 12px; color: #666;">
+                                    Systems: ${detail.systems.join(', ')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            } else {
+                content += '<div style="text-align: center; padding: 40px; color: #666;">All assemblies are healthy! ✅</div>';
+            }
+            
+            content += '</div>';
+            return content;
+        }
+        
+        function analyzeAssemblyHealth() {
+            const allAssemblies = data.assemblies || [];
+            const usedAssemblies = new Map();
+            const health = {
+                total: allAssemblies.length,
+                used: 0,
+                issues: 0,
+                versionIssues: 0,
+                details: []
+            };
+            
+            // Collect usage data from systems
+            data.systems.forEach(system => {
+                if (system.items) {
+                    system.items.forEach(item => {
+                        if (item.type === 'assembly') {
+                            if (!usedAssemblies.has(item.name)) {
+                                usedAssemblies.set(item.name, []);
+                            }
+                            usedAssemblies.get(item.name).push({
+                                system: system.name,
+                                version: item.version,
+                                quantity: item.quantity
+                            });
+                        }
+                    });
+                }
+            });
+            
+            health.used = usedAssemblies.size;
+            
+            // Check each used assembly for health issues
+            usedAssemblies.forEach((usage, assemblyName) => {
+                const assembly = allAssemblies.find(a => a.name === assemblyName);
+                const systemCount = usage.length;
+                const systems = usage.map(u => u.system);
+                const versions = [...new Set(usage.map(u => u.version))];
+                
+                let status = 'success';
+                let message = 'Assembly is healthy';
+                
+                if (!assembly) {
+                    status = 'error';
+                    message = 'Assembly definition not found - may have been deleted';
+                    health.issues++;
+                } else if (assembly.status !== 'Active') {
+                    status = 'warning'; 
+                    message = `Assembly status is ${assembly.status} but still used in systems`;
+                    health.issues++;
+                } else if (versions.length > 1) {
+                    status = 'warning';
+                    message = `Version mismatch detected - used as: ${versions.join(', ')}`;
+                    health.versionIssues++;
+                } else if (versions[0] !== assembly.version) {
+                    status = 'warning';
+                    message = `Version mismatch - systems use v${versions[0]} but assembly is v${assembly.version}`;
+                    health.versionIssues++;
+                }
+                
+                if (status !== 'success') {
+                    health.details.push({
+                        name: assemblyName,
+                        assembly: assembly,
+                        version: versions.join(', '),
+                        systemCount: systemCount,
+                        systems: systems,
+                        status: status,
+                        message: message
+                    });
+                }
+            });
+            
+            // Check for unused assemblies
+            allAssemblies.forEach(assembly => {
+                if (!usedAssemblies.has(assembly.name)) {
+                    health.details.push({
+                        name: assembly.name,
+                        assembly: assembly,
+                        version: assembly.version,
+                        systemCount: 0,
+                        systems: [],
+                        status: 'warning',
+                        message: 'Assembly is not used in any systems'
+                    });
+                }
+            });
+            
+            return health;
+        }
+        
+        function closeAssemblyHealthModal() {
+            const modal = document.getElementById('assembly-health-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Show Assembly Replacement Tool
+        function showAssemblyReplacementTool() {
+            const modal = document.createElement('div');
+            modal.id = 'assembly-replacement-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 600px;
+                width: 90%;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            `;
+            
+            dialog.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>🔄 Assembly Replacement Tool</h3>
+                    <button onclick="closeAssemblyReplacementModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                </div>
+                
+                <div class="assembly-replacement-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Replace Assembly</label>
+                            <select id="replace-from-assembly" onchange="updateReplacementPreview()">
+                                <option value="">Select assembly to replace</option>
+                                ${generateAssemblyOptions()}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>With Assembly</label>
+                            <select id="replace-to-assembly" onchange="updateReplacementPreview()">
+                                <option value="">Select replacement assembly</option>
+                                ${generateAssemblyOptions()}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="replacement-preview"></div>
+                    
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="executeAssemblyReplacement()" id="execute-replacement-btn" disabled>
+                            Execute Replacement
+                        </button>
+                        <button class="btn btn-secondary" onclick="closeAssemblyReplacementModal()" style="margin-left: 10px;">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.appendChild(dialog);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeAssemblyReplacementModal();
+                }
+            };
+        }
+        
+        function generateAssemblyOptions() {
+            const assemblies = data.assemblies || [];
+            return assemblies.map(assembly => 
+                `<option value="${assembly.name}">${assembly.name} (v${assembly.version})</option>`
+            ).join('');
+        }
+        
+        function updateReplacementPreview() {
+            const fromAssembly = document.getElementById('replace-from-assembly').value;
+            const toAssembly = document.getElementById('replace-to-assembly').value;
+            const previewDiv = document.getElementById('replacement-preview');
+            const executeBtn = document.getElementById('execute-replacement-btn');
+            
+            if (!fromAssembly || !toAssembly) {
+                previewDiv.innerHTML = '';
+                executeBtn.disabled = true;
+                return;
+            }
+            
+            if (fromAssembly === toAssembly) {
+                previewDiv.innerHTML = '<div style="color: #dc3545; padding: 10px;">Cannot replace assembly with itself</div>';
+                executeBtn.disabled = true;
+                return;
+            }
+            
+            const affectedSystems = findSystemsUsingAssembly(fromAssembly);
+            
+            if (affectedSystems.length === 0) {
+                previewDiv.innerHTML = '<div style="color: #856404; padding: 10px;">Assembly is not used in any systems</div>';
+                executeBtn.disabled = true;
+                return;
+            }
+            
+            previewDiv.innerHTML = `
+                <div class="replacement-preview">
+                    <h5>Replacement Preview</h5>
+                    <p><strong>Replace:</strong> ${fromAssembly}</p>
+                    <p><strong>With:</strong> ${toAssembly}</p>
+                    <p><strong>Affected Systems:</strong> ${affectedSystems.length}</p>
+                    <ul>
+                        ${affectedSystems.map(system => 
+                            `<li>${system.name} (${system.quantity} units)</li>`
+                        ).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            executeBtn.disabled = false;
+        }
+        
+        function findSystemsUsingAssembly(assemblyName) {
+            const affectedSystems = [];
+            data.systems.forEach(system => {
+                if (system.items) {
+                    system.items.forEach(item => {
+                        if (item.type === 'assembly' && item.name === assemblyName) {
+                            affectedSystems.push({
+                                name: system.name,
+                                quantity: item.quantity
+                            });
+                        }
+                    });
+                }
+            });
+            return affectedSystems;
+        }
+        
+        function executeAssemblyReplacement() {
+            const fromAssembly = document.getElementById('replace-from-assembly').value;
+            const toAssembly = document.getElementById('replace-to-assembly').value;
+            
+            if (!fromAssembly || !toAssembly || fromAssembly === toAssembly) {
+                return;
+            }
+            
+            const affectedSystems = findSystemsUsingAssembly(fromAssembly);
+            
+            if (!confirm(`Replace "${fromAssembly}" with "${toAssembly}" in ${affectedSystems.length} system(s)?\n\nThis action cannot be undone.`)) {
+                return;
+            }
+            
+            let replacementCount = 0;
+            
+            // Perform replacement
+            data.systems.forEach(system => {
+                if (system.items) {
+                    system.items.forEach(item => {
+                        if (item.type === 'assembly' && item.name === fromAssembly) {
+                            item.name = toAssembly;
+                            const newAssembly = data.assemblies.find(a => a.name === toAssembly);
+                            if (newAssembly) {
+                                item.version = newAssembly.version;
+                            }
+                            replacementCount++;
+                        }
+                    });
+                }
+            });
+            
+            // Save changes
+            saveData();
+            
+            // Update displays
+            renderSystems();
+            updateStats();
+            
+            alert(`Successfully replaced "${fromAssembly}" with "${toAssembly}" in ${replacementCount} system item(s).`);
+            closeAssemblyReplacementModal();
+        }
+        
+        function closeAssemblyReplacementModal() {
+            const modal = document.getElementById('assembly-replacement-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Show Assembly Usage Analytics
+        function showAssemblyUsageAnalytics() {
+            const modal = document.createElement('div');
+            modal.id = 'assembly-analytics-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const dashboard = document.createElement('div');
+            dashboard.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 90%;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            `;
+            
+            dashboard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>📈 Assembly Usage Analytics</h3>
+                    <button onclick="closeAssemblyAnalyticsModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                </div>
+                <div id="assembly-analytics-content">${generateAssemblyAnalyticsContent()}</div>
+            `;
+            
+            modal.appendChild(dashboard);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeAssemblyAnalyticsModal();
+                }
+            };
+        }
+        
+        function generateAssemblyAnalyticsContent() {
+            const analytics = analyzeAssemblyUsage();
+            let content = '<div class="usage-analytics-dashboard">';
+            
+            // Usage statistics grid
+            content += `
+                <div class="usage-analytics-grid">
+                    <div class="analytics-card">
+                        <h5>Most Used Assembly</h5>
+                        <div style="font-size: 18px; font-weight: bold; color: #0078d4;">
+                            ${analytics.mostUsed ? analytics.mostUsed.name : 'None'}
+                        </div>
+                        <div style="color: #666; font-size: 14px;">
+                            ${analytics.mostUsed ? `${analytics.mostUsed.totalQuantity} units across ${analytics.mostUsed.systemCount} systems` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h5>Average Usage</h5>
+                        <div style="font-size: 18px; font-weight: bold; color: #28a745;">
+                            ${analytics.averageUsage.toFixed(1)} units
+                        </div>
+                        <div style="color: #666; font-size: 14px;">per assembly</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h5>Unused Assemblies</h5>
+                        <div style="font-size: 18px; font-weight: bold; color: #ffc107;">
+                            ${analytics.unused.length}
+                        </div>
+                        <div style="color: #666; font-size: 14px;">not used in any system</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h5>Multi-System Assemblies</h5>
+                        <div style="font-size: 18px; font-weight: bold; color: #6f42c1;">
+                            ${analytics.multiSystem.length}
+                        </div>
+                        <div style="color: #666; font-size: 14px;">used in multiple systems</div>
+                    </div>
+                </div>
+            `;
+            
+            // Detailed usage breakdown
+            if (analytics.usage.length > 0) {
+                content += '<h4>Detailed Usage Breakdown</h4>';
+                
+                // Sort by total quantity descending
+                const sortedUsage = analytics.usage.sort((a, b) => b.totalQuantity - a.totalQuantity);
+                
+                sortedUsage.forEach(item => {
+                    content += `
+                        <div class="analytics-card" style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <strong>${item.name}</strong>
+                                <span style="color: #666;">${item.totalQuantity} total units</span>
+                            </div>
+                            <div style="color: #666; margin-bottom: 8px;">
+                                Used in ${item.systemCount} system(s) | Avg: ${(item.totalQuantity / item.systemCount).toFixed(1)} units/system
+                            </div>
+                            <div style="font-size: 12px;">
+                                Systems: ${item.systems.map(s => `${s.system} (${s.quantity})`).join(', ')}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Unused assemblies
+            if (analytics.unused.length > 0) {
+                content += '<h4>Unused Assemblies</h4>';
+                content += '<div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 6px; padding: 15px;">';
+                content += '<p>The following assemblies are defined but not used in any systems:</p>';
+                content += '<ul>';
+                analytics.unused.forEach(assembly => {
+                    content += `<li>${assembly.name} (v${assembly.version})</li>`;
+                });
+                content += '</ul>';
+                content += '</div>';
+            }
+            
+            content += '</div>';
+            return content;
+        }
+        
+        function analyzeAssemblyUsage() {
+            const allAssemblies = data.assemblies || [];
+            const usageMap = new Map();
+            
+            // Collect usage data
+            data.systems.forEach(system => {
+                if (system.items) {
+                    system.items.forEach(item => {
+                        if (item.type === 'assembly') {
+                            if (!usageMap.has(item.name)) {
+                                usageMap.set(item.name, []);
+                            }
+                            usageMap.get(item.name).push({
+                                system: system.name,
+                                quantity: item.quantity
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Process usage data
+            const usage = [];
+            let totalUsage = 0;
+            let mostUsed = null;
+            
+            usageMap.forEach((systemUsage, assemblyName) => {
+                const totalQuantity = systemUsage.reduce((sum, s) => sum + s.quantity, 0);
+                const systemCount = systemUsage.length;
+                
+                const usageItem = {
+                    name: assemblyName,
+                    systems: systemUsage,
+                    systemCount: systemCount,
+                    totalQuantity: totalQuantity
+                };
+                
+                usage.push(usageItem);
+                totalUsage += totalQuantity;
+                
+                if (!mostUsed || totalQuantity > mostUsed.totalQuantity) {
+                    mostUsed = usageItem;
+                }
+            });
+            
+            // Find unused assemblies
+            const unused = allAssemblies.filter(assembly => !usageMap.has(assembly.name));
+            
+            // Find multi-system assemblies
+            const multiSystem = usage.filter(item => item.systemCount > 1);
+            
+            return {
+                usage: usage,
+                unused: unused,
+                multiSystem: multiSystem,
+                mostUsed: mostUsed,
+                averageUsage: usage.length > 0 ? totalUsage / usage.length : 0
+            };
+        }
+        
+        function closeAssemblyAnalyticsModal() {
+            const modal = document.getElementById('assembly-analytics-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Validate All Assemblies
+        function validateAllAssemblies() {
+            const modal = document.createElement('div');
+            modal.id = 'assembly-validation-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 600px;
+                width: 90%;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            `;
+            
+            const validationResults = performAssemblyValidation();
+            
+            dialog.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>✅ Assembly Validation Results</h3>
+                    <button onclick="closeAssemblyValidationModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                    <div class="analytics-card" style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #28a745;">${validationResults.valid}</div>
+                        <div>Valid</div>
+                    </div>
+                    <div class="analytics-card" style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #ffc107;">${validationResults.warnings}</div>
+                        <div>Warnings</div>
+                    </div>
+                    <div class="analytics-card" style="text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #dc3545;">${validationResults.errors}</div>
+                        <div>Errors</div>
+                    </div>
+                </div>
+                
+                <div class="validation-results">
+                    ${validationResults.details.map(result => `
+                        <div class="validation-item ${result.type}">
+                            <div style="font-weight: bold;">${result.assembly}</div>
+                            <div>${result.message}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-secondary" onclick="closeAssemblyValidationModal()">Close</button>
+                </div>
+            `;
+            
+            modal.appendChild(dialog);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeAssemblyValidationModal();
+                }
+            };
+        }
+        
+        function performAssemblyValidation() {
+            const results = {
+                valid: 0,
+                warnings: 0,
+                errors: 0,
+                details: []
+            };
+            
+            const assemblies = data.assemblies || [];
+            const systems = data.systems || [];
+            
+            // Create usage map
+            const usageMap = new Map();
+            systems.forEach(system => {
+                if (system.items) {
+                    system.items.forEach(item => {
+                        if (item.type === 'assembly') {
+                            if (!usageMap.has(item.name)) {
+                                usageMap.set(item.name, []);
+                            }
+                            usageMap.get(item.name).push({
+                                system: system.name,
+                                version: item.version
+                            });
+                        }
+                    });
+                }
+            });
+            
+            // Check each assembly
+            assemblies.forEach(assembly => {
+                const usage = usageMap.get(assembly.name) || [];
+                let hasIssues = false;
+                
+                // Check if assembly has valid BOM
+                if (!assembly.bom || assembly.bom.length === 0) {
+                    results.details.push({
+                        assembly: assembly.name,
+                        type: 'warning',
+                        message: 'Assembly has no BOM components defined'
+                    });
+                    results.warnings++;
+                    hasIssues = true;
+                }
+                
+                // Check if assembly is inactive but used
+                if (assembly.status !== 'Active' && usage.length > 0) {
+                    results.details.push({
+                        assembly: assembly.name,
+                        type: 'error',
+                        message: `Assembly is ${assembly.status} but used in ${usage.length} system(s)`
+                    });
+                    results.errors++;
+                    hasIssues = true;
+                }
+                
+                // Check version mismatches
+                const versions = [...new Set(usage.map(u => u.version))];
+                if (versions.length > 1) {
+                    results.details.push({
+                        assembly: assembly.name,
+                        type: 'warning',
+                        message: `Version mismatch - used as: ${versions.join(', ')}`
+                    });
+                    results.warnings++;
+                    hasIssues = true;
+                } else if (versions.length === 1 && versions[0] !== assembly.version) {
+                    results.details.push({
+                        assembly: assembly.name,
+                        type: 'warning',
+                        message: `Version mismatch - systems use v${versions[0]} but assembly is v${assembly.version}`
+                    });
+                    results.warnings++;
+                    hasIssues = true;
+                }
+                
+                // Check if assembly is unused
+                if (usage.length === 0) {
+                    results.details.push({
+                        assembly: assembly.name,
+                        type: 'warning',
+                        message: 'Assembly is not used in any systems'
+                    });
+                    results.warnings++;
+                    hasIssues = true;
+                }
+                
+                if (!hasIssues) {
+                    results.details.push({
+                        assembly: assembly.name,
+                        type: 'valid',
+                        message: 'Assembly is healthy and properly used'
+                    });
+                    results.valid++;
+                }
+            });
+            
+            // Check for missing assemblies referenced in systems
+            usageMap.forEach((usage, assemblyName) => {
+                if (!assemblies.find(a => a.name === assemblyName)) {
+                    results.details.push({
+                        assembly: assemblyName,
+                        type: 'error',
+                        message: 'Assembly referenced in systems but definition not found'
+                    });
+                    results.errors++;
+                }
+            });
+            
+            return results;
+        }
+        
+        function closeAssemblyValidationModal() {
+            const modal = document.getElementById('assembly-validation-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // ===== TASK 3.4: SYSTEM BOM ROLLUP CALCULATIONS =====
+        
+        // Enhanced recursive system BOM calculation with nested system support
+        function calculateSystemBOM(system, systemQuantity = 1, processedSystems = new Set()) {
+            const bomResult = {
+                consolidatedComponents: new Map(),
+                assemblyBreakdown: [],
+                systemBreakdown: [],
+                totalAssemblies: 0,
+                totalComponents: 0,
+                totalQuantity: 0,
+                nestedSystemCount: 0,
+                maxDepth: 0,
+                currentDepth: processedSystems.size
+            };
+            
+            // Prevent infinite recursion in circular references
+            if (processedSystems.has(system.name)) {
+                console.warn(`Circular reference detected for system: ${system.name}`);
+                return bomResult;
+            }
+            
+            processedSystems.add(system.name);
+            bomResult.maxDepth = Math.max(bomResult.maxDepth, processedSystems.size);
+            
+            if (!system.items || system.items.length === 0) {
+                processedSystems.delete(system.name);
+                return bomResult;
+            }
+            
+            system.items.forEach(systemItem => {
+                if (systemItem.type === 'assembly') {
+                    // Handle assemblies
+                    const assembly = data.assemblies.find(a => a.name === systemItem.value);
+                    if (assembly) {
+                        const assemblyCalc = calculateAssemblyQuantities(assembly, systemItem.quantity * systemQuantity);
+                        
+                        bomResult.assemblyBreakdown.push({
+                            name: assembly.name,
+                            type: assembly.type,
+                            version: assembly.version,
+                            quantity: systemItem.quantity * systemQuantity,
+                            systemQuantity: systemQuantity,
+                            itemQuantity: systemItem.quantity,
+                            calculations: assemblyCalc,
+                            depth: processedSystems.size
+                        });
+                        
+                        bomResult.totalAssemblies += systemItem.quantity * systemQuantity;
+                        bomResult.totalQuantity += assemblyCalc.totalQuantity;
+                        
+                        // Add assembly components to consolidated BOM
+                        [...assemblyCalc.bomComponents, ...assemblyCalc.motherComponents].forEach(comp => {
+                            const key = comp.kpn;
+                            if (bomResult.consolidatedComponents.has(key)) {
+                                const existing = bomResult.consolidatedComponents.get(key);
+                                existing.totalQuantity += comp.calculatedQuantity;
+                                existing.sources.push({
+                                    sourceType: 'assembly',
+                                    sourceName: assembly.name,
+                                    systemName: system.name,
+                                    assemblyQuantity: systemItem.quantity * systemQuantity,
+                                    componentQuantity: comp.quantity,
+                                    calculatedQuantity: comp.calculatedQuantity,
+                                    depth: processedSystems.size
+                                });
+                            } else {
+                                bomResult.consolidatedComponents.set(key, {
+                                    kpn: comp.kpn,
+                                    componentName: comp.componentName,
+                                    category: comp.category,
+                                    subcategory: comp.subcategory,
+                                    value: comp.value,
+                                    package: comp.package,
+                                    manufacturer: comp.manufacturer,
+                                    preferredVendor: comp.preferredVendor,
+                                    totalQuantity: comp.calculatedQuantity,
+                                    sources: [{
+                                        sourceType: 'assembly',
+                                        sourceName: assembly.name,
+                                        systemName: system.name,
+                                        assemblyQuantity: systemItem.quantity * systemQuantity,
+                                        componentQuantity: comp.quantity,
+                                        calculatedQuantity: comp.calculatedQuantity,
+                                        depth: processedSystems.size
+                                    }]
+                                });
+                            }
+                        });
+                        
+                        bomResult.totalComponents += assemblyCalc.totalItems;
+                    }
+                } else if (systemItem.type === 'system') {
+                    // Handle nested systems (RECURSIVE)
+                    const nestedSystem = data.systems.find(s => s.name === systemItem.value);
+                    if (nestedSystem) {
+                        const nestedBOM = calculateSystemBOM(nestedSystem, systemItem.quantity * systemQuantity, new Set(processedSystems));
+                        
+                        bomResult.systemBreakdown.push({
+                            name: nestedSystem.name,
+                            version: nestedSystem.version,
+                            quantity: systemItem.quantity * systemQuantity,
+                            systemQuantity: systemQuantity,
+                            itemQuantity: systemItem.quantity,
+                            nestedBOM: nestedBOM,
+                            depth: processedSystems.size
+                        });
+                        
+                        bomResult.nestedSystemCount += 1;
+                        bomResult.totalAssemblies += nestedBOM.totalAssemblies;
+                        bomResult.totalComponents += nestedBOM.totalComponents;
+                        bomResult.totalQuantity += nestedBOM.totalQuantity;
+                        bomResult.maxDepth = Math.max(bomResult.maxDepth, nestedBOM.maxDepth);
+                        
+                        // Merge nested system components into consolidated BOM
+                        nestedBOM.consolidatedComponents.forEach((comp, key) => {
+                            if (bomResult.consolidatedComponents.has(key)) {
+                                const existing = bomResult.consolidatedComponents.get(key);
+                                existing.totalQuantity += comp.totalQuantity;
+                                // Add nested system sources
+                                comp.sources.forEach(source => {
+                                    existing.sources.push({
+                                        ...source,
+                                        nestedSystemName: nestedSystem.name,
+                                        depth: source.depth + 1
+                                    });
+                                });
+                            } else {
+                                bomResult.consolidatedComponents.set(key, {
+                                    ...comp,
+                                    sources: comp.sources.map(source => ({
+                                        ...source,
+                                        nestedSystemName: nestedSystem.name,
+                                        depth: source.depth + 1
+                                    }))
+                                });
+                            }
+                        });
+                    }
+                }
+                // Note: mechanical, printed3d, cable types are handled at assembly level as mother components
+            });
+            
+            processedSystems.delete(system.name);
+            return bomResult;
+        }
+        
+        // Generate exportable system BOM data
+        function generateSystemBOMExport(systemName) {
+            const system = data.systems.find(s => s.name === systemName);
+            if (!system) {
+                console.error(`System ${systemName} not found`);
+                return null;
+            }
+            
+            const bomData = calculateSystemBOM(system);
+            const exportData = [];
+            
+            // Convert consolidated components to export format
+            bomData.consolidatedComponents.forEach((comp, kpn) => {
+                const sourceDetails = comp.sources.map(source => {
+                    if (source.nestedSystemName) {
+                        return `${source.nestedSystemName}→${source.sourceName}`;
+                    } else {
+                        return source.sourceName;
+                    }
+                }).join(', ');
+                
+                exportData.push({
+                    'KPN': kpn,
+                    'Component Name': comp.componentName || '',
+                    'Category': comp.category || '',
+                    'Subcategory': comp.subcategory || '',
+                    'Value': comp.value || '',
+                    'Package': comp.package || '',
+                    'Manufacturer': comp.manufacturer || '',
+                    'Preferred Vendor': comp.preferredVendor || '',
+                    'Total Quantity': comp.totalQuantity,
+                    'Source Assemblies': sourceDetails,
+                    'System': systemName,
+                    'Max Nesting Depth': bomData.maxDepth,
+                    'Export Date': new Date().toISOString().split('T')[0]
+                });
+            });
+            
+            // Sort by total quantity descending
+            exportData.sort((a, b) => b['Total Quantity'] - a['Total Quantity']);
+            
+            return {
+                exportData: exportData,
+                bomAnalysis: bomData,
+                metadata: {
+                    systemName: systemName,
+                    totalComponents: bomData.consolidatedComponents.size,
+                    totalQuantity: bomData.totalQuantity,
+                    totalAssemblies: bomData.totalAssemblies,
+                    nestedSystems: bomData.nestedSystemCount,
+                    maxDepth: bomData.maxDepth,
+                    generatedAt: new Date().toISOString()
+                }
+            };
+        }
+        
+        // Show System BOM Preview Modal
+        function showSystemBOMPreview() {
+            if (data.systems.length === 0) {
+                alert('No systems available for BOM preview');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.id = 'system-bom-preview-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 95%;
+                width: 1200px;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            `;
+            
+            dialog.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>🔍 System BOM Preview</h3>
+                    <button onclick="closeSystemBOMPreviewModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Select System:</label>
+                    <select id="bom-preview-system" onchange="updateBOMPreview()" style="width: 100%; padding: 8px;">
+                        <option value="">Select a system to preview BOM</option>
+                        ${data.systems.map(system => 
+                            `<option value="${system.name}">${system.name} (v${system.version})</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                
+                <div id="bom-preview-content"></div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-success" onclick="exportSelectedSystemBOM()" id="export-bom-btn" disabled>
+                        📤 Export This BOM
+                    </button>
+                    <button class="btn btn-secondary" onclick="closeSystemBOMPreviewModal()" style="margin-left: 10px;">
+                        Close
+                    </button>
+                </div>
+            `;
+            
+            modal.appendChild(dialog);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeSystemBOMPreviewModal();
+                }
+            };
+        }
+        
+        function updateBOMPreview() {
+            const systemName = document.getElementById('bom-preview-system').value;
+            const previewContent = document.getElementById('bom-preview-content');
+            const exportBtn = document.getElementById('export-bom-btn');
+            
+            if (!systemName) {
+                previewContent.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Select a system to preview its BOM</div>';
+                exportBtn.disabled = true;
+                return;
+            }
+            
+            const bomExport = generateSystemBOMExport(systemName);
+            if (!bomExport) {
+                previewContent.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc3545;">Error generating BOM for selected system</div>';
+                exportBtn.disabled = true;
+                return;
+            }
+            
+            exportBtn.disabled = false;
+            
+            const { exportData, bomAnalysis, metadata } = bomExport;
+            
+            let content = '<div class="bom-preview-content">';
+            
+            // BOM Summary Statistics
+            content += `
+                <div class="bom-summary-stats">
+                    <div class="bom-stat-card">
+                        <div class="bom-stat-value">${metadata.totalComponents}</div>
+                        <div class="bom-stat-label">Unique Components</div>
+                    </div>
+                    <div class="bom-stat-card">
+                        <div class="bom-stat-value">${metadata.totalQuantity}</div>
+                        <div class="bom-stat-label">Total Quantity</div>
+                    </div>
+                    <div class="bom-stat-card">
+                        <div class="bom-stat-value">${metadata.totalAssemblies}</div>
+                        <div class="bom-stat-label">Total Assemblies</div>
+                    </div>
+                    <div class="bom-stat-card">
+                        <div class="bom-stat-value">${metadata.nestedSystems}</div>
+                        <div class="bom-stat-label">Nested Systems</div>
+                    </div>
+                    <div class="bom-stat-card">
+                        <div class="bom-stat-value">${metadata.maxDepth}</div>
+                        <div class="bom-stat-label">Max Depth</div>
+                    </div>
+                </div>
+            `;
+            
+            // BOM Component List
+            if (exportData.length > 0) {
+                content += `
+                    <div class="bom-component-list">
+                        <div class="bom-component-header" style="display: grid; grid-template-columns: 1fr 2fr 1fr 1fr 1fr;">
+                            <div>KPN</div>
+                            <div>Component</div>
+                            <div>Quantity</div>
+                            <div>Source</div>
+                            <div>Vendor</div>
+                        </div>
+                `;
+                
+                exportData.forEach(item => {
+                    content += `
+                        <div class="bom-component-item">
+                            <div class="bom-component-kpn">${item.KPN}</div>
+                            <div class="bom-component-description">
+                                <strong>${item['Component Name']}</strong><br>
+                                <small>${item.Category} › ${item.Subcategory} › ${item.Value} › ${item.Package}</small>
+                            </div>
+                            <div class="bom-component-quantity">${item['Total Quantity']}</div>
+                            <div class="bom-component-source">${item['Source Assemblies']}</div>
+                            <div class="bom-component-vendor">${item['Preferred Vendor']}</div>
+                        </div>
+                    `;
+                });
+                
+                content += '</div>';
+            } else {
+                content += '<div style="text-align: center; padding: 40px; color: #666;">No components found in system BOM</div>';
+            }
+            
+            content += '</div>';
+            previewContent.innerHTML = content;
+        }
+        
+        function exportSelectedSystemBOM() {
+            const systemName = document.getElementById('bom-preview-system').value;
+            if (!systemName) return;
+            
+            const bomExport = generateSystemBOMExport(systemName);
+            if (!bomExport) return;
+            
+            // Create CSV content
+            const { exportData } = bomExport;
+            const headers = Object.keys(exportData[0]);
+            const csvContent = [
+                headers.join(','),
+                ...exportData.map(row => 
+                    headers.map(header => {
+                        const value = row[header];
+                        // Escape commas and quotes in CSV
+                        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+                            return `"${value.replace(/"/g, '""')}"`;
+                        }
+                        return value;
+                    }).join(',')
+                )
+            ].join('\n');
+            
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `${systemName}_BOM_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`System BOM exported successfully!\nFile: ${systemName}_BOM_${new Date().toISOString().split('T')[0]}.csv`);
+        }
+        
+        function closeSystemBOMPreviewModal() {
+            const modal = document.getElementById('system-bom-preview-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Export System BOM (quick export without preview)
+        function exportSystemBOM() {
+            if (data.systems.length === 0) {
+                alert('No systems available for BOM export');
+                return;
+            }
+            
+            // If only one system, export directly
+            if (data.systems.length === 1) {
+                const bomExport = generateSystemBOMExport(data.systems[0].name);
+                if (bomExport) {
+                    const { exportData } = bomExport;
+                    const headers = Object.keys(exportData[0]);
+                    const csvContent = [
+                        headers.join(','),
+                        ...exportData.map(row => 
+                            headers.map(header => {
+                                const value = row[header];
+                                if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+                                    return `"${value.replace(/"/g, '""')}"`;
+                                }
+                                return value;
+                            }).join(',')
+                        )
+                    ].join('\n');
+                    
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const link = document.createElement('a');
+                    const url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', `${data.systems[0].name}_BOM_${new Date().toISOString().split('T')[0]}.csv`);
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    alert(`System BOM exported successfully!`);
+                }
+                return;
+            }
+            
+            // Multiple systems - show selection dialog
+            showSystemBOMPreview();
+        }
+       
+        // Show System BOM Analytics
+        function showSystemBOMAnalytics() {
+            if (data.systems.length === 0) {
+                alert('No systems available for BOM analytics');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.id = 'system-bom-analytics-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const dashboard = document.createElement('div');
+            dashboard.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 90%;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            `;
+            
+            dashboard.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>📊 System BOM Analytics</h3>
+                    <button onclick="closeSystemBOMAnalyticsModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                </div>
+                <div id="system-bom-analytics-content">${generateSystemBOMAnalyticsContent()}</div>
+            `;
+            
+            modal.appendChild(dashboard);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closeSystemBOMAnalyticsModal();
+                }
+            };
+        }
+        
+        function generateSystemBOMAnalyticsContent() {
+            const analytics = analyzeSystemBOMs();
+            let content = '<div class="bom-analytics-dashboard">';
+            
+            // Overall BOM statistics
+            content += `
+                <div class="bom-analytics-grid">
+                    <div class="analytics-card">
+                        <h5>System with Most Components</h5>
+                        <div style="font-size: 18px; font-weight: bold; color: #0078d4;">
+                            ${analytics.mostComplexSystem ? analytics.mostComplexSystem.name : 'None'}
+                        </div>
+                        <div style="color: #666; font-size: 14px;">
+                            ${analytics.mostComplexSystem ? `${analytics.mostComplexSystem.componentCount} unique components` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h5>Highest Component Reuse</h5>
+                        <div style="font-size: 18px; font-weight: bold; color: #28a745;">
+                            ${analytics.mostReusedComponent ? analytics.mostReusedComponent.kpn : 'None'}
+                        </div>
+                        <div style="color: #666; font-size: 14px;">
+                            ${analytics.mostReusedComponent ? `Used in ${analytics.mostReusedComponent.systemCount} systems` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h5>Average Components/System</h5>
+                        <div style="font-size: 18px; font-weight: bold; color: #6f42c1;">
+                            ${analytics.averageComponentsPerSystem.toFixed(1)}
+                        </div>
+                        <div style="color: #666; font-size: 14px;">unique components</div>
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <h5>Systems with Nesting</h5>
+                        <div style="font-size: 18px; font-weight: bold; color: #ffc107;">
+                            ${analytics.nestedSystems.length}
+                        </div>
+                        <div style="color: #666; font-size: 14px;">have nested systems</div>
+                    </div>
+                </div>
+            `;
+            
+            // System-by-system breakdown
+            if (analytics.systemBreakdown.length > 0) {
+                content += '<h4>System BOM Breakdown</h4>';
+                
+                analytics.systemBreakdown.forEach(system => {
+                    content += `
+                        <div class="analytics-card" style="margin-bottom: 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <strong>${system.name}</strong>
+                                <span style="color: #666;">${system.componentCount} components, ${system.totalQuantity} total qty</span>
+                            </div>
+                            <div style="color: #666; margin-bottom: 8px;">
+                                Assemblies: ${system.assemblyCount} | Nested Systems: ${system.nestedSystemCount} | Max Depth: ${system.maxDepth}
+                            </div>
+                            ${system.topComponents.length > 0 ? `
+                                <div style="font-size: 12px;">
+                                    Top Components: ${system.topComponents.map(c => `${c.kpn} (${c.quantity})`).join(', ')}
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                });
+            }
+            
+            // Component reuse analysis
+            if (analytics.componentReuse.length > 0) {
+                content += '<h4>Component Reuse Analysis</h4>';
+                content += '<div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 15px;">';
+                content += '<p>Components used across multiple systems (optimization opportunities):</p>';
+                
+                analytics.componentReuse.slice(0, 10).forEach(comp => {
+                    content += `
+                        <div style="display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #f1f3f4;">
+                            <span><strong>${comp.kpn}</strong> - ${comp.componentName}</span>
+                            <span>${comp.systemCount} systems (${comp.totalQuantity} total qty)</span>
+                        </div>
+                    `;
+                });
+                
+                content += '</div>';
+            }
+            
+            content += '</div>';
+            return content;
+        }
+        
+        function analyzeSystemBOMs() {
+            const analytics = {
+                systemBreakdown: [],
+                componentReuse: [],
+                nestedSystems: [],
+                mostComplexSystem: null,
+                mostReusedComponent: null,
+                averageComponentsPerSystem: 0
+            };
+            
+            const globalComponentMap = new Map();
+            let totalComponents = 0;
+            
+            data.systems.forEach(system => {
+                const bomData = calculateSystemBOM(system);
+                
+                const systemAnalysis = {
+                    name: system.name,
+                    componentCount: bomData.consolidatedComponents.size,
+                    totalQuantity: bomData.totalQuantity,
+                    assemblyCount: bomData.totalAssemblies,
+                    nestedSystemCount: bomData.nestedSystemCount,
+                    maxDepth: bomData.maxDepth,
+                    topComponents: []
+                };
+                
+                // Get top 3 components by quantity
+                const sortedComponents = Array.from(bomData.consolidatedComponents.values())
+                    .sort((a, b) => b.totalQuantity - a.totalQuantity)
+                    .slice(0, 3);
+                
+                systemAnalysis.topComponents = sortedComponents.map(comp => ({
+                    kpn: comp.kpn,
+                    quantity: comp.totalQuantity
+                }));
+                
+                analytics.systemBreakdown.push(systemAnalysis);
+                totalComponents += bomData.consolidatedComponents.size;
+                
+                if (bomData.nestedSystemCount > 0) {
+                    analytics.nestedSystems.push(systemAnalysis);
+                }
+                
+                if (!analytics.mostComplexSystem || bomData.consolidatedComponents.size > analytics.mostComplexSystem.componentCount) {
+                    analytics.mostComplexSystem = systemAnalysis;
+                }
+                
+                // Track global component usage
+                bomData.consolidatedComponents.forEach((comp, kpn) => {
+                    if (globalComponentMap.has(kpn)) {
+                        const existing = globalComponentMap.get(kpn);
+                        existing.systemCount++;
+                        existing.totalQuantity += comp.totalQuantity;
+                        existing.systems.push(system.name);
+                    } else {
+                        globalComponentMap.set(kpn, {
+                            kpn: kpn,
+                            componentName: comp.componentName,
+                            systemCount: 1,
+                            totalQuantity: comp.totalQuantity,
+                            systems: [system.name]
+                        });
+                    }
+                });
+            });
+            
+            // Calculate averages
+            analytics.averageComponentsPerSystem = data.systems.length > 0 ? totalComponents / data.systems.length : 0;
+            
+            // Find most reused components
+            analytics.componentReuse = Array.from(globalComponentMap.values())
+                .filter(comp => comp.systemCount > 1)
+                .sort((a, b) => b.systemCount - a.systemCount);
+            
+            if (analytics.componentReuse.length > 0) {
+                analytics.mostReusedComponent = analytics.componentReuse[0];
+            }
+            
+            return analytics;
+        }
+        
+        function closeSystemBOMAnalyticsModal() {
+            const modal = document.getElementById('system-bom-analytics-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Generate Purchase BOM (vendor-organized BOM for procurement)
+        function generatePurchasingBOM() {
+            if (data.systems.length === 0) {
+                alert('No systems available for purchasing BOM');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.id = 'purchasing-bom-modal';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            const dialog = document.createElement('div');
+            dialog.style.cssText = `
+                background: white;
+                border-radius: 8px;
+                padding: 20px;
+                max-width: 95%;
+                width: 1000px;
+                max-height: 90%;
+                overflow-y: auto;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            `;
+            
+            dialog.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3>🛒 Purchase BOM Generator</h3>
+                    <button onclick="closePurchasingBOMModal()" style="background: none; border: none; font-size: 24px; cursor: pointer;">&times;</button>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>Select Systems for Purchase BOM:</label>
+                    <div style="max-height: 200px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 4px; padding: 10px;">
+                        ${data.systems.map((system, index) => `
+                            <div style="margin-bottom: 8px;">
+                                <label style="display: flex; align-items: center;">
+                                    <input type="checkbox" class="purchase-system-checkbox" data-system-name="${system.name}" onchange="updatePurchaseBOMPreview()">
+                                    <span style="margin-left: 8px;">${system.name} (v${system.version})</span>
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div id="purchase-bom-content"></div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-success" onclick="exportPurchaseBOM()" id="export-purchase-btn" disabled>
+                        📤 Export Purchase BOM
+                    </button>
+                    <button class="btn btn-secondary" onclick="closePurchasingBOMModal()" style="margin-left: 10px;">
+                        Close
+                    </button>
+                </div>
+            `;
+            
+            modal.appendChild(dialog);
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    closePurchasingBOMModal();
+                }
+            };
+        }
+        
+        function updatePurchaseBOMPreview() {
+            const checkboxes = document.querySelectorAll('.purchase-system-checkbox:checked');
+            const selectedSystems = Array.from(checkboxes).map(cb => cb.dataset.systemName);
+            const previewContent = document.getElementById('purchase-bom-content');
+            const exportBtn = document.getElementById('export-purchase-btn');
+            
+            if (selectedSystems.length === 0) {
+                previewContent.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Select systems to generate purchase BOM</div>';
+                exportBtn.disabled = true;
+                return;
+            }
+            
+            exportBtn.disabled = false;
+            
+            // Generate consolidated BOM across selected systems
+            const consolidatedBOM = new Map();
+            const vendorBreakdown = new Map();
+            let totalComponents = 0;
+            let totalQuantity = 0;
+            
+            selectedSystems.forEach(systemName => {
+                const system = data.systems.find(s => s.name === systemName);
+                if (system) {
+                    const bomData = calculateSystemBOM(system);
+                    
+                    bomData.consolidatedComponents.forEach((comp, kpn) => {
+                        if (consolidatedBOM.has(kpn)) {
+                            consolidatedBOM.get(kpn).totalQuantity += comp.totalQuantity;
+                        } else {
+                            consolidatedBOM.set(kpn, { ...comp });
+                        }
+                        
+                        // Group by vendor
+                        const vendor = comp.preferredVendor || 'No Vendor Specified';
+                        if (!vendorBreakdown.has(vendor)) {
+                            vendorBreakdown.set(vendor, []);
+                        }
+                        vendorBreakdown.get(vendor).push({
+                            kpn: kpn,
+                            componentName: comp.componentName,
+                            totalQuantity: consolidatedBOM.get(kpn).totalQuantity,
+                            category: comp.category,
+                            value: comp.value,
+                            package: comp.package
+                        });
+                    });
+                }
+            });
+            
+            totalComponents = consolidatedBOM.size;
+            totalQuantity = Array.from(consolidatedBOM.values()).reduce((sum, comp) => sum + comp.totalQuantity, 0);
+            
+            let content = `
+                <div class="purchase-bom-section">
+                    <h4>Purchase BOM Summary</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 15px; margin-bottom: 20px;">
+                        <div class="bom-stat-card">
+                            <div class="bom-stat-value">${selectedSystems.length}</div>
+                            <div class="bom-stat-label">Systems</div>
+                        </div>
+                        <div class="bom-stat-card">
+                            <div class="bom-stat-value">${totalComponents}</div>
+                            <div class="bom-stat-label">Components</div>
+                        </div>
+                        <div class="bom-stat-card">
+                            <div class="bom-stat-value">${totalQuantity}</div>
+                            <div class="bom-stat-label">Total Qty</div>
+                        </div>
+                        <div class="bom-stat-card">
+                            <div class="bom-stat-value">${vendorBreakdown.size}</div>
+                            <div class="bom-stat-label">Vendors</div>
+                        </div>
+                    </div>
+            `;
+            
+            // Vendor breakdown
+            if (vendorBreakdown.size > 0) {
+                content += '<h5>Vendor Breakdown</h5>';
+                content += '<div class="vendor-breakdown">';
+                
+                vendorBreakdown.forEach((components, vendor) => {
+                    const vendorQuantity = components.reduce((sum, comp) => sum + comp.totalQuantity, 0);
+                    content += `
+                        <div class="vendor-card">
+                            <h5>${vendor}</h5>
+                            <div style="margin-bottom: 10px;">
+                                <strong>${components.length}</strong> components, <strong>${vendorQuantity}</strong> total quantity
+                            </div>
+                            <div style="max-height: 150px; overflow-y: auto;">
+                                ${components.map(comp => `
+                                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+                                        <span>${comp.kpn}</span>
+                                        <span>Qty: ${comp.totalQuantity}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                content += '</div>';
+            }
+            
+            content += '</div>';
+            previewContent.innerHTML = content;
+        }
+        
+        function exportPurchaseBOM() {
+            const checkboxes = document.querySelectorAll('.purchase-system-checkbox:checked');
+            const selectedSystems = Array.from(checkboxes).map(cb => cb.dataset.systemName);
+            
+            if (selectedSystems.length === 0) return;
+            
+            // Generate consolidated purchase BOM
+            const consolidatedBOM = new Map();
+            
+            selectedSystems.forEach(systemName => {
+                const system = data.systems.find(s => s.name === systemName);
+                if (system) {
+                    const bomData = calculateSystemBOM(system);
+                    
+                    bomData.consolidatedComponents.forEach((comp, kpn) => {
+                        if (consolidatedBOM.has(kpn)) {
+                            consolidatedBOM.get(kpn).totalQuantity += comp.totalQuantity;
+                        } else {
+                            consolidatedBOM.set(kpn, { ...comp });
+                        }
+                    });
+                }
+            });
+            
+            // Create export data
+            const exportData = [];
+            consolidatedBOM.forEach((comp, kpn) => {
+                exportData.push({
+                    'KPN': kpn,
+                    'Component Name': comp.componentName || '',
+                    'Category': comp.category || '',
+                    'Subcategory': comp.subcategory || '',
+                    'Value': comp.value || '',
+                    'Package': comp.package || '',
+                    'Manufacturer': comp.manufacturer || '',
+                    'Preferred Vendor': comp.preferredVendor || '',
+                    'Total Quantity': comp.totalQuantity,
+                    'Systems': selectedSystems.join(', '),
+                    'Export Type': 'Purchase BOM',
+                    'Export Date': new Date().toISOString().split('T')[0]
+                });
+            });
+            
+            // Sort by vendor, then by total quantity
+            exportData.sort((a, b) => {
+                const vendorCompare = (a['Preferred Vendor'] || '').localeCompare(b['Preferred Vendor'] || '');
+                if (vendorCompare !== 0) return vendorCompare;
+                return b['Total Quantity'] - a['Total Quantity'];
+            });
+            
+            // Create CSV
+            const headers = Object.keys(exportData[0]);
+            const csvContent = [
+                headers.join(','),
+                ...exportData.map(row => 
+                    headers.map(header => {
+                        const value = row[header];
+                        if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+                            return `"${value.replace(/"/g, '""')}"`;
+                        }
+                        return value;
+                    }).join(',')
+                )
+            ].join('\n');
+            
+            // Download CSV
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Purchase_BOM_${selectedSystems.join('_')}_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert(`Purchase BOM exported successfully for ${selectedSystems.length} system(s)!`);
+        }
+        
+        function closePurchasingBOMModal() {
+            const modal = document.getElementById('purchasing-bom-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Add button to open quantity dashboard
+        function addQuantityDashboardButton() {
+            const actionsDiv = document.querySelector('#systems .actions');
+            if (actionsDiv && !document.getElementById('quantity-dashboard-btn')) {
+                const dashboardBtn = document.createElement('button');
+                dashboardBtn.id = 'quantity-dashboard-btn';
+                dashboardBtn.className = 'btn btn-info';
+                dashboardBtn.textContent = '📊 Quantity Analysis';
+                dashboardBtn.onclick = createSystemWideQuantityDashboard;
+                dashboardBtn.title = 'View system-wide quantity analysis and cross-usage patterns';
+                actionsDiv.appendChild(dashboardBtn);
+            }
         }
 
         function renderAll() {
