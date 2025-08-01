@@ -378,9 +378,9 @@ const assembly = {
 ### **PHASE COMPLETION PROTOCOL**
 1. **Phase Summary**: Create `.agent-work/phase-X-summary.md` when all phase tasks complete
 2. **User Verification**: Wait for user confirmation that phase is working correctly
-3. **Git Commit**: After verification, commit changes to `assembly-bom-import` branch
+3. **Git Commit**: After verification, commit changes to `assembly-bom-import-v2` branch
 4. **Commit Message Format**: `📋 Complete [Phase Name] - [Brief description of features]`
-5. **Branch Management**: Always commit to `assembly-bom-import` branch, never `master`
+5. **Branch Management**: Always commit to `assembly-bom-import-v2` branch, never `master`
 
 ### **ROLLBACK PROTOCOL**
 **If ANY validation fails**:
@@ -440,7 +440,7 @@ PHASE X COMPLETED: [Phase Name]
 ✅ Phase summary documentation created in .agent-work/phase-X-summary.md
 ✅ Master task list updated with phase completion status
 ✅ User verification received confirming successful completion
-✅ Changes committed to assembly-bom-import branch with descriptive commit message
+✅ Changes committed to assembly-bom-import-v2 branch with descriptive commit message
 ✅ Ready for next phase
 ```
 
